@@ -150,6 +150,15 @@
         }
         hr { border-color: #334155; margin: 16px 0; }
         .loading { text-align: center; padding: 60px; color: #64748b; }
+        button {
+            background: #f59e0b;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #0f172a;
+        }
     </style>
 </head>
 <body>
@@ -183,21 +192,20 @@
 <div id="modal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal()">&times;</span><div id="modalBody"></div></div></div>
 
 <script>
-    // CORREÇÃO: usando Google Sheets como JSONP (mais confiável)
-    const SHEET_ID = "2PACX-1vSZQ4K9szuj6x6mVT-xzyk829q1THHXBhugH2xUK5tkAC36tDjTsLPNhDKmdMS29xhZwakRVZotrKwL";
-    const CSV_URL = `https://docs.google.com/spreadsheets/d/e/${SHEET_ID}/pub?gid=0&single=true&output=csv`;
+    // 🔥 SEU URL DO GOOGLE APPS SCRIPT (proxy sem CORS)
+    const CSV_URL = "https://script.google.com/macros/s/AKfycbxgjltMj72B_8Zd-46iPAiMYu2S7Y-hIYLOk-N4CdDXYrE9_ioYCw79tdpkrGYLRxTv-w/exec";
     
     let allData = [];
     let filteredData = [];
     let liquidacoes = [];
     let headers = [];
     
-    // Índices (colunas da planilha original)
-    const IDX_FAV = 7;
-    const IDX_PROC = 12;
-    const IDX_SALDO = 17;
-    const LIQ_START = 18; // coluna S
-    const LIQ_END = 25;   // coluna Y
+    // Índices das colunas da planilha
+    const IDX_FAV = 7;      // coluna H
+    const IDX_PROC = 12;    // coluna M
+    const IDX_SALDO = 17;   // coluna R
+    const LIQ_START = 18;   // coluna S
+    const LIQ_END = 25;     // coluna Y
     
     function parseCSV(text) {
         const rows = [];
@@ -228,26 +236,19 @@
     async function loadData() {
         try {
             document.getElementById('emptyState').innerHTML = '⏳ Carregando dados da planilha...';
+            document.getElementById('emptyState').style.display = 'block';
             
-            // Tentativa 1: fetch direto (pode falhar por CORS)
-            let text;
-            try {
-                const resp = await fetch(CSV_URL + '?t=' + Date.now());
-                if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
-                text = await resp.text();
-            } catch(corsError) {
-                // Tentativa 2: usar proxy alternativo
-                console.log('Fetch direto falhou, tentando proxy...');
-                const PROXY = "https://cors-anywhere.herokuapp.com/";
-                const respProxy = await fetch(PROXY + CSV_URL + '?t=' + Date.now());
-                if(!respProxy.ok) throw new Error(`Proxy HTTP ${respProxy.status}`);
-                text = await respProxy.text();
-            }
+            const resp = await fetch(CSV_URL + '?t=' + Date.now());
+            if(!resp.ok) throw new Error(`HTTP ${resp.status} - ${resp.statusText}`);
+            
+            const text = await resp.text();
+            console.log("CSV carregado, primeiros 200 caracteres:", text.substring(0, 200));
             
             const allRows = parseCSV(text);
             if(allRows.length < 2) throw new Error('CSV sem dados');
             
             headers = allRows[0];
+            console.log("Cabeçalhos encontrados:", headers.slice(0, 20));
             
             // Tabela principal (A-R)
             allData = [];
@@ -260,6 +261,8 @@
                 }
             }
             
+            console.log(`Linhas na tabela principal: ${allData.length}`);
+            
             // Tabela de liquidações (S-Y)
             const liqRows = [];
             for(let i = 1; i < allRows.length; i++) {
@@ -270,6 +273,8 @@
                     if(procLiq && procLiq !== 'Total') liqRows.push(row);
                 }
             }
+            
+            console.log(`Linhas de liquidação extraídas: ${liqRows.length}`);
             
             // Mapa de liquidações
             const liqMap = new Map();
@@ -288,6 +293,8 @@
                 }
                 liqMap.get(key).total += parseMoney(row[6]);
             }
+            
+            console.log(`Mapa de liquidações: ${liqMap.size} chaves`);
             
             // Cruzar dados
             liquidacoes = [];
@@ -316,18 +323,22 @@
                 }
             }
             
+            console.log(`Matches de liquidação encontradas: ${liquidacoes.length}`);
+            
             filteredData = [...allData];
             renderDashboard();
             renderLiquidacoes();
             updateKPIs();
             
+            document.getElementById('emptyState').style.display = 'none';
+            
         } catch(err) {
-            console.error(err);
+            console.error('Erro detalhado:', err);
             document.getElementById('emptyState').innerHTML = `
                 <div style="text-align:center; padding:40px;">
                     <p style="color:#ef4444;">❌ Erro ao carregar dados</p>
                     <p style="color:#64748b; font-size:0.9rem;">${err.message}</p>
-                    <button onclick="loadData()" style="margin-top:20px; background:#f59e0b; border:none; padding:10px 24px; border-radius:30px; cursor:pointer;">🔄 Tentar novamente</button>
+                    <button onclick="loadData()">🔄 Tentar novamente</button>
                 </div>
             `;
             document.getElementById('emptyState').style.display = 'block';
@@ -395,11 +406,21 @@
                     <span style="color:#f59e0b;">📄</span>
                     <span style="color:${isPos ? '#10b981' : '#ef4444'};">●</span>
                 </div>
-                <div class="proc">${processo.substring(0, 35)}${processo.length > 35 ? '...' : ''}</div>
-                <div class="fav">${favorecido.substring(0, 40)}${favorecido.length > 40 ? '...' : ''}</div>
+                <div class="proc">${escapeHtml(processo.substring(0, 35))}${processo.length > 35 ? '...' : ''}</div>
+                <div class="fav">${escapeHtml(favorecido.substring(0, 40))}${favorecido.length > 40 ? '...' : ''}</div>
                 <div class="saldo" style="color:${isPos ? '#34d399' : '#f87171'}">${formatMoney(saldo)}</div>
             </div>`;
         }).join('');
+    }
+    
+    function escapeHtml(str) {
+        if(!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        });
     }
     
     function updateKPIs() {
@@ -422,14 +443,14 @@
         const modal = document.getElementById('modal');
         const modalBody = document.getElementById('modalBody');
         modalBody.innerHTML = `
-            <h2 style="margin-bottom:16px;">📄 ${row[IDX_PROC] || 'N/A'}</h2>
-            <p><strong>Favorecido:</strong> ${row[IDX_FAV] || 'N/A'}</p>
+            <h2 style="margin-bottom:16px;">📄 ${escapeHtml(row[IDX_PROC] || 'N/A')}</h2>
+            <p><strong>Favorecido:</strong> ${escapeHtml(row[IDX_FAV] || 'N/A')}</p>
             <p><strong>Saldo:</strong> ${formatMoney(parseMoney(row[IDX_SALDO]))}</p>
             <hr>
             <div style="display:grid; gap:8px; grid-template-columns:1fr 1fr;">
                 ${headers.map((h,i) => {
                     if(i !== IDX_FAV && i !== IDX_PROC && i !== IDX_SALDO && row[i] && row[i] !== '') {
-                        return `<div><small style="color:#64748b;">${h}</small><br>${row[i]}</div>`;
+                        return `<div><small style="color:#64748b;">${escapeHtml(h)}</small><br>${escapeHtml(row[i])}</div>`;
                     }
                     return '';
                 }).join('')}
