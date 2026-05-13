@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Consulta de Saldos Diários</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
@@ -166,6 +167,156 @@
         }
         .liq-table-wrap { overflow-x: auto; border-radius: 10px; }
         .text-right { text-align: right; }
+        .text-center { text-align: center; }
+
+        /* Painel 30 dias */
+        #liq30Panel {
+            position: relative;
+            border-radius: 20px;
+            border: 1px solid rgba(6,182,212,0.2);
+            background: linear-gradient(135deg, #0a1628 0%, #0d1e35 50%, #0a1628 100%);
+        }
+        #liq30Panel::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px; right: -1px; bottom: -1px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(6,182,212,0.35), rgba(59,130,246,0.2), rgba(139,92,246,0.2), rgba(6,182,212,0.35));
+            z-index: 0;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: destination-out;
+            mask-composite: exclude;
+            padding: 1px;
+        }
+        #liq30Panel > * { position: relative; z-index: 1; }
+
+        .panel-header-badge-cyan {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(6,182,212,0.1);
+            border: 1px solid rgba(6,182,212,0.25);
+            color: #22d3ee;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+        .pulse-dot-cyan {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #06b6d4;
+            box-shadow: 0 0 0 0 rgba(6,182,212,0.5);
+            animation: pulse-cyan 2.2s infinite;
+        }
+        @keyframes pulse-cyan {
+            0%   { box-shadow: 0 0 0 0 rgba(6,182,212,0.6); }
+            70%  { box-shadow: 0 0 0 8px rgba(6,182,212,0); }
+            100% { box-shadow: 0 0 0 0 rgba(6,182,212,0); }
+        }
+
+        .liq30-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .liq30-table thead tr th {
+            padding: 8px 12px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: #475569;
+            background: rgba(10,22,40,0.9);
+            border-bottom: 1px solid #1e3050;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+        .liq30-table thead tr th:first-child { border-radius: 10px 0 0 0; }
+        .liq30-table thead tr th:last-child  { border-radius: 0 10px 0 0; text-align: right; }
+        .liq30-table thead tr th.text-right  { text-align: right; }
+        .liq30-table tbody td {
+            padding: 9px 12px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(30,48,80,0.4);
+        }
+        .liq30-table tbody tr:hover { background: rgba(6,182,212,0.04); cursor: pointer; }
+        .liq30-table tfoot tr td {
+            padding: 10px 12px;
+            border-top: 1px solid rgba(6,182,212,0.2);
+            background: rgba(10,22,40,0.7);
+            font-weight: 700;
+            font-size: 12px;
+        }
+        .liq30-scroll-wrap {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 400px;
+            border-radius: 10px;
+        }
+        .date-chip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: rgba(6,182,212,0.07);
+            color: #67e8f9;
+            border: 1px solid rgba(6,182,212,0.15);
+            white-space: nowrap;
+        }
+        .chip-after-warn { background: rgba(245,158,11,0.10); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+
+        /* Modal 30 dias */
+        #modal30 {
+            position: fixed; inset: 0; z-index: 60;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(4,9,20,0.75);
+            backdrop-filter: blur(8px);
+        }
+        #modal30.hidden { display: none; }
+        .modal30-content {
+            background: linear-gradient(135deg, #0d1626 0%, #0f1e38 100%);
+            border: 1px solid rgba(6,182,212,0.3);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 580px;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(6,182,212,0.1);
+            animation: scaleUp 0.22s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .modal30-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid rgba(30,48,80,0.6);
+            flex-shrink: 0;
+        }
+        .modal30-body {
+            padding: 16px 24px 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal30-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            background: rgba(10,22,40,0.6);
+            border: 1px solid rgba(30,48,80,0.5);
+            transition: background 0.15s;
+        }
+        .modal30-row:hover { background: rgba(6,182,212,0.05); border-color: rgba(6,182,212,0.2); }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
@@ -255,6 +406,47 @@
             <div id="liqCardsContainer" class="liq-table-wrap"></div>
         </div>
 
+        <div id="liq30Panel" class="hidden p-5">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <span class="panel-header-badge-cyan">
+                        <span class="pulse-dot-cyan"></span>
+                        Últimas Liquidações · 30 dias
+                    </span>
+                    <span id="liq30CountBadge" class="text-xs px-2.5 py-1 rounded-full font-mono font-bold" style="background: rgba(6,182,212,0.1); color: #22d3ee; border: 1px solid rgba(6,182,212,0.2);">0 ocorrências</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs" style="color:#475569; font-family:'JetBrains Mono',monospace;">
+                    <i class="fas fa-calendar-alt" style="color:#06b6d4;"></i>
+                    <span id="liq30PeriodText">últimos 30 dias</span>
+                </div>
+            </div>
+            <div class="liq30-scroll-wrap">
+                <div id="liq30CardsContainer"></div>
+            </div>
+        </div>
+
+        <div id="modal30" class="hidden" onclick="if(event.target===this)closeModal30()">
+            <div class="modal30-content">
+                <div class="modal30-header">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color:#06b6d4;">Lançamentos do Processo</p>
+                            <h3 id="modal30Processo" class="text-base font-display font-bold text-white leading-snug"></h3>
+                            <p id="modal30Fav" class="text-sm mt-1" style="color:#64748b;"></p>
+                        </div>
+                        <button onclick="closeModal30()" class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors" style="background:rgba(30,48,80,0.6);color:#64748b;" onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#64748b'">
+                            <i class="fas fa-times text-sm"></i>
+                        </button>
+                    </div>
+                    <div id="modal30Summary" class="flex gap-3 mt-3 flex-wrap"></div>
+                </div>
+                <div class="modal30-body">
+                    <p class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color:#334155;">Detalhes dos lançamentos</p>
+                    <div id="modal30Entries"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="rounded-2xl p-6" style="background: #0d1626; border: 1px solid #1e3050;">
             <h3 class="text-[10px] font-bold uppercase tracking-widest mb-4 flex items-center gap-2" style="color: #475569;">
                 <i class="fas fa-sliders-h" style="color:#3b82f6;"></i> Filtros de Pesquisa
@@ -321,25 +513,35 @@
 </div>
 
 <script>
-    // 🔥 URL DO GOOGLE APPS SCRIPT (funcionando sem CORS)
+    // URL do Google Apps Script (sem CORS)
     const CSV_URL = "https://script.google.com/macros/s/AKfycbxgjltMj72B_8Zd-46iPAiMYu2S7Y-hIYLOk-N4CdDXYrE9_ioYCw79tdpkrGYLRxTv-w/exec";
     
     let allData = [];
     let filteredData = [];
     let headers = [];
     let allMatches = [];
+    let allMatches30 = [];
     
-    // Índices das colunas
+    // Índices das colunas principais (A-R)
     let IDX_FAVORECIDO = 7;
     let IDX_PROCESSO   = 12;
     let IDX_SALDO      = 17;
     
-    // Índices das colunas de liquidação (S-Y)
+    // Índices das colunas de liquidação do dia (S-Y)
     const LIQ_START = 18;
     const LIQ_END = 25;
     
+    // Índices das colunas de liquidação 30 dias (AA-AG)
+    const IDX_30_DATA = 26;
+    const IDX_30_FAV = 27;
+    const IDX_30_PROC = 28;
+    const IDX_30_ELEM = 29;
+    const IDX_30_DESC = 30;
+    const IDX_30_PI = 31;
+    const IDX_30_TOTAL = 32;
+    
     const modal = document.getElementById('detailsModal');
-    const body  = document.body;
+    const body = document.body;
     
     function parseCSV(text) {
         const rows = [];
@@ -383,6 +585,16 @@
         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(isNaN(num) ? 0 : num);
     }
     
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
     function detectIndexes(headerRow) {
         const h = headerRow.map(c => String(c).toLowerCase().trim());
         const find = (...terms) => {
@@ -395,10 +607,30 @@
         IDX_SALDO      = find('saldo - moeda origem', 'saldo', 'a liquidar', 'valor');
     }
     
+    function parseExcelDate(val) {
+        if (!val || val === '' || val === 'undefined') return null;
+        const s = String(val).trim();
+        const dmy = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (dmy) return new Date(+dmy[3], +dmy[2]-1, +dmy[1]);
+        const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
+        const n = parseFloat(s);
+        if (!isNaN(n) && n > 40000 && n < 60000) {
+            const ms = (n - 25569) * 86400 * 1000;
+            return new Date(ms);
+        }
+        return null;
+    }
+    
+    function formatDateBR(d) {
+        if (!d) return '—';
+        return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+    
     async function loadData() {
         const btn = document.getElementById('refreshBtn');
         const icon = document.getElementById('refreshIcon');
-        btn.disabled = true; 
+        btn.disabled = true;
         icon.className = 'fas fa-sync-alt animate-spin';
         
         const sec = document.getElementById('uploadSection');
@@ -427,7 +659,7 @@
             }
             filteredData = [...allData];
             
-            // Tabela de liquidações (S-Y)
+            // Tabela de liquidações do dia (S-Y)
             const liqRows = [];
             for (let i = 1; i < allRows.length; i++) {
                 const row = allRows[i].slice(LIQ_START, LIQ_END);
@@ -438,7 +670,7 @@
                 }
             }
             
-            // Mapa de liquidações
+            // Mapa de liquidações do dia
             const liqMap = new Map();
             for (const row of liqRows) {
                 const fav = row[0]?.trim();
@@ -457,7 +689,7 @@
                 liqMap.get(key).total += parseBRValue(row[6]);
             }
             
-            // Cruzar dados
+            // Cruzar liquidações do dia
             allMatches = [];
             const seen = new Set();
             for (const row of allData) {
@@ -485,10 +717,66 @@
                 }
             }
             
-            renderLiquidacaoPanel(allMatches);
-            
+            // =========================================================
+            // PAINEL 30 DIAS - lê colunas AA-AG
+            // =========================================================
             const now = new Date();
-            document.getElementById('lastUpdateText').textContent = now.toLocaleDateString('pt-BR') + ' às ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+            const liq30Map = new Map();
+            
+            for (let i = 1; i < allRows.length; i++) {
+                const row = allRows[i];
+                const rawDate = row[IDX_30_DATA];
+                const fav30 = String(row[IDX_30_FAV] || '').trim();
+                const proc30 = String(row[IDX_30_PROC] || '').trim();
+                const val30 = parseBRValue(row[IDX_30_TOTAL]);
+                
+                if (!fav30 || !proc30 || fav30 === 'undefined' || proc30 === 'undefined') continue;
+                if (!rawDate || rawDate === '' || rawDate === 'undefined') continue;
+                
+                const dt = parseExcelDate(rawDate);
+                if (!dt) continue;
+                if (dt < cutoff) continue;
+                if (val30 === 0 && !(row[IDX_30_TOTAL] && String(row[IDX_30_TOTAL]).trim() !== '')) continue;
+                
+                const key = `${fav30}|||${proc30}`;
+                if (!liq30Map.has(key)) {
+                    liq30Map.set(key, {
+                        favorecido: fav30,
+                        processo: proc30,
+                        elemDespesa: String(row[IDX_30_ELEM] || '').trim(),
+                        descricao: String(row[IDX_30_DESC] || '').trim(),
+                        pi: String(row[IDX_30_PI] || '').trim(),
+                        entries: [],
+                        totalLiquidado: 0,
+                        saldoAtual: null
+                    });
+                }
+                const entry = liq30Map.get(key);
+                entry.entries.push({ date: dt, valor: val30 });
+                entry.totalLiquidado += val30;
+            }
+            
+            // Buscar saldo atual na tabela principal
+            for (const row of allData) {
+                const fav = row[IDX_FAVORECIDO]?.trim();
+                const proc = row[IDX_PROCESSO]?.trim();
+                if (!fav || !proc) continue;
+                const key = `${fav}|||${proc}`;
+                if (liq30Map.has(key) && liq30Map.get(key).saldoAtual === null) {
+                    liq30Map.get(key).saldoAtual = parseBRValue(row[IDX_SALDO]);
+                }
+            }
+            
+            allMatches30 = Array.from(liq30Map.values())
+                .filter(m => m.totalLiquidado !== 0)
+                .sort((a, b) => b.totalLiquidado - a.totalLiquidado);
+            
+            renderLiquidacaoPanel(allMatches);
+            renderLiq30Panel(allMatches30);
+            
+            const nowTime = new Date();
+            document.getElementById('lastUpdateText').textContent = nowTime.toLocaleDateString('pt-BR') + ' às ' + nowTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
             
             sec.style.display = 'none';
             document.getElementById('dashboardContent').classList.remove('hidden');
@@ -503,7 +791,7 @@
             document.getElementById('loadingTitle').textContent = 'Erro ao carregar';
             document.getElementById('loadingSubtitle').textContent = err.message + ' — Tente novamente.';
         }
-        btn.disabled = false; 
+        btn.disabled = false;
         icon.className = 'fas fa-sync-alt';
     }
     
@@ -570,32 +858,84 @@
         cardsContainer.innerHTML = `
             <table class="liq-table">
                 <thead>
-                    <tr>
-                        <th style="min-width:220px;">Favorecido</th>
-                        <th>Elemento · Processo</th>
-                        <th class="text-right">Saldo Anterior</th>
-                        <th class="text-right">Liquidado</th>
-                        <th class="text-right">Saldo Atual</th>
-                        <th class="text-right">Consumo</th>
-                    </tr>
+                    <tr><th style="min-width:220px;">Favorecido</th><th>Elemento · Processo</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr>
                 </thead>
                 <tbody>${tbody}</tbody>
                 <tfoot>${tfootRow}</tfoot>
-            </table>
-        `;
+            </table>`;
     }
     
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str).replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
+    function renderLiq30Panel(matches) {
+        const panel = document.getElementById('liq30Panel');
+        const badge = document.getElementById('liq30CountBadge');
+        const container = document.getElementById('liq30CardsContainer');
+        
+        if (!matches || matches.length === 0) {
+            panel.classList.add('hidden');
+            return;
+        }
+        
+        panel.classList.remove('hidden');
+        badge.textContent = matches.length + ' ocorrência' + (matches.length > 1 ? 's' : '');
+        
+        const now = new Date();
+        const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        document.getElementById('liq30PeriodText').textContent = formatDateBR(cutoff) + ' → ' + formatDateBR(now);
+        
+        window._liq30Data = matches;
+        
+        const totalLiq = matches.reduce((s, m) => s + m.totalLiquidado, 0);
+        const totalSaldoAntes = matches.filter(m => m.saldoAtual !== null).reduce((s, m) => s + (m.saldoAtual + m.totalLiquidado), 0);
+        const totalSaldoAtual = matches.filter(m => m.saldoAtual !== null).reduce((s, m) => s + m.saldoAtual, 0);
+        
+        const tbody = matches.map((m, idx) => {
+            const saldo = m.saldoAtual;
+            const saldoAntes = saldo !== null ? saldo + m.totalLiquidado : null;
+            const pct = saldoAntes && saldoAntes > 0 ? Math.min(m.totalLiquidado / saldoAntes * 100, 100) : 100;
+            const barColor = pct > 90 ? '#ef4444' : pct > 60 ? '#f59e0b' : '#10b981';
+            const isLow = saldo !== null && saldoAntes !== null && saldo < saldoAntes * 0.1;
+            const afterChip = saldo === null ? 'chip-before' : (saldo < 0 ? 'chip-after-red' : (isLow ? 'chip-after-warn' : 'chip-after'));
+            const latestDate = m.entries.length > 0 ? m.entries.reduce((a, b) => a.date > b.date ? a : b).date : null;
+            const hasMultiple = m.entries.length > 1;
+            
+            return `<tr class="liq30-row-clickable" onclick="openModal30(${idx})">
+                <td><div class="flex items-center gap-2"><i class="fas fa-history text-xs" style="color:#06b6d4;"></i><div><p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p>${m.descricao ? `<p class="text-[10px] text-slate-500">${escapeHtml(m.descricao)}</p>` : ''}</div></div></td>
+                <td><span class="text-[11px] font-mono px-2 py-1 rounded-md" style="background:rgba(6,182,212,0.07);color:#67e8f9;">${escapeHtml(m.elemDespesa)} · ${escapeHtml(m.processo)}</span>${m.pi ? `<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded" style="background:rgba(139,92,246,0.08);color:#a78bfa;">PI ${escapeHtml(m.pi)}</span>` : ''}</td>
+                <td class="text-center"><span class="date-chip">${latestDate ? formatDateBR(latestDate) : '—'}</span>${hasMultiple ? `<span class="text-[9px] block mt-1 text-cyan-400"><i class="fas fa-layer-group mr-0.5"></i>${m.entries.length} lançamentos</span>` : ''}</td>
+                <td class="text-right"><span class="value-chip chip-before">${saldoAntes !== null ? formatCurrency(saldoAntes) : '—'}</span></td>
+                <td class="text-right"><span class="value-chip chip-liq">− ${formatCurrency(m.totalLiquidado)}</span></td>
+                <td class="text-right"><span class="value-chip ${afterChip}">${saldo !== null ? formatCurrency(saldo) : '—'}</span></td>
+                <td class="text-right"><div class="flex items-center justify-end gap-2"><span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pct.toFixed(1)}%</span><div class="mini-bar-track" style="width:60px;"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div></div><i class="fas fa-chevron-right text-[9px] text-slate-600"></i></div></td>
+            </tr>`;
+        }).join('');
+        
+        const tfootRow = `<tr><td colspan="3" class="font-mono text-slate-500">TOTAIS · ${matches.length} OCORRÊNCIAS (30 dias)</td><td class="text-right"><span class="value-chip chip-before">${formatCurrency(totalSaldoAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatCurrency(totalLiq)}</span></td><td class="text-right"><span class="value-chip chip-after">${formatCurrency(totalSaldoAtual)}</span></td><td class="text-right"></td></tr>`;
+        
+        container.innerHTML = `<table class="liq30-table"><thead><tr><th style="min-width:220px;">Favorecido</th><th>Elemento · Processo</th><th class="text-center">Último Lançamento</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody><tfoot>${tfootRow}</tfoot></table>`;
     }
     
-    // FILTROS
+    function openModal30(idx) {
+        const m = window._liq30Data && window._liq30Data[idx];
+        if (!m) return;
+        document.getElementById('modal30Processo').textContent = m.processo;
+        document.getElementById('modal30Fav').textContent = m.favorecido;
+        const saldo = m.saldoAtual;
+        const saldoAntes = saldo !== null ? saldo + m.totalLiquidado : null;
+        document.getElementById('modal30Summary').innerHTML = `<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50"><span class="text-[10px] uppercase text-slate-500">Saldo Anterior</span><span class="font-mono text-sm text-slate-300">${saldoAntes !== null ? formatCurrency(saldoAntes) : '—'}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10"><span class="text-[10px] uppercase text-slate-500">Total Liquidado</span><span class="font-mono text-sm text-red-400">− ${formatCurrency(m.totalLiquidado)}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg ${saldo !== null && saldo >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-500">Saldo Atual</span><span class="font-mono text-sm ${saldo !== null && saldo >= 0 ? 'text-emerald-400' : 'text-red-400'}">${saldo !== null ? formatCurrency(saldo) : '—'}</span></div>`;
+        const sorted = [...m.entries].sort((a, b) => b.date - a.date);
+        document.getElementById('modal30Entries').innerHTML = sorted.map((e, i) => `<div class="modal30-row"><div class="flex items-center gap-3"><div class="w-7 h-7 rounded-full flex items-center justify-center bg-cyan-500/10 border border-cyan-500/20"><span class="text-[10px] font-bold text-cyan-400">${sorted.length - i}</span></div><span class="date-chip">${formatDateBR(e.date)}</span></div><span class="value-chip ${e.valor >= 0 ? 'chip-after' : 'chip-liq'}">${e.valor >= 0 ? '' : '− '}${formatCurrency(Math.abs(e.valor))}</span></div>`).join('');
+        document.getElementById('modal30').classList.remove('hidden');
+        document.body.classList.add('modal-active');
+    }
+    
+    function closeModal30() {
+        document.getElementById('modal30').classList.add('hidden');
+        document.body.classList.remove('modal-active');
+    }
+    
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.getElementById('modal30').classList.contains('hidden')) closeModal30(); });
+    
+    // Filtros
     document.getElementById('searchGlobal').addEventListener('input', applyFilters);
     document.getElementById('searchProcesso').addEventListener('input', applyFilters);
     document.getElementById('searchFavorecido').addEventListener('input', applyFilters);
@@ -618,26 +958,30 @@
             const allLiq = (fav + ' ' + proc + ' ' + m.elemDespesa).toLowerCase();
             return proc.includes(pT) && fav.includes(fT) && allLiq.includes(gT);
         });
-        
         renderLiquidacaoPanel(filteredMatches);
+        
+        const filtered30 = allMatches30.filter(m => {
+            const proc = m.processo.toLowerCase();
+            const fav = m.favorecido.toLowerCase();
+            const all30 = (fav + ' ' + proc + ' ' + m.elemDespesa + ' ' + m.descricao).toLowerCase();
+            return proc.includes(pT) && fav.includes(fT) && all30.includes(gT);
+        });
+        renderLiq30Panel(filtered30);
+        
         renderDashboard();
     }
     
     function openModal(rowIndex) {
         const row = filteredData[rowIndex];
         if (!row) return;
-        
         const processo = row[IDX_PROCESSO] || 'N/A';
         const favorecido = row[IDX_FAVORECIDO] || 'Não Informado';
-        let saldoVal = parseBRValue(row[IDX_SALDO]);
-        
+        const saldoVal = parseBRValue(row[IDX_SALDO]);
         document.getElementById('modalTitleProcesso').innerText = processo;
         document.getElementById('modalFavorecido').innerText = favorecido;
-        
         const modalSaldoEl = document.getElementById('modalSaldo');
         const modalSaldoCard = document.getElementById('modalSaldoCard');
         modalSaldoEl.innerText = formatCurrency(saldoVal);
-        
         if (saldoVal >= 0) {
             modalSaldoEl.style.color = '#34d399';
             modalSaldoCard.style.borderLeftColor = '#10b981';
@@ -645,21 +989,14 @@
             modalSaldoEl.style.color = '#f87171';
             modalSaldoCard.style.borderLeftColor = '#ef4444';
         }
-        
-        const detailsGrid = document.getElementById('modalExtraDetails');
         let html = '';
         headers.forEach((header, i) => {
-            if (i !== IDX_FAVORECIDO && i !== IDX_PROCESSO && i !== IDX_SALDO) {
+            if (i !== IDX_FAVORECIDO && i !== IDX_PROCESSO && i !== IDX_SALDO && i < LIQ_START) {
                 const value = (row[i] !== undefined && row[i] !== '') ? row[i] : '—';
-                html += `
-                    <div class="p-3 rounded-xl transition-colors" style="background: rgba(17,30,51,0.6); border: 1px solid #1e3050;">
-                        <span class="text-[10px] font-bold uppercase tracking-widest block mb-1" style="color:#334155;">${escapeHtml(header)}</span>
-                        <span class="text-sm font-medium break-words" style="color:#cbd5e1;">${escapeHtml(value)}</span>
-                    </div>
-                `;
+                html += `<div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700"><span class="text-[10px] font-bold uppercase text-slate-500 block mb-1">${escapeHtml(header)}</span><span class="text-sm text-slate-200">${escapeHtml(value)}</span></div>`;
             }
         });
-        detailsGrid.innerHTML = html;
+        document.getElementById('modalExtraDetails').innerHTML = html;
         modal.classList.remove('hidden');
         body.classList.add('modal-active');
     }
@@ -676,71 +1013,30 @@
         const container = document.getElementById('resultsContainer');
         const emptyState = document.getElementById('emptyState');
         container.innerHTML = '';
-        
         let totalSaldo = 0;
         const setFavorecidos = new Set();
-        
         if (filteredData.length === 0) {
             container.style.display = 'none';
             emptyState.style.display = 'flex';
             updateKPIs(0, 0, 0);
             return;
         }
-        
         container.style.display = 'grid';
         emptyState.style.display = 'none';
-        
         filteredData.forEach((row, index) => {
             const processo = row[IDX_PROCESSO] || 'N/A';
             const favorecido = row[IDX_FAVORECIDO] || 'Não Informado';
-            let saldoVal = parseBRValue(row[IDX_SALDO]);
-            
+            const saldoVal = parseBRValue(row[IDX_SALDO]);
             totalSaldo += saldoVal;
             setFavorecidos.add(favorecido);
-            
             const isPositivo = saldoVal >= 0;
-            const saldoColor = isPositivo ? '#34d399' : '#f87171';
-            const dotColor = isPositivo ? '#10b981' : '#ef4444';
-            const iconBg = isPositivo ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)';
-            const iconBorder = isPositivo ? 'rgba(16,185,129,0.2)' : 'rgba(239,68,68,0.2)';
-            const iconColor = isPositivo ? '#34d399' : '#f87171';
-            const iconClass = isPositivo ? 'fa-check' : 'fa-exclamation';
-            
             const card = document.createElement('div');
-            card.className = 'result-card rounded-2xl p-5 flex flex-col h-full';
+            card.className = 'result-card rounded-2xl p-5 flex flex-col h-full cursor-pointer';
             card.style.cssText = 'background: #0d1626; border: 1px solid #1e3050;';
             card.onclick = () => openModal(index);
-            
-            card.innerHTML = `
-                <div class="flex justify-between items-start mb-4">
-                    <div class="flex-1 pr-3 overflow-hidden">
-                        <div class="flex items-center gap-2 mb-1.5">
-                            <span class="w-2 h-2 rounded-full flex-shrink-0" style="background:${dotColor};"></span>
-                            <p class="text-[10px] font-bold uppercase tracking-widest" style="color:#334155;">Processo</p>
-                        </div>
-                        <h4 class="text-sm font-display font-bold text-white truncate" title="${escapeHtml(processo)}">${escapeHtml(processo)}</h4>
-                    </div>
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${iconBg}; border:1px solid ${iconBorder}; color:${iconColor};">
-                        <i class="fas ${iconClass} text-sm"></i>
-                    </div>
-                </div>
-                <div class="mb-5 flex-grow">
-                    <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color:#334155;">Favorecido</p>
-                    <p class="text-sm font-medium line-clamp-2" style="color:#94a3b8;" title="${escapeHtml(favorecido)}">${escapeHtml(favorecido)}</p>
-                </div>
-                <div class="pt-4 flex items-center justify-between mt-auto" style="border-top: 1px solid #1e3050;">
-                    <div>
-                        <p class="text-[10px] font-bold uppercase tracking-widest mb-0.5" style="color:#334155;">Saldo</p>
-                        <p class="text-lg font-display font-bold font-mono" style="color:${saldoColor};">${formatCurrency(saldoVal)}</p>
-                    </div>
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center transition-colors" style="background:#111e33; border:1px solid #1e3050; color:#475569;">
-                        <i class="fas fa-arrow-right text-sm"></i>
-                    </div>
-                </div>
-            `;
+            card.innerHTML = `<div class="flex justify-between items-start mb-4"><div class="flex-1"><div class="flex items-center gap-2 mb-1.5"><span class="w-2 h-2 rounded-full ${isPositivo ? 'bg-emerald-500' : 'bg-red-500'}"></span><p class="text-[10px] font-bold uppercase text-slate-500">Processo</p></div><h4 class="text-sm font-display font-bold text-white truncate">${escapeHtml(processo)}</h4></div><div class="w-10 h-10 rounded-xl flex items-center justify-center ${isPositivo ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}"><i class="fas ${isPositivo ? 'fa-check' : 'fa-exclamation'} text-sm"></i></div></div><div class="mb-5"><p class="text-[10px] font-bold uppercase text-slate-500 mb-1">Favorecido</p><p class="text-sm text-slate-300 line-clamp-2">${escapeHtml(favorecido)}</p></div><div class="pt-4 flex items-center justify-between border-t border-slate-700/50"><div><p class="text-[10px] font-bold uppercase text-slate-500 mb-0.5">Saldo</p><p class="text-lg font-display font-bold font-mono ${isPositivo ? 'text-emerald-400' : 'text-red-400'}">${formatCurrency(saldoVal)}</p></div><div class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-500"><i class="fas fa-arrow-right text-sm"></i></div></div>`;
             container.appendChild(card);
         });
-        
         updateKPIs(totalSaldo, filteredData.length, setFavorecidos.size);
     }
     
