@@ -79,12 +79,12 @@
         }
         #liquidacaoPanel > * { position: relative; z-index: 1; }
 
-        .liq-table {
+        .liq-table, .liq30-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
         }
-        .liq-table thead tr th {
+        .liq-table thead tr th, .liq30-table thead tr th {
             padding: 8px 12px;
             text-align: left;
             font-size: 10px;
@@ -95,8 +95,13 @@
             background: rgba(17,30,51,0.8);
             border-bottom: 1px solid #1e3050;
             white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
         }
-        .liq-table tbody td {
+        .liq-table thead tr th:first-child, .liq30-table thead tr th:first-child { border-radius: 10px 0 0 0; }
+        .liq-table thead tr th:last-child, .liq30-table thead tr th:last-child { border-radius: 0 10px 0 0; text-align: right; }
+        .liq-table tbody td, .liq30-table tbody td {
             padding: 10px 12px;
             vertical-align: middle;
             border-bottom: 1px solid rgba(30,48,80,0.4);
@@ -114,6 +119,7 @@
         .chip-liq    { background: rgba(239,68,68,0.10); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
         .chip-after  { background: rgba(16,185,129,0.10); color: #34d399; border: 1px solid rgba(16,185,129,0.18); }
         .chip-after-red { background: rgba(239,68,68,0.10); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+        .chip-after-warn { background: rgba(245,158,11,0.10); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
 
         .mini-bar-track {
             height: 4px;
@@ -130,26 +136,21 @@
             border-radius: 3px;
             background: linear-gradient(90deg, #f59e0b, #ef4444);
         }
-        .pulse-dot {
+        .pulse-dot, .pulse-dot-cyan {
             display: inline-block;
             width: 8px; height: 8px;
             border-radius: 50%;
-            background: #f59e0b;
-            box-shadow: 0 0 0 0 rgba(245,158,11,0.5);
-            animation: pulse-amber 1.8s infinite;
+            animation: pulse 1.8s infinite;
         }
-        @keyframes pulse-amber {
-            0%   { box-shadow: 0 0 0 0 rgba(245,158,11,0.6); }
-            70%  { box-shadow: 0 0 0 8px rgba(245,158,11,0); }
-            100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
-        }
-        .panel-header-badge {
+        .pulse-dot { background: #f59e0b; box-shadow: 0 0 0 0 rgba(245,158,11,0.5); }
+        .pulse-dot-cyan { background: #06b6d4; box-shadow: 0 0 0 0 rgba(6,182,212,0.5); animation: pulse-cyan 2.2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(245,158,11,0.6); } 70% { box-shadow: 0 0 0 8px rgba(245,158,11,0); } 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); } }
+        @keyframes pulse-cyan { 0% { box-shadow: 0 0 0 0 rgba(6,182,212,0.6); } 70% { box-shadow: 0 0 0 8px rgba(6,182,212,0); } 100% { box-shadow: 0 0 0 0 rgba(6,182,212,0); } }
+
+        .panel-header-badge, .panel-header-badge-cyan {
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            background: rgba(245,158,11,0.1);
-            border: 1px solid rgba(245,158,11,0.25);
-            color: #fbbf24;
             font-family: 'Syne', sans-serif;
             font-weight: 700;
             font-size: 11px;
@@ -158,18 +159,26 @@
             padding: 5px 12px;
             border-radius: 20px;
         }
-        .kpi-card {
-            transition: all 0.2s ease;
-        }
-        .kpi-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.4);
-        }
-        .liq-table-wrap { overflow-x: auto; border-radius: 10px; }
+        .panel-header-badge { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; }
+        .panel-header-badge-cyan { background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25); color: #22d3ee; }
+
+        .kpi-card { transition: all 0.2s ease; }
+        .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -5px rgba(0,0,0,0.4); }
+        .liq-table-wrap, .liq30-table-wrap { overflow-x: auto; border-radius: 10px; max-height: 400px; overflow-y: auto; }
         .text-right { text-align: right; }
         .text-center { text-align: center; }
+        .date-chip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: rgba(6,182,212,0.07);
+            color: #67e8f9;
+            border: 1px solid rgba(6,182,212,0.15);
+            white-space: nowrap;
+        }
 
-        /* Painel 30 dias */
         #liq30Panel {
             position: relative;
             border-radius: 20px;
@@ -190,121 +199,31 @@
         }
         #liq30Panel > * { position: relative; z-index: 1; }
 
-        .panel-header-badge-cyan {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            background: rgba(6,182,212,0.1);
-            border: 1px solid rgba(6,182,212,0.25);
-            color: #22d3ee;
-            font-family: 'Syne', sans-serif;
-            font-weight: 700;
-            font-size: 11px;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            padding: 5px 12px;
-            border-radius: 20px;
-        }
-        .pulse-dot-cyan {
-            display: inline-block;
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: #06b6d4;
-            box-shadow: 0 0 0 0 rgba(6,182,212,0.5);
-            animation: pulse-cyan 2.2s infinite;
-        }
-        @keyframes pulse-cyan {
-            0%   { box-shadow: 0 0 0 0 rgba(6,182,212,0.6); }
-            70%  { box-shadow: 0 0 0 8px rgba(6,182,212,0); }
-            100% { box-shadow: 0 0 0 0 rgba(6,182,212,0); }
-        }
+        .liq30-row-clickable { cursor: pointer; transition: background 0.15s; }
+        .liq30-row-clickable:hover { background: rgba(6,182,212,0.05) !important; }
 
-        .liq30-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-        .liq30-table thead tr th {
-            padding: 8px 12px;
-            text-align: left;
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: #475569;
-            background: rgba(10,22,40,0.9);
-            border-bottom: 1px solid #1e3050;
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-            z-index: 2;
-        }
-        .liq30-table thead tr th:first-child { border-radius: 10px 0 0 0; }
-        .liq30-table thead tr th:last-child  { border-radius: 0 10px 0 0; text-align: right; }
-        .liq30-table thead tr th.text-right  { text-align: right; }
-        .liq30-table tbody td {
-            padding: 9px 12px;
-            vertical-align: middle;
-            border-bottom: 1px solid rgba(30,48,80,0.4);
-        }
-        .liq30-table tbody tr:hover { background: rgba(6,182,212,0.04); cursor: pointer; }
-        .liq30-table tfoot tr td {
-            padding: 10px 12px;
-            border-top: 1px solid rgba(6,182,212,0.2);
-            background: rgba(10,22,40,0.7);
-            font-weight: 700;
-            font-size: 12px;
-        }
-        .liq30-scroll-wrap {
-            overflow-x: auto;
-            overflow-y: auto;
-            max-height: 400px;
-            border-radius: 10px;
-        }
-        .date-chip {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 10px;
-            font-weight: 600;
-            padding: 2px 7px;
-            border-radius: 4px;
-            background: rgba(6,182,212,0.07);
-            color: #67e8f9;
-            border: 1px solid rgba(6,182,212,0.15);
-            white-space: nowrap;
-        }
-        .chip-after-warn { background: rgba(245,158,11,0.10); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
-
-        /* Modal 30 dias */
-        #modal30 {
+        .modal30 {
             position: fixed; inset: 0; z-index: 60;
             display: flex; align-items: center; justify-content: center;
-            background: rgba(4,9,20,0.75);
+            background: rgba(4,9,20,0.85);
             backdrop-filter: blur(8px);
         }
-        #modal30.hidden { display: none; }
+        .modal30.hidden { display: none; }
         .modal30-content {
             background: linear-gradient(135deg, #0d1626 0%, #0f1e38 100%);
             border: 1px solid rgba(6,182,212,0.3);
             border-radius: 20px;
             width: 100%;
-            max-width: 580px;
+            max-width: 600px;
             max-height: 85vh;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8), 0 0 0 1px rgba(6,182,212,0.1);
-            animation: scaleUp 0.22s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8);
+            animation: scaleUp 0.22s ease-out;
         }
-        .modal30-header {
-            padding: 20px 24px 16px;
-            border-bottom: 1px solid rgba(30,48,80,0.6);
-            flex-shrink: 0;
-        }
-        .modal30-body {
-            padding: 16px 24px 20px;
-            overflow-y: auto;
-            flex: 1;
-        }
+        .modal30-header { padding: 20px 24px 16px; border-bottom: 1px solid #1e3050; flex-shrink: 0; }
+        .modal30-body { padding: 16px 24px 20px; overflow-y: auto; flex: 1; }
         .modal30-row {
             display: flex;
             align-items: center;
@@ -313,8 +232,7 @@
             border-radius: 10px;
             margin-bottom: 6px;
             background: rgba(10,22,40,0.6);
-            border: 1px solid rgba(30,48,80,0.5);
-            transition: background 0.15s;
+            border: 1px solid #1e3050;
         }
         .modal30-row:hover { background: rgba(6,182,212,0.05); border-color: rgba(6,182,212,0.2); }
     </style>
@@ -348,703 +266,192 @@
 
     <div id="uploadSection" class="rounded-2xl p-10 mb-8 text-center" style="background: #0d1626; border: 1px solid #1e3050;">
         <div class="flex flex-col items-center justify-center space-y-5">
-            <div id="loadingIcon" class="text-5xl animate-spin" style="color: #3b82f6;">
-                <i class="fas fa-circle-notch"></i>
-            </div>
-            <div>
-                <h2 class="text-xl font-display font-bold text-white mb-2" id="loadingTitle">Carregando dados...</h2>
-                <p class="text-sm max-w-md mx-auto" id="loadingSubtitle" style="color: #64748b;">Buscando planilha atualizada do Google Sheets</p>
-            </div>
+            <div id="loadingIcon" class="text-5xl animate-spin" style="color: #3b82f6;"><i class="fas fa-circle-notch"></i></div>
+            <div><h2 class="text-xl font-display font-bold text-white mb-2">Carregando dados...</h2><p class="text-sm text-slate-500">Buscando planilha atualizada</p></div>
         </div>
     </div>
 
     <div id="dashboardContent" class="hidden space-y-8">
-
+        <!-- KPIs -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="kpi-card rounded-2xl p-6 flex items-center gap-5 relative overflow-hidden" style="background: #0d1626; border: 1px solid #1e3050;">
-                <div class="absolute top-0 right-0 w-32 h-32 rounded-bl-full opacity-10" style="background: #3b82f6; transform: translate(20%, -20%);"></div>
-                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl z-10" style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: #60a5fa;">
-                    <i class="fas fa-wallet"></i>
-                </div>
-                <div class="z-10">
-                    <p class="text-[10px] font-semibold uppercase tracking-widest mb-1" style="color: #475569;">Saldo Total</p>
-                    <h3 id="kpiTotalSaldo" class="text-2xl font-display font-bold text-white tracking-tight">R$ 0,00</h3>
-                </div>
+            <div class="kpi-card rounded-2xl p-6 flex items-center gap-5 bg-darkCard border border-darkBorder">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400"><i class="fas fa-wallet"></i></div>
+                <div><p class="text-[10px] font-semibold uppercase text-slate-500">Saldo Total</p><h3 id="kpiTotalSaldo" class="text-2xl font-display font-bold text-white">R$ 0,00</h3></div>
             </div>
-            <div class="kpi-card rounded-2xl p-6 flex items-center gap-5 relative overflow-hidden" style="background: #0d1626; border: 1px solid #1e3050;">
-                <div class="absolute top-0 right-0 w-32 h-32 rounded-bl-full opacity-10" style="background: #8b5cf6; transform: translate(20%, -20%);"></div>
-                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl z-10" style="background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); color: #a78bfa;">
-                    <i class="fas fa-folder-open"></i>
-                </div>
-                <div class="z-10">
-                    <p class="text-[10px] font-semibold uppercase tracking-widest mb-1" style="color: #475569;">Processos</p>
-                    <h3 id="kpiTotalProcessos" class="text-2xl font-display font-bold text-white tracking-tight">0</h3>
-                </div>
+            <div class="kpi-card rounded-2xl p-6 flex items-center gap-5 bg-darkCard border border-darkBorder">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400"><i class="fas fa-folder-open"></i></div>
+                <div><p class="text-[10px] font-semibold uppercase text-slate-500">Processos</p><h3 id="kpiTotalProcessos" class="text-2xl font-display font-bold text-white">0</h3></div>
             </div>
-            <div class="kpi-card rounded-2xl p-6 flex items-center gap-5 relative overflow-hidden" style="background: #0d1626; border: 1px solid #1e3050;">
-                <div class="absolute top-0 right-0 w-32 h-32 rounded-bl-full opacity-10" style="background: #10b981; transform: translate(20%, -20%);"></div>
-                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl z-10" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #34d399;">
-                    <i class="fas fa-building"></i>
-                </div>
-                <div class="z-10">
-                    <p class="text-[10px] font-semibold uppercase tracking-widest mb-1" style="color: #475569;">Favorecidos</p>
-                    <h3 id="kpiTotalFavorecidos" class="text-2xl font-display font-bold text-white tracking-tight">0</h3>
-                </div>
+            <div class="kpi-card rounded-2xl p-6 flex items-center gap-5 bg-darkCard border border-darkBorder">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"><i class="fas fa-building"></i></div>
+                <div><p class="text-[10px] font-semibold uppercase text-slate-500">Favorecidos</p><h3 id="kpiTotalFavorecidos" class="text-2xl font-display font-bold text-white">0</h3></div>
             </div>
         </div>
 
+        <!-- Liquidações do Dia -->
         <div id="liquidacaoPanel" class="hidden p-5">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                <div class="flex items-center gap-3">
-                    <span class="panel-header-badge">
-                        <span class="pulse-dot"></span>
-                        Liquidações do Dia
-                    </span>
-                    <span id="liqCountBadge" class="text-xs px-2.5 py-1 rounded-full font-mono font-bold" style="background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.2);">0 ocorrências</span>
-                </div>
-            </div>
+            <div class="flex items-center gap-3 mb-4"><span class="panel-header-badge"><span class="pulse-dot"></span> Liquidações do Dia</span><span id="liqCountBadge" class="text-xs px-2.5 py-1 rounded-full font-mono font-bold bg-red-500/10 text-red-400 border border-red-500/20">0 ocorrências</span></div>
             <div id="liqCardsContainer" class="liq-table-wrap"></div>
         </div>
 
+        <!-- Últimas Liquidações 30 dias -->
         <div id="liq30Panel" class="hidden p-5">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                <div class="flex items-center gap-3 flex-wrap">
-                    <span class="panel-header-badge-cyan">
-                        <span class="pulse-dot-cyan"></span>
-                        Últimas Liquidações · 30 dias
-                    </span>
-                    <span id="liq30CountBadge" class="text-xs px-2.5 py-1 rounded-full font-mono font-bold" style="background: rgba(6,182,212,0.1); color: #22d3ee; border: 1px solid rgba(6,182,212,0.2);">0 ocorrências</span>
-                </div>
-                <div class="flex items-center gap-2 text-xs" style="color:#475569; font-family:'JetBrains Mono',monospace;">
-                    <i class="fas fa-calendar-alt" style="color:#06b6d4;"></i>
-                    <span id="liq30PeriodText">últimos 30 dias</span>
-                </div>
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                <div class="flex items-center gap-3"><span class="panel-header-badge-cyan"><span class="pulse-dot-cyan"></span> Últimas Liquidações · 30 dias</span><span id="liq30CountBadge" class="text-xs px-2.5 py-1 rounded-full font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">0 ocorrências</span></div>
+                <div class="flex items-center gap-2 text-xs text-slate-500 font-mono"><i class="fas fa-calendar-alt text-cyan-400"></i><span id="liq30PeriodText">últimos 30 dias</span></div>
             </div>
-            <div class="liq30-scroll-wrap">
-                <div id="liq30CardsContainer"></div>
-            </div>
+            <div id="liq30CardsContainer" class="liq30-table-wrap"></div>
         </div>
 
-        <div id="modal30" class="hidden" onclick="if(event.target===this)closeModal30()">
-            <div class="modal30-content">
-                <div class="modal30-header">
-                    <div class="flex items-start justify-between gap-4">
-                        <div>
-                            <p class="text-[10px] font-bold uppercase tracking-widest mb-1" style="color:#06b6d4;">Lançamentos do Processo</p>
-                            <h3 id="modal30Processo" class="text-base font-display font-bold text-white leading-snug"></h3>
-                            <p id="modal30Fav" class="text-sm mt-1" style="color:#64748b;"></p>
-                        </div>
-                        <button onclick="closeModal30()" class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors" style="background:rgba(30,48,80,0.6);color:#64748b;" onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#64748b'">
-                            <i class="fas fa-times text-sm"></i>
-                        </button>
-                    </div>
-                    <div id="modal30Summary" class="flex gap-3 mt-3 flex-wrap"></div>
-                </div>
-                <div class="modal30-body">
-                    <p class="text-[10px] font-bold uppercase tracking-widest mb-3" style="color:#334155;">Detalhes dos lançamentos</p>
-                    <div id="modal30Entries"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="rounded-2xl p-6" style="background: #0d1626; border: 1px solid #1e3050;">
-            <h3 class="text-[10px] font-bold uppercase tracking-widest mb-4 flex items-center gap-2" style="color: #475569;">
-                <i class="fas fa-sliders-h" style="color:#3b82f6;"></i> Filtros de Pesquisa
-            </h3>
+        <!-- Filtros -->
+        <div class="rounded-2xl p-6 bg-darkCard border border-darkBorder">
+            <h3 class="text-[10px] font-bold uppercase text-slate-500 mb-4 flex items-center gap-2"><i class="fas fa-sliders-h text-blue-500"></i> Filtros de Pesquisa</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><i class="fas fa-search" style="color:#475569;"></i></div>
-                    <input type="text" id="searchGlobal" placeholder="Busca geral..." class="w-full pl-10 pr-4 py-2.5 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm" style="background: #111e33; border: 1px solid #1e3050;">
-                </div>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><i class="fas fa-fingerprint" style="color:#475569;"></i></div>
-                    <input type="text" id="searchProcesso" placeholder="Nº Processo..." class="w-full pl-10 pr-4 py-2.5 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm" style="background: #111e33; border: 1px solid #1e3050;">
-                </div>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><i class="fas fa-users" style="color:#475569;"></i></div>
-                    <input type="text" id="searchFavorecido" placeholder="Favorecido..." class="w-full pl-10 pr-4 py-2.5 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm" style="background: #111e33; border: 1px solid #1e3050;">
-                </div>
+                <input type="text" id="searchGlobal" placeholder="Busca geral..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="searchProcesso" placeholder="Nº Processo..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="searchFavorecido" placeholder="Favorecido..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
             </div>
         </div>
 
+        <!-- Cards de Processos -->
         <div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-        <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16" style="color: #334155;">
-            <i class="fas fa-box-open text-5xl mb-4" style="color:#1e3050;"></i>
-            <p class="text-xl font-display font-medium mb-1" style="color:#475569;">Nenhum resultado</p>
-            <p class="text-sm">Tente ajustar seus termos de pesquisa.</p>
-        </div>
+        <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16 text-slate-500"><i class="fas fa-box-open text-5xl mb-4 text-slate-700"></i><p class="text-xl font-medium">Nenhum resultado</p><p class="text-sm">Tente ajustar seus termos de pesquisa.</p></div>
     </div>
 </main>
 
+<!-- Modal Detalhes do Processo -->
 <div id="detailsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-    <div class="modal-content w-full max-w-3xl rounded-2xl flex flex-col max-h-[90vh]" style="background: #0d1626; border: 1px solid #1e3050; box-shadow: 0 40px 80px -10px rgba(0,0,0,0.8);">
-        <div class="px-6 py-4 flex justify-between items-center rounded-t-2xl" style="border-bottom: 1px solid #1e3050; background: rgba(17,30,51,0.5);">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: #60a5fa;">
-                    <i class="fas fa-file-invoice"></i>
-                </div>
-                <div>
-                    <p class="text-[10px] font-bold uppercase tracking-widest" style="color:#3b82f6;">Detalhes do Processo</p>
-                    <h2 id="modalTitleProcesso" class="text-lg font-display font-bold text-white">---</h2>
-                </div>
-            </div>
-            <button onclick="closeModal()" class="p-2 rounded-xl transition-colors" style="color:#475569;" onmouseover="this.style.color='#f1f5f9';this.style.background='#1e3050';" onmouseout="this.style.color='#475569';this.style.background='transparent';">
-                <i class="fas fa-times text-xl"></i>
-            </button>
+    <div class="modal-content w-full max-w-3xl rounded-2xl flex flex-col max-h-[90vh] bg-darkCard border border-darkBorder">
+        <div class="px-6 py-4 flex justify-between items-center border-b border-darkBorder bg-slate-800/50 rounded-t-2xl">
+            <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-500/10 border border-blue-500/20 text-blue-400"><i class="fas fa-file-invoice"></i></div><div><p class="text-[10px] font-bold uppercase text-blue-500">Detalhes do Processo</p><h2 id="modalTitleProcesso" class="text-lg font-display font-bold text-white">---</h2></div></div>
+            <button onclick="closeModal()" class="p-2 rounded-xl text-slate-500 hover:text-white hover:bg-slate-700"><i class="fas fa-times text-xl"></i></button>
         </div>
         <div class="p-6 overflow-y-auto flex-grow">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div class="rounded-xl p-5" style="background: rgba(17,30,51,0.8); border: 1px solid #1e3050;">
-                    <p class="text-sm font-medium mb-1" style="color:#475569;"><i class="fas fa-building mr-1"></i> Favorecido</p>
-                    <p id="modalFavorecido" class="text-base font-bold text-white">---</p>
-                </div>
-                <div class="rounded-xl p-5 border-l-4" id="modalSaldoCard" style="background: rgba(17,30,51,0.8); border: 1px solid #1e3050;">
-                    <p class="text-sm font-medium mb-1" style="color:#475569;"><i class="fas fa-wallet mr-1"></i> Saldo Disponível</p>
-                    <p id="modalSaldo" class="text-2xl font-display font-bold tracking-tight">R$ 0,00</p>
-                </div>
+                <div class="rounded-xl p-5 bg-slate-800/80 border border-slate-700"><p class="text-sm text-slate-500 mb-1"><i class="fas fa-building mr-1"></i> Favorecido</p><p id="modalFavorecido" class="text-base font-bold text-white">---</p></div>
+                <div id="modalSaldoCard" class="rounded-xl p-5 border-l-4 bg-slate-800/80 border border-slate-700"><p class="text-sm text-slate-500 mb-1"><i class="fas fa-wallet mr-1"></i> Saldo Disponível</p><p id="modalSaldo" class="text-2xl font-display font-bold tracking-tight">R$ 0,00</p></div>
             </div>
-            <h3 class="text-[11px] font-bold uppercase tracking-widest mb-4 pb-2" style="color:#334155; border-bottom: 1px solid #1e3050;">Informações Completas</h3>
-            <div id="modalExtraDetails" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-4 gap-x-3"></div>
+            <h3 class="text-[11px] font-bold uppercase text-slate-500 mb-4 pb-2 border-b border-darkBorder">Informações Completas</h3>
+            <div id="modalExtraDetails" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
-        <div class="px-6 py-4 rounded-b-2xl flex justify-end" style="border-top: 1px solid #1e3050; background: rgba(17,30,51,0.5);">
-            <button onclick="closeModal()" class="px-5 py-2 rounded-xl font-semibold text-sm transition-all" style="background:#1e3050; color:#94a3b8;" onmouseover="this.style.background='#2d4a7a';" onmouseout="this.style.background='#1e3050';">Fechar Consulta</button>
+        <div class="px-6 py-4 rounded-b-2xl flex justify-end border-t border-darkBorder bg-slate-800/50"><button onclick="closeModal()" class="px-5 py-2 rounded-xl font-semibold text-sm bg-slate-700 text-slate-300 hover:bg-slate-600">Fechar Consulta</button></div>
+    </div>
+</div>
+
+<!-- Modal 30 dias -->
+<div id="modal30" class="modal30 hidden" onclick="if(event.target===this) closeModal30()">
+    <div class="modal30-content">
+        <div class="modal30-header">
+            <div class="flex justify-between items-start gap-4">
+                <div><p class="text-[10px] font-bold uppercase text-cyan-400">Lançamentos do Processo</p><h3 id="modal30Processo" class="text-base font-display font-bold text-white"></h3><p id="modal30Fav" class="text-sm text-slate-500 mt-1"></p></div>
+                <button onclick="closeModal30()" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 text-slate-500 hover:text-white"><i class="fas fa-times text-sm"></i></button>
+            </div>
+            <div id="modal30Summary" class="flex gap-3 mt-3 flex-wrap"></div>
         </div>
+        <div class="modal30-body"><p class="text-[10px] font-bold uppercase text-slate-500 mb-3">Detalhes dos lançamentos</p><div id="modal30Entries"></div></div>
     </div>
 </div>
 
 <script>
-    // URL do Google Apps Script (sem CORS)
     const CSV_URL = "https://script.google.com/macros/s/AKfycbxgjltMj72B_8Zd-46iPAiMYu2S7Y-hIYLOk-N4CdDXYrE9_ioYCw79tdpkrGYLRxTv-w/exec";
     
-    let allData = [];
-    let filteredData = [];
-    let headers = [];
-    let allMatches = [];
-    let allMatches30 = [];
-    
-    // Índices das colunas principais (A-R)
-    let IDX_FAVORECIDO = 7;
-    let IDX_PROCESSO   = 12;
-    let IDX_SALDO      = 17;
-    
-    // Índices das colunas de liquidação do dia (S-Y)
-    const LIQ_START = 18;
-    const LIQ_END = 25;
-    
-    // Índices das colunas de liquidação 30 dias (AA-AG)
-    const IDX_30_DATA = 26;
-    const IDX_30_FAV = 27;
-    const IDX_30_PROC = 28;
-    const IDX_30_ELEM = 29;
-    const IDX_30_DESC = 30;
-    const IDX_30_PI = 31;
-    const IDX_30_TOTAL = 32;
-    
-    const modal = document.getElementById('detailsModal');
-    const body = document.body;
+    let allData = [], filteredData = [], headers = [], allMatches = [], allMatches30 = [];
+    let IDX_FAVORECIDO = 7, IDX_PROCESSO = 12, IDX_SALDO = 17;
+    const LIQ_START = 18, LIQ_END = 25;
+    const IDX_30_DATA = 26, IDX_30_FAV = 27, IDX_30_PROC = 28, IDX_30_ELEM = 29, IDX_30_DESC = 30, IDX_30_PI = 31, IDX_30_TOTAL = 32;
     
     function parseCSV(text) {
-        const rows = [];
-        let inQuotes = false;
-        let currentRow = [];
-        let currentField = '';
-        
-        for (let i = 0; i < text.length; i++) {
-            const ch = text[i];
-            if (ch === '"') {
-                inQuotes = !inQuotes;
-            } else if (ch === ',' && !inQuotes) {
-                currentRow.push(currentField.trim());
-                currentField = '';
-            } else if (ch === '\n' && !inQuotes) {
-                currentRow.push(currentField.trim());
-                if (currentRow.some(f => f !== '')) rows.push(currentRow);
-                currentRow = [];
-                currentField = '';
-            } else {
-                currentField += ch;
-            }
-        }
-        if (currentField !== '' || currentRow.length > 0) {
-            currentRow.push(currentField.trim());
-            if (currentRow.some(f => f !== '')) rows.push(currentRow);
-        }
+        const rows = []; let inQ = false, cur = '', row = [];
+        for(let i=0;i<text.length;i++){ const ch=text[i]; if(ch==='"') inQ=!inQ; else if(ch===',' && !inQ){ row.push(cur.trim()); cur=''; } else if(ch==='\n' && !inQ){ row.push(cur.trim()); if(row.some(c=>c)) rows.push(row); row=[]; cur=''; } else cur+=ch; }
+        if(cur || row.length){ row.push(cur.trim()); if(row.some(c=>c)) rows.push(row); }
         return rows;
     }
-    
-    function parseBRValue(value) {
-        let v = String(value || '').trim().replace(/R\$\s*/gi, '');
-        if (v === '-' || v === '' || v === '—') return 0;
-        if (v.includes(',') && v.includes('.')) { v = v.replace(/\./g, '').replace(',', '.'); }
-        else if (v.includes(',') && !v.includes('.')) { v = v.replace(',', '.'); }
-        return parseFloat(v) || 0;
-    }
-    
-    function formatCurrency(value) {
-        const num = typeof value === 'number' ? value : parseBRValue(value);
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(isNaN(num) ? 0 : num);
-    }
-    
-    function escapeHtml(str) {
-        if (!str) return '';
-        return String(str).replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-    
-    function detectIndexes(headerRow) {
-        const h = headerRow.map(c => String(c).toLowerCase().trim());
-        const find = (...terms) => {
-            let i = h.findIndex(c => terms.some(t => c === t.toLowerCase()));
-            if (i >= 0) return i;
-            return h.findIndex(c => terms.some(t => c.includes(t.toLowerCase())));
-        };
-        IDX_FAVORECIDO = find('ne ccor - favorecido', 'favorecido', 'fornecedor');
-        IDX_PROCESSO   = find('ne ccor - núm. processo', 'ne ccor - num. processo', 'processo', 'número');
-        IDX_SALDO      = find('saldo - moeda origem', 'saldo', 'a liquidar', 'valor');
-    }
-    
-    function parseExcelDate(val) {
-        if (!val || val === '' || val === 'undefined') return null;
-        const s = String(val).trim();
-        const dmy = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-        if (dmy) return new Date(+dmy[3], +dmy[2]-1, +dmy[1]);
-        const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
-        if (iso) return new Date(+iso[1], +iso[2]-1, +iso[3]);
-        const n = parseFloat(s);
-        if (!isNaN(n) && n > 40000 && n < 60000) {
-            const ms = (n - 25569) * 86400 * 1000;
-            return new Date(ms);
-        }
+    function parseMoney(v){ let s=String(v||'').replace(/R\$\s*/g,'').trim(); if(s==='-'||s==='') return 0; s=s.replace(/\./g,'').replace(',','.'); return parseFloat(s)||0; }
+    function formatMoney(v){ return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v); }
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>]/g,function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
+    function parseExcelDate(val){
+        if(!val) return null; const s=String(val).trim(); const dmy=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/); if(dmy) return new Date(+dmy[3],+dmy[2]-1,+dmy[1]);
+        const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(iso) return new Date(+iso[1],+iso[2]-1,+iso[3]);
+        const n=parseFloat(s); if(!isNaN(n)&&n>40000&&n<60000) return new Date((n-25569)*86400*1000);
         return null;
     }
+    function formatDateBR(d){ if(!d) return '—'; return d.toLocaleDateString('pt-BR'); }
     
-    function formatDateBR(d) {
-        if (!d) return '—';
-        return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    }
-    
-    async function loadData() {
-        const btn = document.getElementById('refreshBtn');
-        const icon = document.getElementById('refreshIcon');
-        btn.disabled = true;
-        icon.className = 'fas fa-sync-alt animate-spin';
-        
-        const sec = document.getElementById('uploadSection');
-        sec.style.display = 'block';
+    async function loadData(){
+        const btn=document.getElementById('refreshBtn'), icon=document.getElementById('refreshIcon');
+        btn.disabled=true; icon.className='fas fa-sync-alt animate-spin';
+        document.getElementById('uploadSection').style.display='block';
         document.getElementById('dashboardContent').classList.add('hidden');
-        
-        try {
-            const resp = await fetch(CSV_URL + '?t=' + Date.now());
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            const text = await resp.text();
-            const allRows = parseCSV(text);
-            if (allRows.length < 2) throw new Error('Planilha sem dados.');
+        try{
+            const resp=await fetch(CSV_URL+'?t='+Date.now()); if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const text=await resp.text(); const allRows=parseCSV(text); if(allRows.length<2) throw new Error('Planilha sem dados.');
+            headers=allRows[0];
+            const h=headers.map(c=>String(c).toLowerCase().trim());
+            const find=(...t)=>{ let i=h.findIndex(c=>t.some(ct=>c===ct.toLowerCase())); if(i>=0) return i; return h.findIndex(c=>t.some(ct=>c.includes(ct.toLowerCase()))); };
+            IDX_FAVORECIDO=find('ne ccor - favorecido','favorecido'); IDX_PROCESSO=find('ne ccor - núm. processo','processo'); IDX_SALDO=find('saldo - moeda origem','saldo');
             
-            headers = allRows[0];
-            detectIndexes(headers);
+            // Tabela principal
+            allData=[]; for(let i=1;i<allRows.length;i++){ const row=allRows[i].slice(0,LIQ_START); const proc=String(row[IDX_PROCESSO]||'').trim(); const fav=String(row[IDX_FAVORECIDO]||'').trim(); if(proc&&fav&&proc!=='Total'&&fav!=='Total'&&proc.length>3) allData.push(row); }
+            filteredData=[...allData];
             
-            // Tabela principal (A-R)
-            allData = [];
-            for (let i = 1; i < allRows.length; i++) {
-                const row = allRows[i].slice(0, LIQ_START);
-                const proc = String(row[IDX_PROCESSO] || '').trim();
-                const fav = String(row[IDX_FAVORECIDO] || '').trim();
-                if (proc && fav && proc !== 'Total' && fav !== 'Total' && proc.length > 3) {
-                    allData.push(row);
-                }
-            }
-            filteredData = [...allData];
+            // Liquidações do dia (S-Y)
+            const liqRows=[]; for(let i=1;i<allRows.length;i++){ const row=allRows[i].slice(LIQ_START,LIQ_END); const fav=String(row[0]||'').trim(); if(fav&&fav!=='Total'){ const proc=String(row[1]||'').trim(); if(proc&&proc!=='Total') liqRows.push(row); } }
+            const liqMap=new Map();
+            for(const row of liqRows){ const fav=row[0]?.trim(), proc=row[1]?.trim(); if(!fav||!proc) continue; const key=`${fav}|||${proc}`; if(!liqMap.has(key)) liqMap.set(key,{total:0,elemDespesa:row[2]||'',subitem:row[3]||'',pi:row[5]||''}); liqMap.get(key).total+=parseMoney(row[6]); }
+            const seen=new Set(); allMatches=[]; for(const row of allData){ const fav=row[IDX_FAVORECIDO]?.trim(), proc=row[IDX_PROCESSO]?.trim(); if(!fav||!proc) continue; const key=`${fav}|||${proc}`; if(liqMap.has(key)&&!seen.has(key)){ seen.add(key); const liq=liqMap.get(key); const saldoAtual=parseMoney(row[IDX_SALDO]); const saldoAntes=saldoAtual+liq.total; allMatches.push({favorecido:fav,processo:proc,saldoAntes,liquidado:liq.total,saldoDepois:saldoAtual,pct:saldoAntes>0?liq.total/saldoAntes*100:0,elemDespesa:liq.elemDespesa,subitem:liq.subitem,pi:liq.pi}); } }
             
-            // Tabela de liquidações do dia (S-Y)
-            const liqRows = [];
-            for (let i = 1; i < allRows.length; i++) {
-                const row = allRows[i].slice(LIQ_START, LIQ_END);
-                const favLiq = String(row[0] || '').trim();
-                if (favLiq && favLiq !== 'Total' && favLiq !== '') {
-                    const procLiq = String(row[1] || '').trim();
-                    if (procLiq && procLiq !== 'Total') liqRows.push(row);
-                }
-            }
+            // 30 dias (AA-AG)
+            const now=new Date(), cutoff=new Date(now.getTime()-30*24*60*60*1000); const liq30Map=new Map();
+            for(let i=1;i<allRows.length;i++){ const row=allRows[i]; const rawDate=row[IDX_30_DATA]; const fav30=String(row[IDX_30_FAV]||'').trim(); const proc30=String(row[IDX_30_PROC]||'').trim(); const val30=parseMoney(row[IDX_30_TOTAL]); if(!fav30||!proc30||fav30==='undefined') continue; if(!rawDate) continue; const dt=parseExcelDate(rawDate); if(!dt||dt<cutoff) continue; if(val30===0&&!(row[IDX_30_TOTAL]&&String(row[IDX_30_TOTAL]).trim()!=='')) continue; const key=`${fav30}|||${proc30}`; if(!liq30Map.has(key)) liq30Map.set(key,{favorecido:fav30,processo:proc30,elemDespesa:String(row[IDX_30_ELEM]||'').trim(),descricao:String(row[IDX_30_DESC]||'').trim(),pi:String(row[IDX_30_PI]||'').trim(),entries:[],totalLiquidado:0,saldoAtual:null}); const entry=liq30Map.get(key); entry.entries.push({date:dt,valor:val30}); entry.totalLiquidado+=val30; }
+            for(const row of allData){ const fav=row[IDX_FAVORECIDO]?.trim(), proc=row[IDX_PROCESSO]?.trim(); if(!fav||!proc) continue; const key=`${fav}|||${proc}`; if(liq30Map.has(key)&&liq30Map.get(key).saldoAtual===null) liq30Map.get(key).saldoAtual=parseMoney(row[IDX_SALDO]); }
+            allMatches30=Array.from(liq30Map.values()).filter(m=>m.totalLiquidado!==0).sort((a,b)=>b.totalLiquidado-a.totalLiquidado);
             
-            // Mapa de liquidações do dia
-            const liqMap = new Map();
-            for (const row of liqRows) {
-                const fav = row[0]?.trim();
-                const proc = row[1]?.trim();
-                if (!fav || !proc) continue;
-                const key = `${fav}|||${proc}`;
-                if (!liqMap.has(key)) {
-                    liqMap.set(key, {
-                        total: 0,
-                        elemDespesa: row[2] || '',
-                        subitem: row[3] || '',
-                        cos01: row[4] || '',
-                        pi: row[5] || ''
-                    });
-                }
-                liqMap.get(key).total += parseBRValue(row[6]);
-            }
-            
-            // Cruzar liquidações do dia
-            allMatches = [];
-            const seen = new Set();
-            for (const row of allData) {
-                const fav = row[IDX_FAVORECIDO]?.trim();
-                const proc = row[IDX_PROCESSO]?.trim();
-                if (!fav || !proc) continue;
-                const key = `${fav}|||${proc}`;
-                if (liqMap.has(key) && !seen.has(key)) {
-                    seen.add(key);
-                    const liq = liqMap.get(key);
-                    const saldoAtual = parseBRValue(row[IDX_SALDO]);
-                    const saldoAntes = saldoAtual + liq.total;
-                    allMatches.push({
-                        favorecido: fav,
-                        processo: proc,
-                        saldoAntes: saldoAntes,
-                        liquidado: liq.total,
-                        saldoDepois: saldoAtual,
-                        pct: saldoAntes > 0 ? (liq.total / saldoAntes * 100) : 0,
-                        elemDespesa: liq.elemDespesa,
-                        subitem: liq.subitem,
-                        cos01: liq.cos01,
-                        pi: liq.pi
-                    });
-                }
-            }
-            
-            // =========================================================
-            // PAINEL 30 DIAS - lê colunas AA-AG
-            // =========================================================
-            const now = new Date();
-            const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-            const liq30Map = new Map();
-            
-            for (let i = 1; i < allRows.length; i++) {
-                const row = allRows[i];
-                const rawDate = row[IDX_30_DATA];
-                const fav30 = String(row[IDX_30_FAV] || '').trim();
-                const proc30 = String(row[IDX_30_PROC] || '').trim();
-                const val30 = parseBRValue(row[IDX_30_TOTAL]);
-                
-                if (!fav30 || !proc30 || fav30 === 'undefined' || proc30 === 'undefined') continue;
-                if (!rawDate || rawDate === '' || rawDate === 'undefined') continue;
-                
-                const dt = parseExcelDate(rawDate);
-                if (!dt) continue;
-                if (dt < cutoff) continue;
-                if (val30 === 0 && !(row[IDX_30_TOTAL] && String(row[IDX_30_TOTAL]).trim() !== '')) continue;
-                
-                const key = `${fav30}|||${proc30}`;
-                if (!liq30Map.has(key)) {
-                    liq30Map.set(key, {
-                        favorecido: fav30,
-                        processo: proc30,
-                        elemDespesa: String(row[IDX_30_ELEM] || '').trim(),
-                        descricao: String(row[IDX_30_DESC] || '').trim(),
-                        pi: String(row[IDX_30_PI] || '').trim(),
-                        entries: [],
-                        totalLiquidado: 0,
-                        saldoAtual: null
-                    });
-                }
-                const entry = liq30Map.get(key);
-                entry.entries.push({ date: dt, valor: val30 });
-                entry.totalLiquidado += val30;
-            }
-            
-            // Buscar saldo atual na tabela principal
-            for (const row of allData) {
-                const fav = row[IDX_FAVORECIDO]?.trim();
-                const proc = row[IDX_PROCESSO]?.trim();
-                if (!fav || !proc) continue;
-                const key = `${fav}|||${proc}`;
-                if (liq30Map.has(key) && liq30Map.get(key).saldoAtual === null) {
-                    liq30Map.get(key).saldoAtual = parseBRValue(row[IDX_SALDO]);
-                }
-            }
-            
-            allMatches30 = Array.from(liq30Map.values())
-                .filter(m => m.totalLiquidado !== 0)
-                .sort((a, b) => b.totalLiquidado - a.totalLiquidado);
-            
-            renderLiquidacaoPanel(allMatches);
-            renderLiq30Panel(allMatches30);
-            
-            const nowTime = new Date();
-            document.getElementById('lastUpdateText').textContent = nowTime.toLocaleDateString('pt-BR') + ' às ' + nowTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            
-            sec.style.display = 'none';
-            document.getElementById('dashboardContent').classList.remove('hidden');
-            document.getElementById('statusBadge').classList.remove('hidden');
-            document.getElementById('statusBadge').classList.add('flex');
+            renderLiquidacaoPanel(allMatches); renderLiq30Panel(allMatches30);
+            document.getElementById('lastUpdateText').textContent=new Date().toLocaleString('pt-BR');
+            document.getElementById('uploadSection').style.display='none'; document.getElementById('dashboardContent').classList.remove('hidden'); document.getElementById('statusBadge').classList.remove('hidden'); document.getElementById('statusBadge').classList.add('flex');
             renderDashboard();
-            
-        } catch (err) {
-            console.error(err);
-            document.getElementById('loadingIcon').className = 'text-5xl text-red-500';
-            document.getElementById('loadingIcon').innerHTML = '<i class="fas fa-exclamation-circle"></i>';
-            document.getElementById('loadingTitle').textContent = 'Erro ao carregar';
-            document.getElementById('loadingSubtitle').textContent = err.message + ' — Tente novamente.';
-        }
-        btn.disabled = false;
-        icon.className = 'fas fa-sync-alt';
+        } catch(err){ console.error(err); document.getElementById('loadingIcon').innerHTML='<i class="fas fa-exclamation-circle"></i>'; document.getElementById('loadingTitle').textContent='Erro'; document.getElementById('loadingSubtitle').textContent=err.message; }
+        btn.disabled=false; icon.className='fas fa-sync-alt';
     }
     
-    function renderLiquidacaoPanel(matches) {
-        const panel = document.getElementById('liquidacaoPanel');
-        const countBadge = document.getElementById('liqCountBadge');
-        const cardsContainer = document.getElementById('liqCardsContainer');
-        
-        if (!matches || matches.length === 0) {
-            panel.classList.add('hidden');
-            return;
-        }
-        
-        panel.classList.remove('hidden');
-        countBadge.textContent = matches.length + ' ocorrência' + (matches.length > 1 ? 's' : '');
-        
-        const totalLiquidado = matches.reduce((s, m) => s + m.liquidado, 0);
-        const totalSaldoAntes = matches.reduce((s, m) => s + m.saldoAntes, 0);
-        const totalSaldoDep = matches.reduce((s, m) => s + m.saldoDepois, 0);
-        
-        const tbody = matches.map(m => {
-            const pct = Math.min(m.pct, 100);
-            const pctFmt = m.pct.toFixed(1);
-            const isLow = m.saldoDepois < m.saldoAntes * 0.1;
-            const afterChipClass = isLow ? 'chip-after-red' : 'chip-after';
-            const barColor = pct > 90 ? '#ef4444' : pct > 60 ? '#f59e0b' : '#10b981';
-            return `
-            <tr>
-                <td>
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-bolt text-xs flex-shrink-0" style="color:#f59e0b;"></i>
-                        <div><p class="text-sm font-semibold text-white leading-tight">${escapeHtml(m.favorecido)}</p></div>
-                    </div>
-                </td>
-                <td>
-                    <span class="text-[11px] font-mono px-2 py-1 rounded-md" style="background:rgba(6,182,212,0.07);color:#67e8f9;border:1px solid rgba(6,182,212,0.12);">
-                        ${escapeHtml(m.elemDespesa)}/${escapeHtml(m.subitem)} · ${escapeHtml(m.processo)}
-                    </span>
-                    ${m.pi ? `<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded" style="background:rgba(139,92,246,0.08);color:#a78bfa;border:1px solid rgba(139,92,246,0.15);">PI ${escapeHtml(m.pi)}</span>` : ''}
-                </td>
-                <td class="text-right"><span class="value-chip chip-before">${formatCurrency(m.saldoAntes)}</span></td>
-                <td class="text-right"><span class="value-chip chip-liq">− ${formatCurrency(m.liquidado)}</span></td>
-                <td class="text-right"><span class="value-chip ${afterChipClass}">${formatCurrency(m.saldoDepois)}</span></td>
-                <td class="text-right" style="min-width:130px;">
-                    <div class="flex items-center justify-end gap-2">
-                        <span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pctFmt}%</span>
-                        <div class="mini-bar-track" style="width:60px;">
-                            <div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div>
-                        </div>
-                    </div>
-                </td>
-            </tr>`;
-        }).join('');
-        
-        const tfootRow = `
-        <tr>
-            <td colspan="2" style="color:#64748b;font-size:11px;font-family:'JetBrains Mono',monospace;">TOTAIS · ${matches.length} OCORRÊNCIAS</td>
-            <td class="text-right"><span class="value-chip chip-before">${formatCurrency(totalSaldoAntes)}</span></td>
-            <td class="text-right"><span class="value-chip chip-liq">− ${formatCurrency(totalLiquidado)}</span></td>
-            <td class="text-right"><span class="value-chip chip-after">${formatCurrency(totalSaldoDep)}</span></td>
-            <td class="text-right"></td>
-        </tr>`;
-        
-        cardsContainer.innerHTML = `
-            <table class="liq-table">
-                <thead>
-                    <tr><th style="min-width:220px;">Favorecido</th><th>Elemento · Processo</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr>
-                </thead>
-                <tbody>${tbody}</tbody>
-                <tfoot>${tfootRow}</tfoot>
-            </table>`;
+    function renderLiquidacaoPanel(matches){
+        const panel=document.getElementById('liquidacaoPanel'), badge=document.getElementById('liqCountBadge'), container=document.getElementById('liqCardsContainer');
+        if(!matches.length){ panel.classList.add('hidden'); return; }
+        panel.classList.remove('hidden'); badge.textContent=matches.length+' ocorrência'+(matches.length>1?'s':'');
+        const totalLiq=matches.reduce((s,m)=>s+m.liquidado,0), totalAntes=matches.reduce((s,m)=>s+m.saldoAntes,0), totalDep=matches.reduce((s,m)=>s+m.saldoDepois,0);
+        const tbody=matches.map(m=>{ const pct=Math.min(m.pct,100); const barColor=pct>90?'#ef4444':pct>60?'#f59e0b':'#10b981'; const isLow=m.saldoDepois<m.saldoAntes*0.1; const afterChip=isLow?'chip-after-red':'chip-after'; return `<tr><td><div class="flex items-center gap-2"><i class="fas fa-bolt text-xs text-amber-500"></i><div><p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p></div></div></td><td><span class="text-[11px] font-mono px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">${escapeHtml(m.elemDespesa)}/${escapeHtml(m.subitem)} · ${escapeHtml(m.processo)}</span>${m.pi?`<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">PI ${escapeHtml(m.pi)}</span>`:''}</td><td class="text-right"><span class="value-chip chip-before">${formatMoney(m.saldoAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(m.liquidado)}</span></td><td class="text-right"><span class="value-chip ${afterChip}">${formatMoney(m.saldoDepois)}</span></td><td class="text-right"><div class="flex items-center justify-end gap-2"><span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pct.toFixed(1)}%</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div></div></div></td></tr>`; }).join('');
+        container.innerHTML=`<table class="liq-table"><thead><tr><th style="min-width:220px;">Favorecido</th><th>Elemento · Processo</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody><tfoot><tr><td colspan="2" class="font-mono text-slate-500">TOTAIS · ${matches.length} OCORRÊNCIAS</td><td class="text-right"><span class="value-chip chip-before">${formatMoney(totalAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(totalLiq)}</span></td><td class="text-right"><span class="value-chip chip-after">${formatMoney(totalDep)}</span></td><td class="text-right"></td></tr></tfoot></table>`;
     }
     
-    function renderLiq30Panel(matches) {
-        const panel = document.getElementById('liq30Panel');
-        const badge = document.getElementById('liq30CountBadge');
-        const container = document.getElementById('liq30CardsContainer');
-        
-        if (!matches || matches.length === 0) {
-            panel.classList.add('hidden');
-            return;
-        }
-        
-        panel.classList.remove('hidden');
-        badge.textContent = matches.length + ' ocorrência' + (matches.length > 1 ? 's' : '');
-        
-        const now = new Date();
-        const cutoff = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        document.getElementById('liq30PeriodText').textContent = formatDateBR(cutoff) + ' → ' + formatDateBR(now);
-        
-        window._liq30Data = matches;
-        
-        const totalLiq = matches.reduce((s, m) => s + m.totalLiquidado, 0);
-        const totalSaldoAntes = matches.filter(m => m.saldoAtual !== null).reduce((s, m) => s + (m.saldoAtual + m.totalLiquidado), 0);
-        const totalSaldoAtual = matches.filter(m => m.saldoAtual !== null).reduce((s, m) => s + m.saldoAtual, 0);
-        
-        const tbody = matches.map((m, idx) => {
-            const saldo = m.saldoAtual;
-            const saldoAntes = saldo !== null ? saldo + m.totalLiquidado : null;
-            const pct = saldoAntes && saldoAntes > 0 ? Math.min(m.totalLiquidado / saldoAntes * 100, 100) : 100;
-            const barColor = pct > 90 ? '#ef4444' : pct > 60 ? '#f59e0b' : '#10b981';
-            const isLow = saldo !== null && saldoAntes !== null && saldo < saldoAntes * 0.1;
-            const afterChip = saldo === null ? 'chip-before' : (saldo < 0 ? 'chip-after-red' : (isLow ? 'chip-after-warn' : 'chip-after'));
-            const latestDate = m.entries.length > 0 ? m.entries.reduce((a, b) => a.date > b.date ? a : b).date : null;
-            const hasMultiple = m.entries.length > 1;
-            
-            return `<tr class="liq30-row-clickable" onclick="openModal30(${idx})">
-                <td><div class="flex items-center gap-2"><i class="fas fa-history text-xs" style="color:#06b6d4;"></i><div><p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p>${m.descricao ? `<p class="text-[10px] text-slate-500">${escapeHtml(m.descricao)}</p>` : ''}</div></div></td>
-                <td><span class="text-[11px] font-mono px-2 py-1 rounded-md" style="background:rgba(6,182,212,0.07);color:#67e8f9;">${escapeHtml(m.elemDespesa)} · ${escapeHtml(m.processo)}</span>${m.pi ? `<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded" style="background:rgba(139,92,246,0.08);color:#a78bfa;">PI ${escapeHtml(m.pi)}</span>` : ''}</td>
-                <td class="text-center"><span class="date-chip">${latestDate ? formatDateBR(latestDate) : '—'}</span>${hasMultiple ? `<span class="text-[9px] block mt-1 text-cyan-400"><i class="fas fa-layer-group mr-0.5"></i>${m.entries.length} lançamentos</span>` : ''}</td>
-                <td class="text-right"><span class="value-chip chip-before">${saldoAntes !== null ? formatCurrency(saldoAntes) : '—'}</span></td>
-                <td class="text-right"><span class="value-chip chip-liq">− ${formatCurrency(m.totalLiquidado)}</span></td>
-                <td class="text-right"><span class="value-chip ${afterChip}">${saldo !== null ? formatCurrency(saldo) : '—'}</span></td>
-                <td class="text-right"><div class="flex items-center justify-end gap-2"><span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pct.toFixed(1)}%</span><div class="mini-bar-track" style="width:60px;"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div></div><i class="fas fa-chevron-right text-[9px] text-slate-600"></i></div></td>
-            </tr>`;
-        }).join('');
-        
-        const tfootRow = `<tr><td colspan="3" class="font-mono text-slate-500">TOTAIS · ${matches.length} OCORRÊNCIAS (30 dias)</td><td class="text-right"><span class="value-chip chip-before">${formatCurrency(totalSaldoAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatCurrency(totalLiq)}</span></td><td class="text-right"><span class="value-chip chip-after">${formatCurrency(totalSaldoAtual)}</span></td><td class="text-right"></td></tr>`;
-        
-        container.innerHTML = `<table class="liq30-table"><thead><tr><th style="min-width:220px;">Favorecido</th><th>Elemento · Processo</th><th class="text-center">Último Lançamento</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody><tfoot>${tfootRow}</tfoot></table>`;
+    function renderLiq30Panel(matches){
+        const panel=document.getElementById('liq30Panel'), badge=document.getElementById('liq30CountBadge'), container=document.getElementById('liq30CardsContainer');
+        if(!matches.length){ panel.classList.add('hidden'); return; }
+        panel.classList.remove('hidden'); badge.textContent=matches.length+' ocorrência'+(matches.length>1?'s':'');
+        const now=new Date(); const cutoff=new Date(now.getTime()-30*24*60*60*1000);
+        document.getElementById('liq30PeriodText').textContent=formatDateBR(cutoff)+' → '+formatDateBR(now);
+        window._liq30Data=matches;
+        const totalLiq=matches.reduce((s,m)=>s+m.totalLiquidado,0), totalAntes=matches.filter(m=>m.saldoAtual!==null).reduce((s,m)=>s+(m.saldoAtual+m.totalLiquidado),0), totalDep=matches.filter(m=>m.saldoAtual!==null).reduce((s,m)=>s+m.saldoAtual,0);
+        const tbody=matches.map((m,idx)=>{ const saldo=m.saldoAtual; const saldoAntes=saldo!==null?saldo+m.totalLiquidado:null; const pct=saldoAntes&&saldoAntes>0?Math.min(m.totalLiquidado/saldoAntes*100,100):100; const barColor=pct>90?'#ef4444':pct>60?'#f59e0b':'#10b981'; const isLow=saldo!==null&&saldoAntes!==null&&saldo<saldoAntes*0.1; const afterChip=saldo===null?'chip-before':(saldo<0?'chip-after-red':(isLow?'chip-after-warn':'chip-after')); const latestDate=m.entries.length?m.entries.reduce((a,b)=>a.date>b.date?a:b).date:null; const hasMultiple=m.entries.length>1; return `<tr class="liq30-row-clickable" onclick="openModal30(${idx})"><td><div class="flex items-center gap-2"><i class="fas fa-history text-xs text-cyan-400"></i><div><p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p>${m.descricao?`<p class="text-[10px] text-slate-500">${escapeHtml(m.descricao)}</p>`:''}</div></div></td><td><span class="text-[11px] font-mono px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400">${escapeHtml(m.elemDespesa)} · ${escapeHtml(m.processo)}</span>${m.pi?`<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">PI ${escapeHtml(m.pi)}</span>`:''}</td><td class="text-center"><span class="date-chip">${latestDate?formatDateBR(latestDate):'—'}</span>${hasMultiple?`<span class="text-[9px] block mt-1 text-cyan-400"><i class="fas fa-layer-group mr-0.5"></i>${m.entries.length} lançamentos</span>`:''}</td><td class="text-right"><span class="value-chip chip-before">${saldoAntes!==null?formatMoney(saldoAntes):'—'}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(m.totalLiquidado)}</span></td><td class="text-right"><span class="value-chip ${afterChip}">${saldo!==null?formatMoney(saldo):'—'}</span></td><td class="text-right"><div class="flex items-center justify-end gap-2"><span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pct.toFixed(1)}%</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div></div><i class="fas fa-chevron-right text-[9px] text-slate-600"></i></div></td></tr>`; }).join('');
+        container.innerHTML=`<table class="liq30-table"><thead><tr><th style="min-width:220px;">Favorecido</th><th>Elemento · Processo</th><th class="text-center">Último Lançamento</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody><tfoot><tr><td colspan="3" class="font-mono text-slate-500">TOTAIS · ${matches.length} OCORRÊNCIAS (30 dias)</td><td class="text-right"><span class="value-chip chip-before">${formatMoney(totalAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(totalLiq)}</span></td><td class="text-right"><span class="value-chip chip-after">${formatMoney(totalDep)}</span></td><td class="text-right"></td></tr></tfoot></table>`;
     }
     
-    function openModal30(idx) {
-        const m = window._liq30Data && window._liq30Data[idx];
-        if (!m) return;
-        document.getElementById('modal30Processo').textContent = m.processo;
-        document.getElementById('modal30Fav').textContent = m.favorecido;
-        const saldo = m.saldoAtual;
-        const saldoAntes = saldo !== null ? saldo + m.totalLiquidado : null;
-        document.getElementById('modal30Summary').innerHTML = `<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50"><span class="text-[10px] uppercase text-slate-500">Saldo Anterior</span><span class="font-mono text-sm text-slate-300">${saldoAntes !== null ? formatCurrency(saldoAntes) : '—'}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10"><span class="text-[10px] uppercase text-slate-500">Total Liquidado</span><span class="font-mono text-sm text-red-400">− ${formatCurrency(m.totalLiquidado)}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg ${saldo !== null && saldo >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-500">Saldo Atual</span><span class="font-mono text-sm ${saldo !== null && saldo >= 0 ? 'text-emerald-400' : 'text-red-400'}">${saldo !== null ? formatCurrency(saldo) : '—'}</span></div>`;
-        const sorted = [...m.entries].sort((a, b) => b.date - a.date);
-        document.getElementById('modal30Entries').innerHTML = sorted.map((e, i) => `<div class="modal30-row"><div class="flex items-center gap-3"><div class="w-7 h-7 rounded-full flex items-center justify-center bg-cyan-500/10 border border-cyan-500/20"><span class="text-[10px] font-bold text-cyan-400">${sorted.length - i}</span></div><span class="date-chip">${formatDateBR(e.date)}</span></div><span class="value-chip ${e.valor >= 0 ? 'chip-after' : 'chip-liq'}">${e.valor >= 0 ? '' : '− '}${formatCurrency(Math.abs(e.valor))}</span></div>`).join('');
-        document.getElementById('modal30').classList.remove('hidden');
-        document.body.classList.add('modal-active');
-    }
-    
-    function closeModal30() {
-        document.getElementById('modal30').classList.add('hidden');
-        document.body.classList.remove('modal-active');
-    }
-    
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !document.getElementById('modal30').classList.contains('hidden')) closeModal30(); });
+    function openModal30(idx){ const m=window._liq30Data&&window._liq30Data[idx]; if(!m) return; document.getElementById('modal30Processo').textContent=m.processo; document.getElementById('modal30Fav').textContent=m.favorecido; const saldo=m.saldoAtual; const saldoAntes=saldo!==null?saldo+m.totalLiquidado:null; document.getElementById('modal30Summary').innerHTML=`<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50"><span class="text-[10px] uppercase text-slate-500">Saldo Anterior</span><span class="font-mono text-sm text-slate-300">${saldoAntes!==null?formatMoney(saldoAntes):'—'}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10"><span class="text-[10px] uppercase text-slate-500">Total Liquidado</span><span class="font-mono text-sm text-red-400">− ${formatMoney(m.totalLiquidado)}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg ${saldo!==null&&saldo>=0?'bg-emerald-500/10':'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-500">Saldo Atual</span><span class="font-mono text-sm ${saldo!==null&&saldo>=0?'text-emerald-400':'text-red-400'}">${saldo!==null?formatMoney(saldo):'—'}</span></div>`; const sorted=[...m.entries].sort((a,b)=>b.date-a.date); document.getElementById('modal30Entries').innerHTML=sorted.map((e,i)=>`<div class="modal30-row"><div class="flex items-center gap-3"><div class="w-7 h-7 rounded-full flex items-center justify-center bg-cyan-500/10 border border-cyan-500/20"><span class="text-[10px] font-bold text-cyan-400">${sorted.length-i}</span></div><span class="date-chip">${formatDateBR(e.date)}</span></div><span class="value-chip ${e.valor>=0?'chip-after':'chip-liq'}">${e.valor>=0?'':'− '}${formatMoney(Math.abs(e.valor))}</span></div>`).join(''); document.getElementById('modal30').classList.remove('hidden'); document.body.classList.add('modal-active'); }
+    function closeModal30(){ document.getElementById('modal30').classList.add('hidden'); document.body.classList.remove('modal-active'); }
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('modal30').classList.contains('hidden')) closeModal30(); });
     
     // Filtros
-    document.getElementById('searchGlobal').addEventListener('input', applyFilters);
-    document.getElementById('searchProcesso').addEventListener('input', applyFilters);
-    document.getElementById('searchFavorecido').addEventListener('input', applyFilters);
+    document.getElementById('searchGlobal').addEventListener('input',applyFilters);
+    document.getElementById('searchProcesso').addEventListener('input',applyFilters);
+    document.getElementById('searchFavorecido').addEventListener('input',applyFilters);
+    function applyFilters(){ const gT=document.getElementById('searchGlobal').value.toLowerCase().trim(); const pT=document.getElementById('searchProcesso').value.toLowerCase().trim(); const fT=document.getElementById('searchFavorecido').value.toLowerCase().trim(); filteredData=allData.filter(row=>{ const proc=String(row[IDX_PROCESSO]||'').toLowerCase(); const fav=String(row[IDX_FAVORECIDO]||'').toLowerCase(); const all=row.join(' ').toLowerCase(); return proc.includes(pT)&&fav.includes(fT)&&all.includes(gT); }); renderLiquidacaoPanel(allMatches.filter(m=>m.processo.toLowerCase().includes(pT)&&m.favorecido.toLowerCase().includes(fT))); renderLiq30Panel(allMatches30.filter(m=>m.processo.toLowerCase().includes(pT)&&m.favorecido.toLowerCase().includes(fT))); renderDashboard(); }
     
-    function applyFilters() {
-        const gT = document.getElementById('searchGlobal').value.toLowerCase().trim();
-        const pT = document.getElementById('searchProcesso').value.toLowerCase().trim();
-        const fT = document.getElementById('searchFavorecido').value.toLowerCase().trim();
-        
-        filteredData = allData.filter(row => {
-            const proc = String(row[IDX_PROCESSO] || '').toLowerCase();
-            const fav = String(row[IDX_FAVORECIDO] || '').toLowerCase();
-            const all = row.join(' ').toLowerCase();
-            return proc.includes(pT) && fav.includes(fT) && all.includes(gT);
-        });
-        
-        const filteredMatches = allMatches.filter(m => {
-            const proc = m.processo.toLowerCase();
-            const fav = m.favorecido.toLowerCase();
-            const allLiq = (fav + ' ' + proc + ' ' + m.elemDespesa).toLowerCase();
-            return proc.includes(pT) && fav.includes(fT) && allLiq.includes(gT);
-        });
-        renderLiquidacaoPanel(filteredMatches);
-        
-        const filtered30 = allMatches30.filter(m => {
-            const proc = m.processo.toLowerCase();
-            const fav = m.favorecido.toLowerCase();
-            const all30 = (fav + ' ' + proc + ' ' + m.elemDespesa + ' ' + m.descricao).toLowerCase();
-            return proc.includes(pT) && fav.includes(fT) && all30.includes(gT);
-        });
-        renderLiq30Panel(filtered30);
-        
-        renderDashboard();
-    }
+    function openModal(idx){ const row=filteredData[idx]; if(!row) return; const processo=row[IDX_PROCESSO]||'N/A', favorecido=row[IDX_FAVORECIDO]||'N/A', saldoVal=parseMoney(row[IDX_SALDO]); document.getElementById('modalTitleProcesso').innerText=processo; document.getElementById('modalFavorecido').innerText=favorecido; const modalSaldo=document.getElementById('modalSaldo'), modalCard=document.getElementById('modalSaldoCard'); modalSaldo.innerText=formatMoney(saldoVal); if(saldoVal>=0){ modalSaldo.style.color='#34d399'; modalCard.style.borderLeftColor='#10b981'; }else{ modalSaldo.style.color='#f87171'; modalCard.style.borderLeftColor='#ef4444'; } let html=''; headers.forEach((h,i)=>{ if(i!==IDX_FAVORECIDO&&i!==IDX_PROCESSO&&i!==IDX_SALDO&&i<LIQ_START&&row[i]&&row[i]!=='') html+=`<div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700"><span class="text-[10px] font-bold uppercase text-slate-500 block mb-1">${escapeHtml(h)}</span><span class="text-sm text-slate-200">${escapeHtml(row[i])}</span></div>`; }); document.getElementById('modalExtraDetails').innerHTML=html; document.getElementById('detailsModal').classList.remove('hidden'); document.body.classList.add('modal-active'); }
+    function closeModal(){ document.getElementById('detailsModal').classList.add('hidden'); document.body.classList.remove('modal-active'); }
+    document.getElementById('detailsModal').addEventListener('click',e=>{ if(e.target===document.getElementById('detailsModal')) closeModal(); });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('detailsModal').classList.contains('hidden')) closeModal(); });
     
-    function openModal(rowIndex) {
-        const row = filteredData[rowIndex];
-        if (!row) return;
-        const processo = row[IDX_PROCESSO] || 'N/A';
-        const favorecido = row[IDX_FAVORECIDO] || 'Não Informado';
-        const saldoVal = parseBRValue(row[IDX_SALDO]);
-        document.getElementById('modalTitleProcesso').innerText = processo;
-        document.getElementById('modalFavorecido').innerText = favorecido;
-        const modalSaldoEl = document.getElementById('modalSaldo');
-        const modalSaldoCard = document.getElementById('modalSaldoCard');
-        modalSaldoEl.innerText = formatCurrency(saldoVal);
-        if (saldoVal >= 0) {
-            modalSaldoEl.style.color = '#34d399';
-            modalSaldoCard.style.borderLeftColor = '#10b981';
-        } else {
-            modalSaldoEl.style.color = '#f87171';
-            modalSaldoCard.style.borderLeftColor = '#ef4444';
-        }
-        let html = '';
-        headers.forEach((header, i) => {
-            if (i !== IDX_FAVORECIDO && i !== IDX_PROCESSO && i !== IDX_SALDO && i < LIQ_START) {
-                const value = (row[i] !== undefined && row[i] !== '') ? row[i] : '—';
-                html += `<div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700"><span class="text-[10px] font-bold uppercase text-slate-500 block mb-1">${escapeHtml(header)}</span><span class="text-sm text-slate-200">${escapeHtml(value)}</span></div>`;
-            }
-        });
-        document.getElementById('modalExtraDetails').innerHTML = html;
-        modal.classList.remove('hidden');
-        body.classList.add('modal-active');
-    }
-    
-    function closeModal() {
-        modal.classList.add('hidden');
-        body.classList.remove('modal-active');
-    }
-    
-    modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
-    
-    function renderDashboard() {
-        const container = document.getElementById('resultsContainer');
-        const emptyState = document.getElementById('emptyState');
-        container.innerHTML = '';
-        let totalSaldo = 0;
-        const setFavorecidos = new Set();
-        if (filteredData.length === 0) {
-            container.style.display = 'none';
-            emptyState.style.display = 'flex';
-            updateKPIs(0, 0, 0);
-            return;
-        }
-        container.style.display = 'grid';
-        emptyState.style.display = 'none';
-        filteredData.forEach((row, index) => {
-            const processo = row[IDX_PROCESSO] || 'N/A';
-            const favorecido = row[IDX_FAVORECIDO] || 'Não Informado';
-            const saldoVal = parseBRValue(row[IDX_SALDO]);
-            totalSaldo += saldoVal;
-            setFavorecidos.add(favorecido);
-            const isPositivo = saldoVal >= 0;
-            const card = document.createElement('div');
-            card.className = 'result-card rounded-2xl p-5 flex flex-col h-full cursor-pointer';
-            card.style.cssText = 'background: #0d1626; border: 1px solid #1e3050;';
-            card.onclick = () => openModal(index);
-            card.innerHTML = `<div class="flex justify-between items-start mb-4"><div class="flex-1"><div class="flex items-center gap-2 mb-1.5"><span class="w-2 h-2 rounded-full ${isPositivo ? 'bg-emerald-500' : 'bg-red-500'}"></span><p class="text-[10px] font-bold uppercase text-slate-500">Processo</p></div><h4 class="text-sm font-display font-bold text-white truncate">${escapeHtml(processo)}</h4></div><div class="w-10 h-10 rounded-xl flex items-center justify-center ${isPositivo ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-red-500/10 border-red-500/20 text-red-400'}"><i class="fas ${isPositivo ? 'fa-check' : 'fa-exclamation'} text-sm"></i></div></div><div class="mb-5"><p class="text-[10px] font-bold uppercase text-slate-500 mb-1">Favorecido</p><p class="text-sm text-slate-300 line-clamp-2">${escapeHtml(favorecido)}</p></div><div class="pt-4 flex items-center justify-between border-t border-slate-700/50"><div><p class="text-[10px] font-bold uppercase text-slate-500 mb-0.5">Saldo</p><p class="text-lg font-display font-bold font-mono ${isPositivo ? 'text-emerald-400' : 'text-red-400'}">${formatCurrency(saldoVal)}</p></div><div class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-500"><i class="fas fa-arrow-right text-sm"></i></div></div>`;
-            container.appendChild(card);
-        });
-        updateKPIs(totalSaldo, filteredData.length, setFavorecidos.size);
-    }
-    
-    function updateKPIs(saldo, processos, favorecidos) {
-        document.getElementById('kpiTotalSaldo').innerText = formatCurrency(saldo);
-        document.getElementById('kpiTotalProcessos').innerText = processos.toLocaleString('pt-BR');
-        document.getElementById('kpiTotalFavorecidos').innerText = favorecidos.toLocaleString('pt-BR');
-    }
+    function renderDashboard(){ const container=document.getElementById('resultsContainer'), empty=document.getElementById('emptyState'); container.innerHTML=''; let totalSaldo=0; const setFav=new Set(); if(!filteredData.length){ container.style.display='none'; empty.style.display='flex'; updateKPIs(0,0,0); return; } container.style.display='grid'; empty.style.display='none'; filteredData.forEach((row,idx)=>{ const processo=row[IDX_PROCESSO]||'N/A', favorecido=row[IDX_FAVORECIDO]||'N/A', saldoVal=parseMoney(row[IDX_SALDO]); totalSaldo+=saldoVal; setFav.add(favorecido); const isPos=saldoVal>=0; const card=document.createElement('div'); card.className='result-card rounded-2xl p-5 flex flex-col h-full cursor-pointer'; card.style.cssText='background:#0d1626; border:1px solid #1e3050;'; card.onclick=()=>openModal(idx); card.innerHTML=`<div class="flex justify-between items-start mb-4"><div class="flex-1"><div class="flex items-center gap-2 mb-1.5"><span class="w-2 h-2 rounded-full ${isPos?'bg-emerald-500':'bg-red-500'}"></span><p class="text-[10px] font-bold uppercase text-slate-500">Processo</p></div><h4 class="text-sm font-display font-bold text-white truncate">${escapeHtml(processo)}</h4></div><div class="w-10 h-10 rounded-xl flex items-center justify-center ${isPos?'bg-emerald-500/10 border-emerald-500/20 text-emerald-400':'bg-red-500/10 border-red-500/20 text-red-400'}"><i class="fas ${isPos?'fa-check':'fa-exclamation'} text-sm"></i></div></div><div class="mb-5"><p class="text-[10px] font-bold uppercase text-slate-500 mb-1">Favorecido</p><p class="text-sm text-slate-300 line-clamp-2">${escapeHtml(favorecido)}</p></div><div class="pt-4 flex items-center justify-between border-t border-slate-700/50"><div><p class="text-[10px] font-bold uppercase text-slate-500 mb-0.5">Saldo</p><p class="text-lg font-display font-bold font-mono ${isPos?'text-emerald-400':'text-red-400'}">${formatMoney(saldoVal)}</p></div><div class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-500"><i class="fas fa-arrow-right text-sm"></i></div></div>`; container.appendChild(card); }); updateKPIs(totalSaldo,filteredData.length,setFav.size); }
+    function updateKPIs(saldo,proc,fav){ document.getElementById('kpiTotalSaldo').innerText=formatMoney(saldo); document.getElementById('kpiTotalProcessos').innerText=proc.toLocaleString('pt-BR'); document.getElementById('kpiTotalFavorecidos').innerText=fav.toLocaleString('pt-BR'); }
     
     loadData();
 </script>
