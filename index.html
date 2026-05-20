@@ -297,28 +297,25 @@
             <div id="modalAlertSummary" class="flex gap-3 mt-3 flex-wrap"></div>
         </div>
         <div class="modal30-body">
-            <p class="text-[10px] font-bold uppercase text-slate-500 mb-3">Detalhamento por Linhas do Arquivo (Colunas AG até AZ)</p>
+            <p class="text-[10px] font-bold uppercase text-slate-500 mb-3">Detalhamento por Linhas do Arquivo</p>
             <div id="modalAlertEntries" class="space-y-4"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // URL do Google Apps Script
     const CSV_URL = "https://script.google.com/macros/s/AKfycbxgjltMj72B_8Zd-46iPAiMYu2S7Y-hIYLOk-N4CdDXYrE9_ioYCw79tdpkrGYLRxTv-w/exec";
     
     let allData = [], filteredData = [], headers = [], allMatches = [], allMatches30 = [], allCreditAlerts = [];
     
-    // ÍNDICES CORRIGIDOS para sua planilha
     let IDX_FAVORECIDO = 7, IDX_PROCESSO = 12, IDX_SALDO = 17;
-    const LIQ_START = 18, LIQ_END = 25;  // S=18 a Y=25 (Liquidações do Dia)
-    const LIQ30_START = 25, LIQ30_END = 32; // Z=25 a AF=32 (Últimas Liquidações)
+    const LIQ_START = 18, LIQ_END = 25;  
+    const LIQ30_START = 25, LIQ30_END = 32; 
     
-    // Índices mapeados para Alertas de Crédito
-    const IDX_CURR_PI = 38;      // Coluna AM
-    const IDX_CURR_CREDIT = 41;  // Coluna AP
-    const IDX_BASE_PI = 48;      // Coluna AW
-    const IDX_BASE_CREDIT = 51;  // Coluna AZ
+    const IDX_CURR_PI = 38;      
+    const IDX_CURR_CREDIT = 41;  
+    const IDX_BASE_PI = 48;      
+    const IDX_BASE_CREDIT = 51;  
     
     function parseCSV(text) {
         const rows = []; let inQ = false, cur = '', row = [];
@@ -347,22 +344,20 @@
             const text=await resp.text(); const allRows=parseCSV(text); if(allRows.length<2) throw new Error('Planilha sem dados.');
             headers=allRows[0];
             
-            // Detectar índices principais
             const h=headers.map(c=>String(c).toLowerCase().trim());
             const find=(...t)=>{ let i=h.findIndex(c=>t.some(ct=>c===ct.toLowerCase())); if(i>=0) return i; return h.findIndex(c=>t.some(ct=>c.includes(ct.toLowerCase()))); };
             IDX_FAVORECIDO=find('ne ccor - favorecido','favorecido'); IDX_PROCESSO=find('ne ccor - núm. processo','processo'); IDX_SALDO=find('saldo - moeda origem','saldo');
             
-            // Tabela principal (A-R)
             allData=[]; for(let i=1;i<allRows.length;i++){ const row=allRows[i].slice(0,LIQ_START); const proc=String(row[IDX_PROCESSO]||'').trim(); const fav=String(row[IDX_FAVORECIDO]||'').trim(); if(proc&&fav&&proc!=='Total'&&fav!=='Total'&&proc.length>3) allData.push(row); }
             filteredData=[...allData];
             
-            // ==================== LIQUIDAÇÕES DO DIA (colunas S-Y) ====================
+            // ==================== LIQUIDAÇÕES DO DIA ====================
             const liqRows=[]; for(let i=1;i<allRows.length;i++){ const row=allRows[i].slice(LIQ_START,LIQ_END); const fav=String(row[0]||'').trim(); if(fav&&fav!=='Total'){ const proc=String(row[1]||'').trim(); if(proc&&proc!=='Total') liqRows.push(row); } }
             const liqMap=new Map();
             for(const row of liqRows){ const fav=row[0]?.trim(), proc=row[1]?.trim(); if(!fav||!proc) continue; const key=`${fav}|||${proc}`; if(!liqMap.has(key)) liqMap.set(key,{total:0,elem:row[2]||'',sub:row[3]||'',pi:row[5]||''}); liqMap.get(key).total+=parseMoney(row[6]); }
             const seen=new Set(); allMatches=[]; for(const row of allData){ const fav=row[IDX_FAVORECIDO]?.trim(), proc=row[IDX_PROCESSO]?.trim(); if(!fav||!proc) continue; const key=`${fav}|||${proc}`; if(liqMap.has(key)&&!seen.has(key)){ seen.add(key); const liq=liqMap.get(key); const saldoAtual=parseMoney(row[IDX_SALDO]); const saldoAntes=saldoAtual+liq.total; allMatches.push({favorecido:fav,processo:proc,saldoAntes,liquidado:liq.total,saldoDepois:saldoAtual,pct:saldoAntes>0?liq.total/saldoAntes*100:0,elem:liq.elem,sub:liq.sub,pi:liq.pi}); } }
             
-            // ==================== ÚLTIMAS LIQUIDAÇÕES 30 DIAS (colunas Z-AF) ====================
+            // ==================== ÚLTIMAS LIQUIDAÇÕES 30 DIAS ====================
             const now=new Date(), cutoff=new Date(now.getTime()-30*24*60*60*1000);
             const liq30Map=new Map();
             for(let i=1;i<allRows.length;i++){ 
@@ -375,11 +370,10 @@
                 if(!liq30Map.has(key)) liq30Map.set(key,{favorecido:fav30,processo:proc30,elem:row[3]||'',desc:row[4]||'',pi:row[5]||'',entries:[],totalLiq:0,saldoAtual:null});
                 const entry=liq30Map.get(key); entry.entries.push({date:dt,valor:val30}); entry.totalLiq+=val30;
             }
-            // Buscar saldo atual na tabela principal
             for(const row of allData){ const fav=row[IDX_FAVORECIDO]?.trim(), proc=row[IDX_PROCESSO]?.trim(); if(!fav||!proc) continue; const key=`${fav}|||${proc}`; if(liq30Map.has(key)&&liq30Map.get(key).saldoAtual===null) liq30Map.get(key).saldoAtual=parseMoney(row[IDX_SALDO]); }
             allMatches30=Array.from(liq30Map.values()).filter(m=>m.totalLiq!==0).sort((a,b)=>b.totalLiq-a.totalLiq);
             
-            // ==================== ALERTA DE CRÉDITO DISPONÍVEL (AM/AP vs AW/AZ) ====================
+            // ==================== ALERTA DE CRÉDITO DISPONÍVEL REFINADO ====================
             const baseCreditMap = new Map();
             const baseRowsMap = new Map();
             for (let i = 1; i < allRows.length; i++) {
@@ -388,12 +382,15 @@
                 const bPI = String(row[IDX_BASE_PI] || '').trim();
                 const bCredit = parseMoney(row[IDX_BASE_CREDIT]);
                 if (bPI && bPI !== 'Total' && bPI !== 'undefined' && bPI !== 'PI') {
-                    baseCreditMap.set(bPI, bCredit);
-                    baseRowsMap.set(bPI, row);
+                    // Soma acumulada caso o mesmo PI apareça em várias linhas na base histórico
+                    baseCreditMap.set(bPI, (baseCreditMap.get(bPI) || 0) + bCredit);
+                    if (!baseRowsMap.has(bPI)) baseRowsMap.set(bPI, []);
+                    baseRowsMap.get(bPI).push(row);
                 }
             }
 
-            const alertMap = new Map();
+            // Agrupa primeiro os valores atuais do arquivo para comparar totais exatos
+            const currentGrouped = new Map();
             for (let i = 1; i < allRows.length; i++) {
                 const row = allRows[i];
                 if(row.length <= IDX_CURR_CREDIT) continue;
@@ -401,28 +398,36 @@
                 const cCredit = parseMoney(row[IDX_CURR_CREDIT]);
                 if (!cPI || cPI === 'Total' || cPI === 'undefined' || cPI === 'PI') continue;
 
-                const hasBase = baseCreditMap.has(cPI);
-                const bCredit = hasBase ? baseCreditMap.get(cPI) : 0;
+                if (!currentGrouped.has(cPI)) {
+                    currentGrouped.set(cPI, { sum: 0, rows: [] });
+                }
+                const group = currentGrouped.get(cPI);
+                group.sum += cCredit;
+                group.rows.push(row);
+            }
 
-                // Se não tem base (Crédito Novo) OU se o valor mudou (Crédito Modificado)
-                if (!hasBase || cCredit !== bCredit) {
-                    if (!alertMap.has(cPI)) {
-                        alertMap.set(cPI, {
-                            pi: cPI,
-                            isNew: !hasBase,
-                            oldValue: 0,
-                            newValue: 0,
-                            rows: []
-                        });
-                    }
-                    const alertItem = alertMap.get(cPI);
-                    alertItem.oldValue += bCredit;
-                    alertItem.newValue += cCredit;
-                    alertItem.rows.push({
-                        fullRow: row,
-                        baseRow: hasBase ? baseRowsMap.get(cPI) : null,
-                        cCredit: cCredit,
-                        bCredit: bCredit
+            const alertMap = new Map();
+            for (const [cPI, data] of currentGrouped.entries()) {
+                const hasBase = baseCreditMap.has(cPI);
+                const bCreditTotal = hasBase ? baseCreditMap.get(cPI) : 0;
+                const cCreditTotal = data.sum;
+
+                // CRÍTICO: Só dispara o alerta se houver mudança real de valores ou se for novo
+                if (!hasBase || Math.abs(cCreditTotal - bCreditTotal) > 0.001) {
+                    alertMap.set(cPI, {
+                        pi: cPI,
+                        isNew: !hasBase,
+                        oldValue: bCreditTotal,
+                        newValue: cCreditTotal,
+                        rows: data.rows.map((row, index) => {
+                            const bRows = baseRowsMap.get(cPI) || [];
+                            return {
+                                fullRow: row,
+                                baseRow: bRows[index] || bRows[0] || null, // Associa a linha correspondente ou a principal
+                                cCredit: parseMoney(row[IDX_CURR_CREDIT]),
+                                bCredit: bRows[index] ? parseMoney(bRows[index][IDX_BASE_CREDIT]) : 0
+                            };
+                        })
                     });
                 }
             }
@@ -503,13 +508,11 @@
         a.rows.forEach((r, i) => {
             let currentDetails = '', baseDetails = '';
             
-            // AG até AP (Índices 32 a 41)
             for (let k = 32; k <= 41; k++) {
                 if(headers[k] || r.fullRow[k]) {
                     currentDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-200 font-mono ${k===IDX_CURR_CREDIT?'text-orange-400 font-bold':''}">${escapeHtml(r.fullRow[k] || '—')}</span></div>`;
                 }
             }
-            // AQ até AZ (Índices 42 a 51)
             if (r.baseRow) {
                 for (let k = 42; k <= 51; k++) {
                     if(headers[k] || r.baseRow[k]) {
@@ -527,11 +530,11 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <h4 class="text-[10px] font-bold text-orange-400 uppercase tracking-wider mb-2">Dados Atuais (Colunas AG - AP)</h4>
+                        <h4 class="text-[10px] font-bold text-orange-400 uppercase tracking-wider mb-2">Dados Atualizados</h4>
                         <div class="space-y-1">${currentDetails}</div>
                     </div>
                     <div>
-                        <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Dados Base de Comparação (Colunas AQ - AZ)</h4>
+                        <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Dados Base</h4>
                         <div class="space-y-1">${baseDetails}</div>
                     </div>
                 </div>
@@ -572,7 +575,6 @@
     function openModal30(idx){ const m=window._liq30Data&&window._liq30Data[idx]; if(!m) return; document.getElementById('modal30Processo').textContent=m.processo; document.getElementById('modal30Fav').textContent=m.favorecido; const saldo=m.saldoAtual; const saldoAntes=saldo!==null?saldo+m.totalLiq:null; document.getElementById('modal30Summary').innerHTML=`<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50"><span class="text-[10px] uppercase text-slate-500">Saldo Anterior</span><span class="font-mono text-sm text-slate-300">${saldoAntes!==null?formatMoney(saldoAntes):'—'}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10"><span class="text-[10px] uppercase text-slate-500">Total Liquidado</span><span class="font-mono text-sm text-red-400">− ${formatMoney(m.totalLiq)}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg ${saldo!==null&&saldo>=0?'bg-emerald-500/10':'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-500">Saldo Atual</span><span class="font-mono text-sm ${saldo!==null&&saldo>=0?'text-emerald-400':'text-red-400'}">${saldo!==null?formatMoney(saldo):'—'}</span></div>`; const sorted=[...m.entries].sort((a,b)=>b.date-a.date); document.getElementById('modal30Entries').innerHTML=sorted.map((e,i)=>`<div class="modal30-row"><div class="flex items-center gap-3"><div class="w-7 h-7 rounded-full flex items-center justify-center bg-cyan-500/10 border border-cyan-500/20"><span class="text-[10px] font-bold text-cyan-400">${sorted.length-i}</span></div><span class="date-chip">${formatDateBR(e.date)}</span></div><span class="value-chip ${e.valor>=0?'chip-after':'chip-liq'}">${e.valor>=0?'':'− '}${formatMoney(Math.abs(e.valor))}</span></div>`).join(''); document.getElementById('modal30').classList.remove('hidden'); document.body.classList.add('modal-active'); }
     function closeModal30(){ document.getElementById('modal30').classList.add('hidden'); document.body.classList.remove('modal-active'); }
     
-    // Filtros modificados para escutar e filtrar alertas de créditos também
     document.getElementById('searchGlobal').addEventListener('input',applyFilters);
     document.getElementById('searchProcesso').addEventListener('input',applyFilters);
     document.getElementById('searchFavorecido').addEventListener('input',applyFilters);
@@ -590,7 +592,6 @@
         renderLiquidacaoPanel(allMatches.filter(m=>m.processo.toLowerCase().includes(pT)&&m.favorecido.toLowerCase().includes(fT))); 
         renderLiq30Panel(allMatches30.filter(m=>m.processo.toLowerCase().includes(pT)&&m.favorecido.toLowerCase().includes(fT))); 
         
-        // Sincroniza o painel de Alertas de Crédito aos filtros de pesquisa
         if(typeof allCreditAlerts !== 'undefined') {
             const fAlerts = allCreditAlerts.filter(a => {
                 return a.pi.toLowerCase().includes(gT) || a.rows.some(r => {
@@ -608,7 +609,6 @@
     function closeModal(){ document.getElementById('detailsModal').classList.add('hidden'); document.body.classList.remove('modal-active'); }
     document.getElementById('detailsModal').addEventListener('click',e=>{ if(e.target===document.getElementById('detailsModal')) closeModal(); });
     
-    // Listeners Globais para Fechar Modals via tecla ESC
     document.addEventListener('keydown',e=>{ 
         if(e.key==='Escape') {
             if(!document.getElementById('detailsModal').classList.contains('hidden')) closeModal();
