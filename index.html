@@ -34,71 +34,90 @@
             background: #080e1a; color: #e2e8f0; 
             background-image: radial-gradient(ellipse at 20% 0%, rgba(59,130,246,0.07) 0%, transparent 60%);
         }
-        h1, h2, h3, h4, .font-display { font-family: 'Syne', sans-serif; }
+        h1, h2, h3, .font-display { font-family: 'Syne', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace !important; }
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: #080e1a; }
         ::-webkit-scrollbar-thumb { background: #1e3050; border-radius: 4px; }
 
+        .result-card { transition: all 0.25s ease; cursor: pointer; }
+        .result-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.7), 0 0 0 1px rgba(59,130,246,0.3); }
+
         .modal-active { overflow: hidden; }
-        #detailsModal, #modalCreditAlert { backdrop-filter: blur(8px); }
+        #detailsModal { backdrop-filter: blur(8px); }
         .modal-content { animation: scaleUp 0.22s ease-out; }
         @keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        #liquidacaoPanel, #liq30Panel, #creditAlertPanel {
+        #liquidacaoPanel, #liq30Panel {
             position: relative;
             border-radius: 20px;
             background: linear-gradient(135deg, #0d1626 0%, #0f1e38 50%, #0d1626 100%);
-            margin-bottom: 2rem;
         }
         #liquidacaoPanel { border: 1px solid rgba(245,158,11,0.25); }
         #liq30Panel { border: 1px solid rgba(6,182,212,0.25); }
-        #creditAlertPanel { border: 1px solid rgba(249, 115, 22, 0.45); background: linear-gradient(135deg, #0d1626 0%, #1c130b 100%); }
 
-        .liq-table, .liq30-table, .alert-table {
+        .liq-table, .liq30-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
         }
-        .liq-table thead th, .liq30-table thead th, .alert-table thead th {
-            padding: 12px;
-            font-size: 11px;
+        .liq-table thead th, .liq30-table thead th {
+            padding: 8px 12px;
+            font-size: 10px;
             font-weight: 700;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: #64748b;
-            background: rgba(17,30,51,0.9);
+            color: #475569;
+            background: rgba(17,30,51,0.8);
             border-bottom: 1px solid #1e3050;
             white-space: nowrap;
             position: sticky;
             top: 0;
         }
-        .liq-table tbody td, .liq30-table tbody td, .alert-table tbody td {
-            padding: 12px;
+        .liq-table tbody td, .liq30-table tbody td {
+            padding: 10px 12px;
             border-bottom: 1px solid rgba(30,48,80,0.4);
         }
         .value-chip {
             font-family: 'JetBrains Mono', monospace;
             font-size: 12px;
             font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 6px;
+            padding: 3px 8px;
+            border-radius: 5px;
             white-space: nowrap;
             display: inline-block;
         }
-        .chip-before { background: rgba(148, 163, 184, 0.08); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.15); }
+        .chip-before { background: rgba(100,116,139,0.12); color: #94a3b8; border: 1px solid rgba(100,116,139,0.18); }
+        .chip-liq { background: rgba(239,68,68,0.10); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
         .chip-after { background: rgba(16,185,129,0.10); color: #34d399; border: 1px solid rgba(16,185,129,0.18); }
-        
-        .pulse-dot-orange {
+        .chip-after-red { background: rgba(239,68,68,0.10); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+        .chip-after-warn { background: rgba(245,158,11,0.10); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+
+        .mini-bar-track {
+            height: 4px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.05);
+            width: 70px;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 6px;
+        }
+        .mini-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #f59e0b, #ef4444); }
+
+        .pulse-dot, .pulse-dot-cyan {
             display: inline-block;
             width: 8px; height: 8px;
             border-radius: 50%;
-            background: #f97316; box-shadow: 0 0 0 0 rgba(249,115,22,0.5); animation: pulse-orange 1.8s infinite;
+            animation: pulse 1.8s infinite;
         }
-        @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(249,115,22,0.6); } 70% { box-shadow: 0 0 0 8px rgba(249,115,22,0); } 100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); } }
+        .pulse-dot { background: #f59e0b; box-shadow: 0 0 0 0 rgba(245,158,11,0.5); }
+        .pulse-dot-cyan { background: #06b6d4; box-shadow: 0 0 0 0 rgba(6,182,212,0.5); animation: pulse-cyan 2.2s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(245,158,11,0.6); } 70% { box-shadow: 0 0 0 8px rgba(245,158,11,0); } 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); } }
+        @keyframes pulse-cyan { 0% { box-shadow: 0 0 0 0 rgba(6,182,212,0.6); } 70% { box-shadow: 0 0 0 8px rgba(6,182,212,0); } 100% { box-shadow: 0 0 0 0 rgba(6,182,212,0); } }
 
-        .panel-header-badge-orange {
+        .panel-header-badge, .panel-header-badge-cyan {
             display: inline-flex;
             align-items: center;
             gap: 7px;
@@ -107,29 +126,65 @@
             font-size: 11px;
             letter-spacing: 0.12em;
             text-transform: uppercase;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 20px;
-            background: rgba(249, 115, 22, 0.1); border: 1px solid rgba(249, 115, 22, 0.25); color: #fb923c;
         }
+        .panel-header-badge { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; }
+        .panel-header-badge-cyan { background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25); color: #22d3ee; }
 
         .kpi-card { transition: all 0.2s ease; background: #0d1626; border: 1px solid #1e3050; border-radius: 20px; }
+        .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -5px rgba(0,0,0,0.4); }
+
         .table-wrap { overflow-x: auto; max-height: 400px; overflow-y: auto; border-radius: 10px; }
+        .date-chip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 4px;
+            background: rgba(6,182,212,0.07);
+            color: #67e8f9;
+            border: 1px solid rgba(6,182,212,0.15);
+            white-space: nowrap;
+        }
         .liq30-row-clickable { cursor: pointer; transition: background 0.15s; }
-        .liq30-row-clickable:hover { background: rgba(249,115,22,0.04) !important; }
+        .liq30-row-clickable:hover { background: rgba(6,182,212,0.05) !important; }
 
         .modal30 {
             position: fixed; inset: 0; z-index: 60;
             display: flex; align-items: center; justify-content: center;
-            background: rgba(4,9,20,0.85); backdrop-filter: blur(8px);
+            background: rgba(4,9,20,0.85);
+            backdrop-filter: blur(8px);
         }
         .modal30.hidden { display: none; }
         .modal30-content {
             background: linear-gradient(135deg, #0d1626 0%, #0f1e38 100%);
-            border: 1px solid rgba(249, 115, 22, 0.4);
-            border-radius: 20px; width: 100%; max-width: 750px; max-height: 85vh;
-            overflow: hidden; display: flex; flex-direction: column;
+            border: 1px solid rgba(6,182,212,0.3);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
             box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8);
+            animation: scaleUp 0.22s ease-out;
         }
+        .modal30-header { padding: 20px 24px 16px; border-bottom: 1px solid #1e3050; flex-shrink: 0; }
+        .modal30-body { padding: 16px 24px 20px; overflow-y: auto; flex: 1; }
+        .modal30-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            background: rgba(10,22,40,0.6);
+            border: 1px solid #1e3050;
+        }
+        .modal30-row:hover { background: rgba(6,182,212,0.05); border-color: rgba(6,182,212,0.2); }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
     </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col">
@@ -137,8 +192,8 @@
 <header class="sticky top-0 z-10" style="background: rgba(13,22,38,0.95); border-bottom: 1px solid #1e3050; backdrop-filter: blur(12px);">
     <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         <div class="flex items-center gap-4">
-            <div class="text-white p-2.5 rounded-xl" style="background: linear-gradient(135deg, #1d4ed8, #0891b2);"><i class="fas fa-database text-xl"></i></div>
-            <div><h1 class="text-xl font-display font-bold text-white">Consulta Diária de Saldos</h1><p class="text-xs text-slate-500 font-mono">Painel de Monitoramento Geral</p></div>
+            <div class="text-white p-2.5 rounded-xl" style="background: linear-gradient(135deg, #1d4ed8, #0891b2); box-shadow: 0 0 20px rgba(59,130,246,0.3);"><i class="fas fa-database text-xl"></i></div>
+            <div><h1 class="text-xl font-display font-bold text-white">Consulta Diária de Saldos</h1><p class="text-xs text-slate-500 font-mono">Sistema Local de Monitoramento</p></div>
         </div>
         <div class="flex items-center gap-3">
             <div id="statusBadge" class="hidden items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium" style="background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2);"><i class="fas fa-circle text-[10px] animate-pulse"></i><span id="lastUpdateText">ao vivo</span></div>
@@ -151,366 +206,202 @@
     <div id="uploadSection" class="rounded-2xl p-10 mb-8 text-center bg-darkCard border border-darkBorder">
         <div class="flex flex-col items-center gap-5">
             <div id="loadingIcon" class="text-5xl animate-spin text-blue-500"><i class="fas fa-circle-notch"></i></div>
-            <div><h2 class="text-xl font-display font-bold text-white">Carregando painel consolidado...</h2><p class="text-sm text-slate-500">Cruzando bases e organizando visões gerais</p></div>
+            <div><h2 class="text-xl font-display font-bold text-white">Carregando dados...</h2><p class="text-sm text-slate-500">Buscando planilha atualizada</p></div>
         </div>
     </div>
 
     <div id="dashboardContent" class="hidden space-y-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400"><i class="fas fa-wallet"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Saldo Total Geral</p><h3 id="kpiTotalSaldo" class="text-2xl font-display font-bold text-white">R$ 0,00</h3></div></div>
-            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400"><i class="fas fa-folder-open"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Processos Ativos</p><h3 id="kpiTotalProcessos" class="text-2xl font-display font-bold text-white">0</h3></div></div>
-            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"><i class="fas fa-building"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Favorecidos Únicos</p><h3 id="kpiTotalFavorecidos" class="text-2xl font-display font-bold text-white">0</h3></div></div>
+        <!-- KPIs -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400"><i class="fas fa-wallet"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Saldo Total</p><h3 id="kpiTotalSaldo" class="text-2xl font-display font-bold text-white">R$ 0,00</h3></div></div>
+            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400"><i class="fas fa-folder-open"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Processos</p><h3 id="kpiTotalProcessos" class="text-2xl font-display font-bold text-white">0</h3></div></div>
+            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"><i class="fas fa-building"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Favorecidos</p><h3 id="kpiTotalFavorecidos" class="text-2xl font-display font-bold text-white">0</h3></div></div>
         </div>
 
-        <div id="creditAlertPanel" class="hidden p-5">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="panel-header-badge-orange"><span class="pulse-dot-orange"></span> Alterações Estritas de Crédito Disponível</span>
-                <span id="creditAlertCountBadge" class="text-xs px-2.5 py-1 rounded-full font-mono font-bold bg-orange-500/10 text-orange-400 border border-orange-500/20">0 ocorrências</span>
+        <!-- Liquidações do Dia (colunas S-Y) -->
+        <div id="liquidacaoPanel" class="hidden p-5">
+            <div class="flex items-center gap-3 mb-4"><span class="panel-header-badge"><span class="pulse-dot"></span> Liquidações do Dia</span><span id="liqCountBadge" class="text-xs px-2.5 py-1 rounded-full font-mono font-bold bg-red-500/10 text-red-400 border border-red-500/20">0 ocorrências</span></div>
+            <div id="liqCardsContainer" class="table-wrap"></div>
+        </div>
+
+        <!-- Últimas Liquidações 30 dias (colunas Z-AF) -->
+        <div id="liq30Panel" class="hidden p-5">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                <div class="flex items-center gap-3"><span class="panel-header-badge-cyan"><span class="pulse-dot-cyan"></span> Últimas Liquidações · 30 dias</span><span id="liq30CountBadge" class="text-xs px-2.5 py-1 rounded-full font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">0 ocorrências</span></div>
+                <div class="flex items-center gap-2 text-xs text-slate-500 font-mono"><i class="fas fa-calendar-alt text-cyan-400"></i><span id="liq30PeriodText">últimos 30 dias</span></div>
             </div>
-            <div id="creditAlertContainer" class="table-wrap"></div>
+            <div id="liq30CardsContainer" class="table-wrap"></div>
         </div>
 
+        <!-- Filtros -->
         <div class="rounded-2xl p-6 bg-darkCard border border-darkBorder">
-            <h3 class="text-[10px] font-bold uppercase text-slate-500 mb-4 flex items-center gap-2"><i class="fas fa-sliders-h text-blue-500"></i> Filtros de Pesquisa nos Registros Gerais</h3>
+            <h3 class="text-[10px] font-bold uppercase text-slate-500 mb-4 flex items-center gap-2"><i class="fas fa-sliders-h text-blue-500"></i> Filtros de Pesquisa</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input type="text" id="searchGlobal" placeholder="Busca global (Favorecido ou Processo)..." class="w-full pl-4 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
-                <input type="text" id="searchProcesso" placeholder="Filtrar por Número de Processo..." class="w-full pl-4 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
-                <input type="text" id="searchFavorecido" placeholder="Filtrar por Favorecido..." class="w-full pl-4 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="searchGlobal" placeholder="Busca geral..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="searchProcesso" placeholder="Nº Processo..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="searchFavorecido" placeholder="Favorecido..." class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
             </div>
         </div>
 
-        <div>
-            <h3 class="text-xs font-bold uppercase text-slate-400 mb-4 font-display flex items-center gap-2"><i class="fas fa-th-large text-cyan-400"></i> Registros e Saldos Totais Cadastrados</h3>
-            <div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-            <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16 text-slate-500"><i class="fas fa-box-open text-5xl mb-4 text-slate-700"></i><p class="text-xl font-medium">Nenhum registro encontrado nos filtros</p></div>
-        </div>
+        <!-- Cards de Processos -->
+        <div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16 text-slate-500"><i class="fas fa-box-open text-5xl mb-4 text-slate-700"></i><p class="text-xl font-medium">Nenhum resultado</p><p class="text-sm">Tente ajustar seus termos de pesquisa.</p></div>
     </div>
 </main>
 
-<div id="modalCreditAlert" class="modal30 hidden" onclick="if(event.target===this) closeModalCreditAlert()">
-    <div class="modal30-content" style="border-color: rgba(249, 115, 22, 0.45); max-width: 800px;">
-        <div class="px-6 py-4 flex justify-between items-center border-b border-darkBorder bg-slate-800/50">
-            <div>
-                <p class="text-[10px] font-bold uppercase text-orange-400"><i class="fas fa-bell mr-1"></i> Detalhamento de Auditoria da Dotação</p>
-                <h3 id="modalAlertPI" class="text-base font-display font-bold text-white">PI: ---</h3>
+<!-- Modal Detalhes do Processo -->
+<div id="detailsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+    <div class="modal-content w-full max-w-3xl rounded-2xl flex flex-col max-h-[90vh] bg-darkCard border border-darkBorder">
+        <div class="px-6 py-4 flex justify-between items-center border-b border-darkBorder bg-slate-800/50 rounded-t-2xl">
+            <div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl flex items-center justify-center bg-blue-500/10 border border-blue-500/20 text-blue-400"><i class="fas fa-file-invoice"></i></div><div><p class="text-[10px] font-bold uppercase text-blue-500">Detalhes do Processo</p><h2 id="modalTitleProcesso" class="text-lg font-display font-bold text-white">---</h2></div></div>
+            <button onclick="closeModal()" class="p-2 rounded-xl text-slate-500 hover:text-white hover:bg-slate-700"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-grow">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="rounded-xl p-5 bg-slate-800/80 border border-slate-700"><p class="text-sm text-slate-500 mb-1"><i class="fas fa-building mr-1"></i> Favorecido</p><p id="modalFavorecido" class="text-base font-bold text-white">---</p></div>
+                <div id="modalSaldoCard" class="rounded-xl p-5 border-l-4 bg-slate-800/80 border border-slate-700"><p class="text-sm text-slate-500 mb-1"><i class="fas fa-wallet mr-1"></i> Saldo Disponível</p><p id="modalSaldo" class="text-2xl font-display font-bold tracking-tight">R$ 0,00</p></div>
             </div>
-            <button onclick="closeModalCreditAlert()" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 text-slate-400 hover:text-white"><i class="fas fa-times text-sm"></i></button>
+            <h3 class="text-[11px] font-bold uppercase text-slate-500 mb-4 pb-2 border-b border-darkBorder">Informações Completas</h3>
+            <div id="modalExtraDetails" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         </div>
-        <div class="p-6 overflow-y-auto space-y-4" style="background: #090f1c;">
-            <div id="modalAlertSummary" class="flex gap-3 flex-wrap"></div>
-            <div id="modalAlertEntries" class="space-y-4"></div>
+        <div class="px-6 py-4 rounded-b-2xl flex justify-end border-t border-darkBorder bg-slate-800/50"><button onclick="closeModal()" class="px-5 py-2 rounded-xl font-semibold text-sm bg-slate-700 text-slate-300 hover:bg-slate-600">Fechar Consulta</button></div>
+    </div>
+</div>
+
+<!-- Modal 30 dias -->
+<div id="modal30" class="modal30 hidden" onclick="if(event.target===this) closeModal30()">
+    <div class="modal30-content">
+        <div class="modal30-header">
+            <div class="flex justify-between items-start gap-4"><div><p class="text-[10px] font-bold uppercase text-cyan-400">Lançamentos do Processo</p><h3 id="modal30Processo" class="text-base font-display font-bold text-white"></h3><p id="modal30Fav" class="text-sm text-slate-500 mt-1"></p></div><button onclick="closeModal30()" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 text-slate-500 hover:text-white"><i class="fas fa-times text-sm"></i></button></div>
+            <div id="modal30Summary" class="flex gap-3 mt-3 flex-wrap"></div>
         </div>
-        <div class="px-6 py-4 flex justify-end border-t border-darkBorder bg-slate-800/50">
-            <button onclick="closeModalCreditAlert()" class="px-5 py-2 rounded-xl font-semibold text-sm bg-slate-700 text-slate-300 hover:bg-slate-600">Fechar Janela</button>
-        </div>
+        <div class="modal30-body"><p class="text-[10px] font-bold uppercase text-slate-500 mb-3">Detalhes dos lançamentos</p><div id="modal30Entries"></div></div>
     </div>
 </div>
 
 <script>
+    // URL do Google Apps Script
     const CSV_URL = "https://script.google.com/macros/s/AKfycbxgjltMj72B_8Zd-46iPAiMYu2S7Y-hIYLOk-N4CdDXYrE9_ioYCw79tdpkrGYLRxTv-w/exec";
     
-    let allData = [], filteredData = [], headers = [], allCreditAlerts = [];
+    let allData = [], filteredData = [], headers = [], allMatches = [], allMatches30 = [];
     
-    // Mapeamento das colunas originais do Bloco da Esquerda (Geral)
-    const IDX_FAVORECIDO = 7;
-    const IDX_PROCESSO = 12;
-    const IDX_SALDO = 17;
-    const IDX_PI_ESQUERDA = 10;
-    
-    // Índices das Colunas do Bloco Atual (Colunas 33 a 42 -> Índices 32 a 41)
-    const IDX_CURR_PI = 38;      
-    const IDX_ITEM_INFO = 40;     
-    const IDX_CURR_CREDIT = 41;  
-    
-    // Índices das Colunas do Bloco Base Anterior (Colunas 43 a 52 -> Índices 42 a 51)
-    const IDX_BASE_PI = 48;      
-    const IDX_BASE_ITEM_INFO = 50;
-    const IDX_BASE_CREDIT = 51;  
+    // ÍNDICES CORRIGIDOS para sua planilha
+    let IDX_FAVORECIDO = 7, IDX_PROCESSO = 12, IDX_SALDO = 17;
+    const LIQ_START = 18, LIQ_END = 25;  // S=18 a Y=25 (Liquidações do Dia)
+    const LIQ30_START = 25, LIQ30_END = 32; // Z=25 a AF=32 (Últimas Liquidações)
+    // Dentro de LIQ30: índice 0 = Dia Lançamento, 1 = Favorecido, 2 = Processo, 3 = Elemento, 4 = Descrição, 5 = PI, 6 = Valor
     
     function parseCSV(text) {
         const rows = []; let inQ = false, cur = '', row = [];
-        for(let i=0;i<text.length;i++){ const ch=text[i]; if(ch==='"') inQ=!inQ; else if(ch===' tuning '){} else if(ch===',' && !inQ){ row.push(cur.trim()); cur=''; } else if(ch==='\n' && !inQ){ row.push(cur.trim()); if(row.some(c=>c)) rows.push(row); row=[]; cur=''; } else cur+=ch; }
+        for(let i=0;i<text.length;i++){ const ch=text[i]; if(ch==='"') inQ=!inQ; else if(ch===',' && !inQ){ row.push(cur.trim()); cur=''; } else if(ch==='\n' && !inQ){ row.push(cur.trim()); if(row.some(c=>c)) rows.push(row); row=[]; cur=''; } else cur+=ch; }
         if(cur || row.length){ row.push(cur.trim()); if(row.some(c=>c)) rows.push(row); }
         return rows;
     }
     function parseMoney(v){ let s=String(v||'').replace(/R\$\s*/g,'').trim(); if(s==='-'||s==='') return 0; s=s.replace(/\./g,'').replace(',','.'); return parseFloat(s)||0; }
     function formatMoney(v){ return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v); }
-    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>]/g,m => m==='&'?'&amp;':m==='< Jewish '?'&lt;':m==='>'?'&gt;':m); }
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>]/g,function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
+    function parseExcelDate(val){
+        if(!val) return null; const s=String(val).trim(); const dmy=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/); if(dmy) return new Date(+dmy[3],+dmy[2]-1,+dmy[1]);
+        const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(iso) return new Date(+iso[1],+iso[2]-1,+iso[3]);
+        const n=parseFloat(s); if(!isNaN(n)&&n>40000&&n<60000) return new Date((n-25569)*86400*1000);
+        return null;
+    }
+    function formatDateBR(d){ if(!d) return '—'; return d.toLocaleDateString('pt-BR'); }
     
     async function loadData(){
         const btn=document.getElementById('refreshBtn'), icon=document.getElementById('refreshIcon');
         btn.disabled=true; icon.className='fas fa-sync-alt animate-spin';
         document.getElementById('uploadSection').style.display='block';
         document.getElementById('dashboardContent').classList.add('hidden');
-        
         try{
             const resp=await fetch(CSV_URL+'?t='+Date.now()); if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
             const text=await resp.text(); const allRows=parseCSV(text); if(allRows.length<2) throw new Error('Planilha sem dados.');
             headers=allRows[0];
             
-            // 1. ISOLADO: Carrega dados do bloco esquerdo (Saldos Gerais dos Processos)
-            allData=[]; 
-            for(let i=1; i<allRows.length; i++){ 
-                const row = allRows[i];
-                const proc = String(row[IDX_PROCESSO]||'').trim(); 
-                if(proc && proc!=='Total' && proc!=='NE CCor - Núm. Processo' && proc.length>3) {
-                    allData.push(row); 
-                }
-            }
+            // Detectar índices principais
+            const h=headers.map(c=>String(c).toLowerCase().trim());
+            const find=(...t)=>{ let i=h.findIndex(c=>t.some(ct=>c===ct.toLowerCase())); if(i>=0) return i; return h.findIndex(c=>t.some(ct=>c.includes(ct.toLowerCase()))); };
+            IDX_FAVORECIDO=find('ne ccor - favorecido','favorecido'); IDX_PROCESSO=find('ne ccor - núm. processo','processo'); IDX_SALDO=find('saldo - moeda origem','saldo');
+            
+            // Tabela principal (A-R)
+            allData=[]; for(let i=1;i<allRows.length;i++){ const row=allRows[i].slice(0,LIQ_START); const proc=String(row[IDX_PROCESSO]||'').trim(); const fav=String(row[IDX_FAVORECIDO]||'').trim(); if(proc&&fav&&proc!=='Total'&&fav!=='Total'&&proc.length>3) allData.push(row); }
             filteredData=[...allData];
             
-            // 2. ISOLADO: Mapeamento da Base Anterior (Direita) para Auditoria
-            const baseMap = new Map();
-            for (let i = 1; i < allRows.length; i++) {
-                const row = allRows[i];
-                if(row.length <= IDX_BASE_CREDIT) continue;
-                
-                const bPI = String(row[IDX_BASE_PI] || '').trim();
-                const bItem = String(row[IDX_BASE_ITEM_INFO] || '').trim();
-                const bCat = String(row[IDX_BASE_PI - 1] || '').trim(); 
-                
-                if (bPI && bPI !== 'Total' && bPI !== 'PI' && bPI !== 'undefined') {
-                    const uniqueKey = `${bPI}|||${bItem}|||${bCat}`;
-                    baseMap.set(uniqueKey, row);
-                }
-            }
-
-            // 3. ISOLADO: Cruzamento estrito com Bloco Atual para Alertas de Crédito
-            allCreditAlerts = [];
-            let alertIdCounter = 0;
-            const uniqueCurrentProcessed = new Set();
-
-            for (let i = 1; i < allRows.length; i++) {
-                const row = allRows[i];
-                if(row.length <= IDX_CURR_CREDIT) continue;
-                
-                const cPI = String(row[IDX_CURR_PI] || '').trim();
-                const cItem = String(row[IDX_ITEM_INFO] || '').trim();
-                const cCat = String(row[IDX_CURR_PI - 1] || '').trim(); 
-                const cCredit = parseMoney(row[IDX_CURR_CREDIT]);
-                
-                if (!cPI || cPI === 'Total' || cPI === 'PI' || cPI === 'undefined') continue;
-                
-                const currentKey = `${cPI}|||${cItem}|||${cCat}`;
-                
-                if(uniqueCurrentProcessed.has(currentKey)) continue;
-                uniqueCurrentProcessed.add(currentKey);
-
-                const matchBaseRow = baseMap.get(currentKey);
-                const bCredit = matchBaseRow ? parseMoney(matchBaseRow[IDX_BASE_CREDIT]) : 0;
-                const isNew = !matchBaseRow;
-
-                if (isNew || Math.abs(cCredit - bCredit) > 0.01) {
-                    allCreditAlerts.push({
-                        id: alertIdCounter++,
-                        pi: cPI,
-                        itemInfo: cItem,
-                        isNew: isNew,
-                        oldValue: bCredit,
-                        newValue: cCredit,
-                        fullRow: row,
-                        baseRow: matchBaseRow || null
-                    });
-                }
-            }
+            // ==================== LIQUIDAÇÕES DO DIA (colunas S-Y) ====================
+            const liqRows=[]; for(let i=1;i<allRows.length;i++){ const row=allRows[i].slice(LIQ_START,LIQ_END); const fav=String(row[0]||'').trim(); if(fav&&fav!=='Total'){ const proc=String(row[1]||'').trim(); if(proc&&proc!=='Total') liqRows.push(row); } }
+            const liqMap=new Map();
+            for(const row of liqRows){ const fav=row[0]?.trim(), proc=row[1]?.trim(); if(!fav||!proc) continue; const key=`${fav}|||${proc}`; if(!liqMap.has(key)) liqMap.set(key,{total:0,elem:row[2]||'',sub:row[3]||'',pi:row[5]||''}); liqMap.get(key).total+=parseMoney(row[6]); }
+            const seen=new Set(); allMatches=[]; for(const row of allData){ const fav=row[IDX_FAVORECIDO]?.trim(), proc=row[IDX_PROCESSO]?.trim(); if(!fav||!proc) continue; const key=`${fav}|||${proc}`; if(liqMap.has(key)&&!seen.has(key)){ seen.add(key); const liq=liqMap.get(key); const saldoAtual=parseMoney(row[IDX_SALDO]); const saldoAntes=saldoAtual+liq.total; allMatches.push({favorecido:fav,processo:proc,saldoAntes,liquidado:liq.total,saldoDepois:saldoAtual,pct:saldoAntes>0?liq.total/saldoAntes*100:0,elem:liq.elem,sub:liq.sub,pi:liq.pi}); } }
             
-            // Renderiza painel superior de alertas
-            renderCreditAlertPanel(allCreditAlerts);
+            // ==================== ÚLTIMAS LIQUIDAÇÕES 30 DIAS (colunas Z-AF) ====================
+            const now=new Date(), cutoff=new Date(now.getTime()-30*24*60*60*1000);
+            const liq30Map=new Map();
+            for(let i=1;i<allRows.length;i++){ 
+                const row=allRows[i].slice(LIQ30_START, LIQ30_END);
+                const rawDate=row[0]; const fav30=String(row[1]||'').trim(); const proc30=String(row[2]||'').trim(); const val30=parseMoney(row[6]);
+                if(!fav30||!proc30||fav30==='undefined') continue;
+                if(!rawDate||rawDate==='') continue;
+                const dt=parseExcelDate(rawDate); if(!dt||dt<cutoff) continue;
+                const key=`${fav30}|||${proc30}`;
+                if(!liq30Map.has(key)) liq30Map.set(key,{favorecido:fav30,processo:proc30,elem:row[3]||'',desc:row[4]||'',pi:row[5]||'',entries:[],totalLiq:0,saldoAtual:null});
+                const entry=liq30Map.get(key); entry.entries.push({date:dt,valor:val30}); entry.totalLiq+=val30;
+            }
+            // Buscar saldo atual na tabela principal
+            for(const row of allData){ const fav=row[IDX_FAVORECIDO]?.trim(), proc=row[IDX_PROCESSO]?.trim(); if(!fav||!proc) continue; const key=`${fav}|||${proc}`; if(liq30Map.has(key)&&liq30Map.get(key).saldoAtual===null) liq30Map.get(key).saldoAtual=parseMoney(row[IDX_SALDO]); }
+            allMatches30=Array.from(liq30Map.values()).filter(m=>m.totalLiq!==0).sort((a,b)=>b.totalLiq-a.totalLiq);
+            
+            renderLiquidacaoPanel(allMatches);
+            renderLiq30Panel(allMatches30);
             
             document.getElementById('lastUpdateText').textContent=new Date().toLocaleString('pt-BR');
             document.getElementById('uploadSection').style.display='none';
             document.getElementById('dashboardContent').classList.remove('hidden');
             document.getElementById('statusBadge').classList.remove('hidden');
             document.getElementById('statusBadge').classList.add('flex');
-            
-            // Renderiza KPIs e cartões originais da esquerda
             renderDashboard();
-            renderCards();
-        } catch(err){ 
-            console.error(err); 
-            document.getElementById('loadingIcon').innerHTML='<i class="fas fa-exclamation-circle"></i>'; 
-            document.getElementById('loadingIcon').className='text-5xl text-red-500'; 
-        }
+        } catch(err){ console.error(err); document.getElementById('loadingIcon').innerHTML='<i class="fas fa-exclamation-circle"></i>'; document.getElementById('loadingTitle').textContent='Erro'; document.getElementById('loadingSubtitle').textContent=err.message; }
         btn.disabled=false; icon.className='fas fa-sync-alt';
     }
     
-    function renderCreditAlertPanel(alerts) {
-        const panel = document.getElementById('creditAlertPanel');
-        const badge = document.getElementById('creditAlertCountBadge');
-        const container = document.getElementById('creditAlertContainer');
-        
-        if (!alerts.length) { 
-            panel.classList.add('hidden'); 
-            container.innerHTML = '<div class="p-6 text-center text-slate-500 italic">Nenhuma alteração de crédito detectada nas dotações.</div>';
-            return; 
-        }
-        
-        panel.classList.remove('hidden');
-        badge.textContent = alerts.length + ' ocorrência' + (alerts.length > 1 ? 's' : '');
-        
-        window._creditAlertsData = alerts;
-        
-        const tbody = alerts.map((a, idx) => {
-            const typeBadge = a.isNew 
-                ? `<span class="px-2.5 py-0.5 text-[9px] font-bold rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">NOVO CRÉDITO</span>`
-                : `<span class="px-2.5 py-0.5 text-[9px] font-bold rounded bg-orange-500/10 text-orange-400 border border-orange-500/20">VALOR ALTERADO</span>`;
-            
-            return `<tr class="liq30-row-clickable" onclick="openCreditAlertModal(${idx})">
-                <td>
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-exclamation-circle text-orange-500 text-xs animate-pulse"></i>
-                        <span class="font-mono font-bold text-white text-sm">${escapeHtml(a.pi)}</span>
-                    </div>
-                </td>
-                <td class="text-center">${typeBadge}</td>
-                <td class="text-left text-xs font-mono text-slate-300 max-w-[320px] truncate" title="${escapeHtml(a.itemInfo)}">
-                    ${escapeHtml(a.itemInfo)}
-                </td>
-                <td class="text-right"><span class="value-chip chip-before">${formatMoney(a.oldValue)}</span></td>
-                <td class="text-right"><span class="value-chip font-mono font-bold text-orange-400 bg-orange-500/5 border border-orange-500/20">${formatMoney(a.newValue)}</span></td>
-                <td class="text-right text-slate-600 text-xs"><i class="fas fa-chevron-right"></i></td>
-            </tr>`;
-        }).join('');
-        
-        container.innerHTML = `<table class="alert-table">
-            <thead>
-                <tr>
-                    <th>Identificador (PI)</th>
-                    <th class="text-center">Tipo de Ocorrência</th>
-                    <th class="text-left">Elemento de Despesa (AO)</th>
-                    <th class="text-right">Valor Anterior</th>
-                    <th class="text-right">Valor Atualizado</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>${tbody}</tbody>
-        </table>`;
-    }
-
-    function openCreditAlertModal(idx) {
-        const a = window._creditAlertsData && window._creditAlertsData[idx];
-        if (!a) return;
-        
-        document.getElementById('modalAlertPI').textContent = "Plano Interno (PI): " + a.pi;
-        const diff = a.newValue - a.oldValue;
-        
-        document.getElementById('modalAlertSummary').innerHTML = `
-            <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/60"><span class="text-[10px] uppercase text-slate-400">Anterior (Base)</span><span class="font-mono text-sm text-slate-300 font-medium">${formatMoney(a.oldValue)}</span></div>
-            <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-orange-500/10 border border-orange-500/20"><span class="text-[10px] uppercase text-orange-400">Atualizado</span><span class="font-mono text-sm text-orange-400 font-bold">${formatMoney(a.newValue)}</span></div>
-            <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg ${diff >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-400">Diferença</span><span class="font-mono text-sm ${diff >= 0 ? 'text-emerald-400' : 'text-red-400'} font-bold">${diff >= 0 ? '+' : ''}${formatMoney(diff)}</span></div>
-        `;
-        
-        let currentDetails = '', baseDetails = '';
-        
-        for (let k = 32; k <= 41; k++) {
-            if(headers[k] || a.fullRow[k]) {
-                currentDetails += `<div class="p-2 bg-slate-900/50 rounded border border-slate-800/80 flex justify-between gap-4 text-xs"><span class="text-slate-500 font-medium">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-200 font-mono text-right truncate max-w-[250px]">${escapeHtml(a.fullRow[k] || '—')}</span></div>`;
-            }
-        }
-        
-        if (a.baseRow) {
-            for (let k = 42; k <= 51; k++) {
-                if(headers[k] || a.baseRow[k]) {
-                    baseDetails += `<div class="p-2 bg-slate-900/50 rounded border border-slate-800/80 flex justify-between gap-4 text-xs"><span class="text-slate-500 font-medium">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-400 font-mono text-right truncate max-w-[250px]">${escapeHtml(a.baseRow[k] || '—')}</span></div>`;
-                }
-            }
-        } else {
-            baseDetails = `<div class="text-xs text-slate-500 italic p-4 text-center">Registro inédito. Não constava na planilha base anterior.</div>`;
-        }
-        
-        document.getElementById('modalAlertEntries').innerHTML = `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="p-4 rounded-xl border border-slate-700/60 bg-darkCard"><h4 class="text-xs font-bold text-orange-400 uppercase tracking-wider mb-3 pb-1.5 border-b border-slate-800">Situação Atual no Arquivo</h4><div class="space-y-1.5">${currentDetails}</div></div>
-            <div class="p-4 rounded-xl border border-slate-700/60 bg-darkCard"><h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 pb-1.5 border-b border-slate-800">Situação Histórica Base</h4><div class="space-y-1.5">${baseDetails}</div></div>
-        </div>`;
-        
-        document.getElementById('modalCreditAlert').classList.remove('hidden');
-        document.body.classList.add('modal-active');
-    }
-
-    function closeModalCreditAlert() {
-        document.getElementById('modalCreditAlert').classList.add('hidden');
-        document.body.classList.remove('modal-active');
+    function renderLiquidacaoPanel(matches){
+        const panel=document.getElementById('liquidacaoPanel'), badge=document.getElementById('liqCountBadge'), container=document.getElementById('liqCardsContainer');
+        if(!matches.length){ panel.classList.add('hidden'); return; }
+        panel.classList.remove('hidden'); badge.textContent=matches.length+' ocorrência'+(matches.length>1?'s':'');
+        const totalLiq=matches.reduce((s,m)=>s+m.liquidado,0), totalAntes=matches.reduce((s,m)=>s+m.saldoAntes,0), totalDep=matches.reduce((s,m)=>s+m.saldoDepois,0);
+        const tbody=matches.map(m=>{ const pct=Math.min(m.pct,100); const barColor=pct>90?'#ef4444':pct>60?'#f59e0b':'#10b981'; const isLow=m.saldoDepois<m.saldoAntes*0.1; const afterChip=isLow?'chip-after-red':'chip-after'; return `<tr><td><div class="flex items-center gap-2"><i class="fas fa-bolt text-xs text-amber-500"></i><div><p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p></div></div></td><td><span class="text-[11px] font-mono px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400">${escapeHtml(m.elem)}/${escapeHtml(m.sub)} · ${escapeHtml(m.processo)}</span>${m.pi?`<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">PI ${escapeHtml(m.pi)}</span>`:''}</td><td class="text-right"><span class="value-chip chip-before">${formatMoney(m.saldoAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(m.liquidado)}</span></td><td class="text-right"><span class="value-chip ${afterChip}">${formatMoney(m.saldoDepois)}</span></td><td class="text-right"><div class="flex items-center justify-end gap-2"><span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pct.toFixed(1)}%</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div></div></div></td></td>`; }).join('');
+        container.innerHTML=`<table class="liq-table"><thead><tr><th>Favorecido</th><th>Elemento · Processo</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody><tfoot><td><td colspan="2" class="font-mono text-slate-500">TOTAIS · ${matches.length} OCORRÊNCIAS</td><td class="text-right"><span class="value-chip chip-before">${formatMoney(totalAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(totalLiq)}</span></td><td class="text-right"><span class="value-chip chip-after">${formatMoney(totalDep)}</span></td><td class="text-right"></td></tr></tfoot></table>`;
     }
     
-    // Filtros em tempo real aplicados na visualização dos cards gerais (da esquerda)
-    document.getElementById('searchGlobal').addEventListener('input', applyFilters);
-    document.getElementById('searchProcesso').addEventListener('input', applyFilters);
-    document.getElementById('searchFavorecido').addEventListener('input', applyFilters);
-    
-    function applyFilters(){ 
-        const gT = document.getElementById('searchGlobal').value.toLowerCase().trim(); 
-        const pT = document.getElementById('searchProcesso').value.toLowerCase().trim(); 
-        const fT = document.getElementById('searchFavorecido').value.toLowerCase().trim(); 
-        
-        filteredData = allData.filter(row => {
-            const fav = String(row[IDX_FAVORECIDO]||'').toLowerCase();
-            const proc = String(row[IDX_PROCESSO]||'').toLowerCase();
-            const pi = String(row[IDX_PI_ESQUERDA]||'').toLowerCase();
-            
-            const matchG = !gT || fav.includes(gT) || proc.includes(gT) || pi.includes(gT);
-            const matchP = !pT || proc.includes(pT);
-            const matchF = !fT || fav.includes(fT);
-            
-            return matchG && matchP && matchF;
-        });
-        
-        renderCards();
+    function renderLiq30Panel(matches){
+        const panel=document.getElementById('liq30Panel'), badge=document.getElementById('liq30CountBadge'), container=document.getElementById('liq30CardsContainer');
+        if(!matches.length){ panel.classList.add('hidden'); return; }
+        panel.classList.remove('hidden'); badge.textContent=matches.length+' ocorrência'+(matches.length>1?'s':'');
+        const now=new Date(), cutoff=new Date(now.getTime()-30*24*60*60*1000);
+        document.getElementById('liq30PeriodText').textContent=formatDateBR(cutoff)+' → '+formatDateBR(now);
+        window._liq30Data=matches;
+        const totalLiq=matches.reduce((s,m)=>s+m.totalLiq,0), totalAntes=matches.filter(m=>m.saldoAtual!==null).reduce((s,m)=>s+(m.saldoAtual+m.totalLiq),0), totalDep=matches.filter(m=>m.saldoAtual!==null).reduce((s,m)=>s+m.saldoAtual,0);
+        const tbody=matches.map((m,idx)=>{ const saldo=m.saldoAtual; const saldoAntes=saldo!==null?saldo+m.totalLiq:null; const pct=saldoAntes&&saldoAntes>0?Math.min(m.totalLiq/saldoAntes*100,100):100; const barColor=pct>90?'#ef4444':pct>60?'#f59e0b':'#10b981'; const isLow=saldo!==null&&saldoAntes!==null&&saldo<saldoAntes*0.1; const afterChip=saldo===null?'chip-before':(saldo<0?'chip-after-red':(isLow?'chip-after-warn':'chip-after')); const latestDate=m.entries.length?m.entries.reduce((a,b)=>a.date>b.date?a:b).date:null; const hasMultiple=m.entries.length>1; return `<tr class="liq30-row-clickable" onclick="openModal30(${idx})"><td><div class="flex items-center gap-2"><i class="fas fa-history text-xs text-cyan-400"></i><div><p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p>${m.desc?`<p class="text-[10px] text-slate-500">${escapeHtml(m.desc)}</p>`:''}</div></div></td><td><span class="text-[11px] font-mono px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400">${escapeHtml(m.elem)} · ${escapeHtml(m.processo)}</span>${m.pi?`<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">PI ${escapeHtml(m.pi)}</span>`:''}</td><td class="text-center"><span class="date-chip">${latestDate?formatDateBR(latestDate):'—'}</span>${hasMultiple?`<span class="text-[9px] block mt-1 text-cyan-400"><i class="fas fa-layer-group mr-0.5"></i>${m.entries.length} lançamentos</span>`:''}</td><td class="text-right"><span class="value-chip chip-before">${saldoAntes!==null?formatMoney(saldoAntes):'—'}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(m.totalLiq)}</span></td><td class="text-right"><span class="value-chip ${afterChip}">${saldo!==null?formatMoney(saldo):'—'}</span></td><td class="text-right"><div class="flex items-center justify-end gap-2"><span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pct.toFixed(1)}%</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div></div><i class="fas fa-chevron-right text-[9px] text-slate-600"></i></div></td></tr>`; }).join('');
+        container.innerHTML=`<table class="liq30-table"><thead><tr><th>Favorecido</th><th>Elemento · Processo</th><th class="text-center">Último Lançamento</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody><tfoot><td><td colspan="3" class="font-mono text-slate-500">TOTAIS · ${matches.length} OCORRÊNCIAS (30 dias)</td><td class="text-right"><span class="value-chip chip-before">${formatMoney(totalAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(totalLiq)}</span></td><td class="text-right"><span class="value-chip chip-after">${formatMoney(totalDep)}</span></td><td class="text-right"></td></tr></tfoot></table>`;
     }
     
-    function renderDashboard(){ 
-        let totalSaldo = 0; const setFav = new Set(); 
-        allData.forEach(row => { 
-            totalSaldo += parseMoney(row[IDX_SALDO]); 
-            if(row[IDX_FAVORECIDO]) setFav.add(row[IDX_FAVORECIDO]); 
-        });
-        document.getElementById('kpiTotalSaldo').innerText = formatMoney(totalSaldo); 
-        document.getElementById('kpiTotalProcessos').innerText = allData.length.toLocaleString('pt-BR'); 
-        document.getElementById('kpiTotalFavorecidos').innerText = setFav.size.toLocaleString('pt-BR'); 
-    }
-
-    function renderCards(){
-        const container = document.getElementById('resultsContainer');
-        const empty = document.getElementById('emptyState');
-        
-        if(!filteredData.length){
-            container.innerHTML = ''; empty.classList.remove('hidden'); return;
-        }
-        empty.classList.add('hidden');
-        
-        container.innerHTML = filteredData.map(row => {
-            const fav = row[IDX_FAVORECIDO] || 'NÃO IDENTIFICADO';
-            const proc = row[IDX_PROCESSO] || '—';
-            const saldoVal = parseMoney(row[IDX_SALDO]);
-            const pi = row[IDX_PI_ESQUERDA] || '—';
-            const isPos = saldoVal >= 0;
-            
-            return `<div class="p-5 rounded-2xl bg-darkCard border border-darkBorder flex flex-col justify-between hover:border-slate-700 transition-all">
-                <div class="space-y-4">
-                    <div class="flex justify-between items-start gap-2">
-                        <div>
-                            <span class="text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">PI: ${escapeHtml(pi)}</span>
-                            <h4 class="text-sm font-display font-bold text-white mt-1.5 break-all">Processo: ${escapeHtml(proc)}</h4>
-                        </div>
-                        <div class="w-8 h-8 rounded-xl flex items-center justify-center ${isPos?'bg-emerald-500/10 text-emerald-400':'bg-red-500/10 text-red-400'}">
-                            <i class="fas ${isPos?'fa-check-circle':'fa-exclamation-circle'} text-sm"></i>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-bold uppercase text-slate-500 mb-0.5">Favorecido</p>
-                        <p class="text-xs text-slate-300 line-clamp-2" title="${escapeHtml(fav)}">${escapeHtml(fav)}</p>
-                    </div>
-                </div>
-                <div class="pt-4 mt-4 border-t border-slate-800/80 flex justify-between items-center">
-                    <div>
-                        <p class="text-[9px] font-bold uppercase text-slate-500">Saldo Atual</p>
-                        <p class="text-base font-mono font-bold ${isPos?'text-emerald-400':'text-red-400'}">${formatMoney(saldoVal)}</p>
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
-    }
+    function openModal30(idx){ const m=window._liq30Data&&window._liq30Data[idx]; if(!m) return; document.getElementById('modal30Processo').textContent=m.processo; document.getElementById('modal30Fav').textContent=m.favorecido; const saldo=m.saldoAtual; const saldoAntes=saldo!==null?saldo+m.totalLiq:null; document.getElementById('modal30Summary').innerHTML=`<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50"><span class="text-[10px] uppercase text-slate-500">Saldo Anterior</span><span class="font-mono text-sm text-slate-300">${saldoAntes!==null?formatMoney(saldoAntes):'—'}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10"><span class="text-[10px] uppercase text-slate-500">Total Liquidado</span><span class="font-mono text-sm text-red-400">− ${formatMoney(m.totalLiq)}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg ${saldo!==null&&saldo>=0?'bg-emerald-500/10':'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-500">Saldo Atual</span><span class="font-mono text-sm ${saldo!==null&&saldo>=0?'text-emerald-400':'text-red-400'}">${saldo!==null?formatMoney(saldo):'—'}</span></div>`; const sorted=[...m.entries].sort((a,b)=>b.date-a.date); document.getElementById('modal30Entries').innerHTML=sorted.map((e,i)=>`<div class="modal30-row"><div class="flex items-center gap-3"><div class="w-7 h-7 rounded-full flex items-center justify-center bg-cyan-500/10 border border-cyan-500/20"><span class="text-[10px] font-bold text-cyan-400">${sorted.length-i}</span></div><span class="date-chip">${formatDateBR(e.date)}</span></div><span class="value-chip ${e.valor>=0?'chip-after':'chip-liq'}">${e.valor>=0?'':'− '}${formatMoney(Math.abs(e.valor))}</span></div>`).join(''); document.getElementById('modal30').classList.remove('hidden'); document.body.classList.add('modal-active'); }
+    function closeModal30(){ document.getElementById('modal30').classList.add('hidden'); document.body.classList.remove('modal-active'); }
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('modal30').classList.contains('hidden')) closeModal30(); });
     
-    document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModalCreditAlert(); });
+    // Filtros
+    document.getElementById('searchGlobal').addEventListener('input',applyFilters);
+    document.getElementById('searchProcesso').addEventListener('input',applyFilters);
+    document.getElementById('searchFavorecido').addEventListener('input',applyFilters);
+    function applyFilters(){ const gT=document.getElementById('searchGlobal').value.toLowerCase().trim(); const pT=document.getElementById('searchProcesso').value.toLowerCase().trim(); const fT=document.getElementById('searchFavorecido').value.toLowerCase().trim(); filteredData=allData.filter(row=>{ const proc=String(row[IDX_PROCESSO]||'').toLowerCase(); const fav=String(row[IDX_FAVORECIDO]||'').toLowerCase(); const all=row.join(' ').toLowerCase(); return proc.includes(pT)&&fav.includes(fT)&&all.includes(gT); }); renderLiquidacaoPanel(allMatches.filter(m=>m.processo.toLowerCase().includes(pT)&&m.favorecido.toLowerCase().includes(fT))); renderLiq30Panel(allMatches30.filter(m=>m.processo.toLowerCase().includes(pT)&&m.favorecido.toLowerCase().includes(fT))); renderDashboard(); }
+    
+    function openModal(idx){ const row=filteredData[idx]; if(!row) return; document.getElementById('modalTitleProcesso').innerText=row[IDX_PROCESSO]||'N/A'; document.getElementById('modalFavorecido').innerText=row[IDX_FAVORECIDO]||'N/A'; const saldoVal=parseMoney(row[IDX_SALDO]); const modalSaldo=document.getElementById('modalSaldo'), modalCard=document.getElementById('modalSaldoCard'); modalSaldo.innerText=formatMoney(saldoVal); if(saldoVal>=0){ modalSaldo.style.color='#34d399'; modalCard.style.borderLeftColor='#10b981'; }else{ modalSaldo.style.color='#f87171'; modalCard.style.borderLeftColor='#ef4444'; } let html=''; headers.forEach((h,i)=>{ if(i!==IDX_FAVORECIDO&&i!==IDX_PROCESSO&&i!==IDX_SALDO&&i<LIQ_START&&row[i]&&row[i]!=='') html+=`<div class="p-3 rounded-xl bg-slate-800/60 border border-slate-700"><span class="text-[10px] font-bold uppercase text-slate-500 block mb-1">${escapeHtml(h)}</span><span class="text-sm text-slate-200">${escapeHtml(row[i])}</span></div>`; }); document.getElementById('modalExtraDetails').innerHTML=html; document.getElementById('detailsModal').classList.remove('hidden'); document.body.classList.add('modal-active'); }
+    function closeModal(){ document.getElementById('detailsModal').classList.add('hidden'); document.body.classList.remove('modal-active'); }
+    document.getElementById('detailsModal').addEventListener('click',e=>{ if(e.target===document.getElementById('detailsModal')) closeModal(); });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!document.getElementById('detailsModal').classList.contains('hidden')) closeModal(); });
+    
+    function renderDashboard(){ const container=document.getElementById('resultsContainer'), empty=document.getElementById('emptyState'); container.innerHTML=''; let totalSaldo=0; const setFav=new Set(); if(!filteredData.length){ container.style.display='none'; empty.style.display='flex'; updateKPIs(0,0,0); return; } container.style.display='grid'; empty.style.display='none'; filteredData.forEach((row,idx)=>{ const processo=row[IDX_PROCESSO]||'N/A', favorecido=row[IDX_FAVORECIDO]||'N/A', saldoVal=parseMoney(row[IDX_SALDO]); totalSaldo+=saldoVal; setFav.add(favorecido); const isPos=saldoVal>=0; const card=document.createElement('div'); card.className='result-card rounded-2xl p-5 flex flex-col h-full cursor-pointer'; card.style.cssText='background:#0d1626; border:1px solid #1e3050;'; card.onclick=()=>openModal(idx); card.innerHTML=`<div class="flex justify-between items-start mb-4"><div class="flex-1"><div class="flex items-center gap-2 mb-1.5"><span class="w-2 h-2 rounded-full ${isPos?'bg-emerald-500':'bg-red-500'}"></span><p class="text-[10px] font-bold uppercase text-slate-500">Processo</p></div><h4 class="text-sm font-display font-bold text-white truncate">${escapeHtml(processo)}</h4></div><div class="w-10 h-10 rounded-xl flex items-center justify-center ${isPos?'bg-emerald-500/10 border-emerald-500/20 text-emerald-400':'bg-red-500/10 border-red-500/20 text-red-400'}"><i class="fas ${isPos?'fa-check':'fa-exclamation'} text-sm"></i></div></div><div class="mb-5"><p class="text-[10px] font-bold uppercase text-slate-500 mb-1">Favorecido</p><p class="text-sm text-slate-300 line-clamp-2">${escapeHtml(favorecido)}</p></div><div class="pt-4 flex items-center justify-between border-t border-slate-700/50"><div><p class="text-[10px] font-bold uppercase text-slate-500 mb-0.5">Saldo</p><p class="text-lg font-display font-bold font-mono ${isPos?'text-emerald-400':'text-red-400'}">${formatMoney(saldoVal)}</p></div><div class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-500"><i class="fas fa-arrow-right text-sm"></i></div></div>`; container.appendChild(card); }); updateKPIs(totalSaldo,filteredData.length,setFav.size); }
+    function updateKPIs(saldo,proc,fav){ document.getElementById('kpiTotalSaldo').innerText=formatMoney(saldo); document.getElementById('kpiTotalProcessos').innerText=proc.toLocaleString('pt-BR'); document.getElementById('kpiTotalFavorecidos').innerText=fav.toLocaleString('pt-BR'); }
+    
     loadData();
 </script>
 </body>
