@@ -313,6 +313,7 @@
     const LIQ30_START = 25, LIQ30_END = 32; 
     
     const IDX_CURR_PI = 38;      
+    const IDX_ITEM_INFO = 40; // Coluna AO (Item Informação)     
     const IDX_CURR_CREDIT = 41;  
     const IDX_BASE_PI = 48;      
     const IDX_BASE_CREDIT = 51;  
@@ -374,59 +375,47 @@
             allMatches30=Array.from(liq30Map.values()).filter(m=>m.totalLiq!==0).sort((a,b)=>b.totalLiq-a.totalLiq);
             
             // ==================== ALERTA DE CRÉDITO DISPONÍVEL CORE COMPACTO ====================
-            const baseCreditMap = new Map();
             const baseRowsMap = new Map();
             for (let i = 1; i < allRows.length; i++) {
                 const row = allRows[i];
                 if(row.length <= IDX_BASE_CREDIT) continue;
                 const bPI = String(row[IDX_BASE_PI] || '').trim();
-                const bCredit = parseMoney(row[IDX_BASE_CREDIT]);
                 if (bPI && bPI !== 'Total' && bPI !== 'undefined' && bPI !== 'PI') {
-                    baseCreditMap.set(bPI, (baseCreditMap.get(bPI) || 0) + bCredit);
                     if (!baseRowsMap.has(bPI)) baseRowsMap.set(bPI, []);
                     baseRowsMap.get(bPI).push(row);
                 }
             }
 
-            const currentGrouped = new Map();
+            const alertMap = new Map();
+            alertMap.clear(); 
+            
+            let alertIdCounter = 0;
+
             for (let i = 1; i < allRows.length; i++) {
                 const row = allRows[i];
                 if(row.length <= IDX_CURR_CREDIT) continue;
                 const cPI = String(row[IDX_CURR_PI] || '').trim();
                 const cCredit = parseMoney(row[IDX_CURR_CREDIT]);
+                const itemInfo = String(row[IDX_ITEM_INFO] || '—').trim();
                 if (!cPI || cPI === 'Total' || cPI === 'undefined' || cPI === 'PI') continue;
 
-                if (!currentGrouped.has(cPI)) {
-                    currentGrouped.set(cPI, { sum: 0, rows: [] });
-                }
-                const group = currentGrouped.get(cPI);
-                group.sum += cCredit;
-                group.rows.push(row);
-            }
+                const bRows = baseRowsMap.get(cPI) || [];
+                // Tenta parear por índice de linha correspondente no bloco do PI
+                const matchBaseRow = bRows.find((br, idx) => br[IDX_BASE_PI] === cPI && bRows.indexOf(br) === (baseRowsMap.get(cPI).indexOf(br)));
+                const bCredit = matchBaseRow ? parseMoney(matchBaseRow[IDX_BASE_CREDIT]) : 0;
+                const isNew = bRows.length === 0;
 
-            const alertMap = new Map();
-            alertMap.clear(); // Força limpeza preventiva de cache volátil de escopo
-            
-            for (const [cPI, data] of currentGrouped.entries()) {
-                const hasBase = baseCreditMap.has(cPI);
-                const bCreditTotal = hasBase ? baseCreditMap.get(cPI) : 0;
-                const cCreditTotal = data.sum;
-
-                if (!hasBase || Math.abs(cCreditTotal - bCreditTotal) > 0.001) {
-                    alertMap.set(cPI, {
+                // Modificação estrutural: Se houver mudança real na linha específica, nós geramos o alerta por linha!
+                if (isNew || Math.abs(cCredit - bCredit) > 0.001) {
+                    alertMap.set(alertIdCounter++, {
                         pi: cPI,
-                        isNew: !hasBase,
-                        oldValue: bCreditTotal,
-                        newValue: cCreditTotal,
-                        rows: data.rows.map((row, index) => {
-                            const bRows = baseRowsMap.get(cPI) || [];
-                            return {
-                                fullRow: row,
-                                baseRow: bRows[index] || bRows[0] || null,
-                                cCredit: parseMoney(row[IDX_CURR_CREDIT]),
-                                bCredit: bRows[index] ? parseMoney(bRows[index][IDX_BASE_CREDIT]) : 0
-                            };
-                        })
+                        itemInfo: itemInfo,
+                        isNew: isNew,
+                        oldValue: bCredit,
+                        newValue: cCredit,
+                        fullRow: row,
+                        baseRow: matchBaseRow || (bRows[0] || null),
+                        favorecido: row[IDX_FAVORECIDO] || '—'
                     });
                 }
             }
@@ -468,6 +457,7 @@
             return `<tr class="liq30-row-clickable" onclick="openCreditAlertModal(${idx})">
                 <td><div class="flex items-center gap-2"><i class="fas fa-exclamation-triangle text-orange-400 text-xs animate-pulse"></i><span class="font-mono font-bold text-white text-sm">PI ${escapeHtml(a.pi)}</span></div></td>
                 <td class="text-center">${typeBadge}</td>
+                <td class="text-left text-xs text-slate-400 truncate max-w-[180px]" title="${escapeHtml(a.itemInfo)}">${escapeHtml(a.itemInfo)}</td>
                 <td class="text-right"><span class="value-chip chip-before">${formatMoney(a.oldValue)}</span></td>
                 <td class="text-right"><span class="value-chip font-mono font-bold text-orange-400 bg-orange-500/5 border border-orange-500/20">${formatMoney(a.newValue)}</span></td>
                 <td class="text-right font-mono text-xs font-bold ${diffClass}">${diffText}</td>
@@ -479,7 +469,8 @@
             <thead>
                 <tr>
                     <th>Identificador (PI)</th>
-                    <th class="text-center">Tipo de Ocorrência</th>
+                    <th class="text-center">Tipo</th>
+                    <th class="text-left">Item Informação (AO)</th>
                     <th class="text-right">Valor Anterior (Base)</th>
                     <th class="text-right">Valor Atualizado</th>
                     <th class="text-right">Diferença</th>
@@ -498,60 +489,45 @@
         const diff = a.newValue - a.oldValue;
         
         document.getElementById('modalAlertSummary').innerHTML = `
-            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50"><span class="text-[10px] uppercase text-slate-500">Total Anterior Base</span><span class="font-mono text-sm text-slate-300">${formatMoney(a.oldValue)}</span></div>
-            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/20"><span class="text-[10px] uppercase text-orange-400">Total Novo Atual</span><span class="font-mono text-sm text-orange-400 font-bold">${formatMoney(a.newValue)}</span></div>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50"><span class="text-[10px] uppercase text-slate-500">Anterior Base Linha</span><span class="font-mono text-sm text-slate-300">${formatMoney(a.oldValue)}</span></div>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/20"><span class="text-[10px] uppercase text-orange-400">Novo Atual Linha</span><span class="font-mono text-sm text-orange-400 font-bold">${formatMoney(a.newValue)}</span></div>
             <div class="flex items-center gap-2 px-3 py-2 rounded-lg ${diff >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-500 font-bold">Variação Real</span><span class="font-mono text-sm ${diff >= 0 ? 'text-emerald-400' : 'text-red-400'}">${diff >= 0 ? '+' : ''}${formatMoney(diff)}</span></div>
         `;
         
-        let entriesHtml = '';
-        let hasDisplayedAny = false;
-
-        a.rows.forEach((r, i) => {
-            // REGRA DE OURO: Só exibe no modal as linhas que DE FATO mudaram de valor individualmente
-            if (r.baseRow && Math.abs(r.cCredit - r.bCredit) < 0.001) {
-                return; 
-            }
-            
-            hasDisplayedAny = true;
-            let currentDetails = '', baseDetails = '';
-            
-            for (let k = 32; k <= 41; k++) {
-                if(headers[k] || r.fullRow[k]) {
-                    currentDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-200 font-mono ${k===IDX_CURR_CREDIT?'text-orange-400 font-bold':''}">${escapeHtml(r.fullRow[k] || '—')}</span></div>`;
-                }
-            }
-            if (r.baseRow) {
-                for (let k = 42; k <= 51; k++) {
-                    if(headers[k] || r.baseRow[k]) {
-                        baseDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-400 font-mono">${escapeHtml(r.baseRow[k] || '—')}</span></div>`;
-                    }
-                }
-            } else {
-                baseDetails = `<div class="text-xs text-slate-600 italic p-3 text-center">Nenhum registro correspondente localizado na base anterior.</div>`;
-            }
-            
-            entriesHtml += `<div class="border border-slate-700/60 rounded-xl p-4 bg-slate-800/40 space-y-3">
-                <div class="flex justify-between items-center border-b border-slate-700/40 pb-2">
-                    <span class="text-xs font-bold text-orange-400"><i class="fas fa-layer-group"></i> Linha Alterada Localizada</span>
-                    <span class="text-xs text-slate-400 font-mono">Favorecido: ${escapeHtml(r.fullRow[IDX_FAVORECIDO] || '—')}</span>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <h4 class="text-[10px] font-bold text-orange-400 uppercase tracking-wider mb-2">Dados Atualizados</h4>
-                        <div class="space-y-1">${currentDetails}</div>
-                    </div>
-                    <div>
-                        <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Dados Base</h4>
-                        <div class="space-y-1">${baseDetails}</div>
-                    </div>
-                </div>
-            </div>`;
-        });
+        let currentDetails = '', baseDetails = '';
         
-        if(!hasDisplayedAny) {
-            entriesHtml = `<div class="text-xs text-slate-500 italic p-6 text-center bg-slate-800/20 rounded-xl border border-slate-700/40">As divergências identificadas pertencem a ajustes de consolidação estrutural nas linhas. Nenhuma célula de valor útil foi modificada.</div>`;
+        for (let k = 32; k <= 41; k++) {
+            if(headers[k] || a.fullRow[k]) {
+                currentDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-200 font-mono ${k===IDX_CURR_CREDIT?'text-orange-400 font-bold':''}">${escapeHtml(a.fullRow[k] || '—')}</span></div>`;
+            }
         }
-
+        if (a.baseRow) {
+            for (let k = 42; k <= 51; k++) {
+                if(headers[k] || a.baseRow[k]) {
+                    baseDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-400 font-mono">${escapeHtml(a.baseRow[k] || '—')}</span></div>`;
+                }
+            }
+        } else {
+            baseDetails = `<div class="text-xs text-slate-600 italic p-3 text-center">Nenhum registro correspondente localizado na base anterior.</div>`;
+        }
+        
+        let entriesHtml = `<div class="border border-slate-700/60 rounded-xl p-4 bg-slate-800/40 space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-700/40 pb-2">
+                <span class="text-xs font-bold text-orange-400"><i class="fas fa-layer-group"></i> Linha Alterada Localizada</span>
+                <span class="text-xs text-slate-400 font-mono">Favorecido: ${escapeHtml(a.favorecido)}</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h4 class="text-[10px] font-bold text-orange-400 uppercase tracking-wider mb-2">Dados Atualizados</h4>
+                    <div class="space-y-1">${currentDetails}</div>
+                </div>
+                <div>
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Dados Base</h4>
+                    <div class="space-y-1">${baseDetails}</div>
+                </div>
+            </div>
+        </div>`;
+        
         document.getElementById('modalAlertEntries').innerHTML = entriesHtml;
         document.getElementById('modalCreditAlert').classList.remove('hidden');
         document.body.classList.add('modal-active');
@@ -605,11 +581,7 @@
         
         if(typeof allCreditAlerts !== 'undefined') {
             const fAlerts = allCreditAlerts.filter(a => {
-                return a.pi.toLowerCase().includes(gT) || a.rows.some(r => {
-                    const fav = String(r.fullRow[IDX_FAVORECIDO] || '').toLowerCase();
-                    const proc = String(r.fullRow[IDX_PROCESSO] || '').toLowerCase();
-                    return fav.includes(fT) && proc.includes(pT);
-                });
+                return a.pi.toLowerCase().includes(gT) || a.itemInfo.toLowerCase().includes(gT) || a.favorecido.toLowerCase().includes(fT);
             });
             renderCreditAlertPanel(fAlerts);
         }
