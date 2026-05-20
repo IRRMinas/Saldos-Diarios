@@ -34,7 +34,7 @@
             background: #080e1a; color: #e2e8f0; 
             background-image: radial-gradient(ellipse at 20% 0%, rgba(59,130,246,0.07) 0%, transparent 60%);
         }
-        h1, h2, h3, .font-display { font-family: 'Syne', sans-serif; }
+        h1, h2, h3, h4, .font-display { font-family: 'Syne', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace !important; }
 
         ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -88,7 +88,6 @@
             display: inline-block;
         }
         .chip-before { background: rgba(148, 163, 184, 0.08); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.15); }
-        .chip-liq { background: rgba(239,68,68,0.10); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
         .chip-after { background: rgba(16,185,129,0.10); color: #34d399; border: 1px solid rgba(16,185,129,0.18); }
         
         .pulse-dot-orange {
@@ -139,7 +138,7 @@
     <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
         <div class="flex items-center gap-4">
             <div class="text-white p-2.5 rounded-xl" style="background: linear-gradient(135deg, #1d4ed8, #0891b2);"><i class="fas fa-database text-xl"></i></div>
-            <div><h1 class="text-xl font-display font-bold text-white">Consulta Diária de Saldos</h1><p class="text-xs text-slate-500 font-mono">Painel de Monitoramento de Créditos</p></div>
+            <div><h1 class="text-xl font-display font-bold text-white">Consulta Diária de Saldos</h1><p class="text-xs text-slate-500 font-mono">Painel de Monitoramento Geral</p></div>
         </div>
         <div class="flex items-center gap-3">
             <div id="statusBadge" class="hidden items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium" style="background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2);"><i class="fas fa-circle text-[10px] animate-pulse"></i><span id="lastUpdateText">ao vivo</span></div>
@@ -152,46 +151,39 @@
     <div id="uploadSection" class="rounded-2xl p-10 mb-8 text-center bg-darkCard border border-darkBorder">
         <div class="flex flex-col items-center gap-5">
             <div id="loadingIcon" class="text-5xl animate-spin text-blue-500"><i class="fas fa-circle-notch"></i></div>
-            <div><h2 class="text-xl font-display font-bold text-white">Processando dados e comparando bases...</h2><p class="text-sm text-slate-500">Filtrando alterações estritas das dotações</p></div>
+            <div><h2 class="text-xl font-display font-bold text-white">Carregando painel consolidado...</h2><p class="text-sm text-slate-500">Cruzando bases e organizando visões gerais</p></div>
         </div>
     </div>
 
     <div id="dashboardContent" class="hidden space-y-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400"><i class="fas fa-wallet"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Saldo Total</p><h3 id="kpiTotalSaldo" class="text-2xl font-display font-bold text-white">R$ 0,00</h3></div></div>
-            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400"><i class="fas fa-folder-open"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Processos</p><h3 id="kpiTotalProcessos" class="text-2xl font-display font-bold text-white">0</h3></div></div>
-            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"><i class="fas fa-building"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Favorecidos</p><h3 id="kpiTotalFavorecidos" class="text-2xl font-display font-bold text-white">0</h3></div></div>
+            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-blue-500/10 border border-blue-500/20 text-blue-400"><i class="fas fa-wallet"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Saldo Total Geral</p><h3 id="kpiTotalSaldo" class="text-2xl font-display font-bold text-white">R$ 0,00</h3></div></div>
+            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400"><i class="fas fa-folder-open"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Processos Ativos</p><h3 id="kpiTotalProcessos" class="text-2xl font-display font-bold text-white">0</h3></div></div>
+            <div class="kpi-card p-6 flex items-center gap-5"><div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"><i class="fas fa-building"></i></div><div><p class="text-[10px] font-semibold uppercase text-slate-500">Favorecidos Únicos</p><h3 id="kpiTotalFavorecidos" class="text-2xl font-display font-bold text-white">0</h3></div></div>
         </div>
 
         <div id="creditAlertPanel" class="hidden p-5">
             <div class="flex items-center gap-3 mb-4">
-                <span class="panel-header-badge-orange"><span class="pulse-dot-orange"></span> Alertas de Crédito Disponível (Modificados / Novos)</span>
+                <span class="panel-header-badge-orange"><span class="pulse-dot-orange"></span> Alterações Estritas de Crédito Disponível</span>
                 <span id="creditAlertCountBadge" class="text-xs px-2.5 py-1 rounded-full font-mono font-bold bg-orange-500/10 text-orange-400 border border-orange-500/20">0 ocorrências</span>
             </div>
             <div id="creditAlertContainer" class="table-wrap"></div>
         </div>
 
-        <div id="liquidacaoPanel" class="hidden p-5">
-            <div class="flex items-center gap-3 mb-4"><span class="panel-header-badge-orange" style="color:#fbbf24; background:rgba(245,158,11,0.1); border-color:rgba(245,158,11,0.2);"><i class="fas fa-bolt mr-1"></i> Liquidações do Dia</span></div>
-            <div id="liqCardsContainer" class="table-wrap"></div>
-        </div>
-        
-        <div id="liq30Panel" class="hidden p-5">
-            <div class="flex items-center gap-3 mb-4"><span class="panel-header-badge-orange" style="color:#22d3ee; background:rgba(6,182,212,0.1); border-color:rgba(6,182,212,0.2);"><i class="fas fa-history mr-1"></i> Histórico Recente 30d</span></div>
-            <div id="liq30CardsContainer" class="table-wrap"></div>
-        </div>
-
         <div class="rounded-2xl p-6 bg-darkCard border border-darkBorder">
-            <h3 class="text-[10px] font-bold uppercase text-slate-500 mb-4 flex items-center gap-2"><i class="fas fa-sliders-h text-blue-500"></i> Filtros de Pesquisa Geral</h3>
+            <h3 class="text-[10px] font-bold uppercase text-slate-500 mb-4 flex items-center gap-2"><i class="fas fa-sliders-h text-blue-500"></i> Filtros de Pesquisa nos Registros Gerais</h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <input type="text" id="searchGlobal" placeholder="Busca geral no painel..." class="w-full pl-4 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
-                <input type="text" id="searchProcesso" placeholder="Filtrar PI..." class="w-full pl-4 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
-                <input type="text" id="searchFavorecido" placeholder="Filtrar Item Info..." class="w-full pl-4 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="searchGlobal" placeholder="Busca global (Favorecido ou Processo)..." class="w-full pl-4 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="searchProcesso" placeholder="Filtrar por Número de Processo..." class="w-full pl-4 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
+                <input type="text" id="searchFavorecido" placeholder="Filtrar por Favorecido..." class="w-full pl-4 pr-4 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500">
             </div>
         </div>
 
-        <div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-        <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16 text-slate-500"><i class="fas fa-box-open text-5xl mb-4 text-slate-700"></i><p class="text-xl font-medium">Nenhum registro</p></div>
+        <div>
+            <h3 class="text-xs font-bold uppercase text-slate-400 mb-4 font-display flex items-center gap-2"><i class="fas fa-th-large text-cyan-400"></i> Registros e Saldos Totais Cadastrados</h3>
+            <div id="resultsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+            <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16 text-slate-500"><i class="fas fa-box-open text-5xl mb-4 text-slate-700"></i><p class="text-xl font-medium">Nenhum registro encontrado nos filtros</p></div>
+        </div>
     </div>
 </main>
 
@@ -199,7 +191,7 @@
     <div class="modal30-content" style="border-color: rgba(249, 115, 22, 0.45); max-width: 800px;">
         <div class="px-6 py-4 flex justify-between items-center border-b border-darkBorder bg-slate-800/50">
             <div>
-                <p class="text-[10px] font-bold uppercase text-orange-400"><i class="fas fa-bell mr-1"></i> Detalhamento Completo das Tabelas</p>
+                <p class="text-[10px] font-bold uppercase text-orange-400"><i class="fas fa-bell mr-1"></i> Detalhamento de Auditoria da Dotação</p>
                 <h3 id="modalAlertPI" class="text-base font-display font-bold text-white">PI: ---</h3>
             </div>
             <button onclick="closeModalCreditAlert()" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 text-slate-400 hover:text-white"><i class="fas fa-times text-sm"></i></button>
@@ -219,8 +211,11 @@
     
     let allData = [], filteredData = [], headers = [], allCreditAlerts = [];
     
-    // Mapeamento dinâmico ou fixo de colunas conforme estrutura do CSV
-    let IDX_FAVORECIDO = 7, IDX_PROCESSO = 12, IDX_SALDO = 17;
+    // Mapeamento das colunas originais do Bloco da Esquerda (Geral)
+    const IDX_FAVORECIDO = 7;
+    const IDX_PROCESSO = 12;
+    const IDX_SALDO = 17;
+    const IDX_PI_ESQUERDA = 10;
     
     // Índices das Colunas do Bloco Atual (Colunas 33 a 42 -> Índices 32 a 41)
     const IDX_CURR_PI = 38;      
@@ -253,18 +248,18 @@
             const text=await resp.text(); const allRows=parseCSV(text); if(allRows.length<2) throw new Error('Planilha sem dados.');
             headers=allRows[0];
             
-            // Filtra linhas válidas da dotação da esquerda
+            // 1. ISOLADO: Carrega dados do bloco esquerdo (Saldos Gerais dos Processos)
             allData=[]; 
             for(let i=1; i<allRows.length; i++){ 
                 const row = allRows[i];
                 const proc = String(row[IDX_PROCESSO]||'').trim(); 
-                const fav = String(row[IDX_FAVORECIDO]||'').trim(); 
-                if(proc && proc!=='Total' && proc.length>3) allData.push(row); 
+                if(proc && proc!=='Total' && proc!=='NE CCor - Núm. Processo' && proc.length>3) {
+                    allData.push(row); 
+                }
             }
             filteredData=[...allData];
             
-            // ==================== MAPEAMENTO DA BASE ANTERIOR (DIREITA) ====================
-            // Criamos um mapa indexado por PI + Item de Informação + Categoria Econômica para blindar contra falsos positivos
+            // 2. ISOLADO: Mapeamento da Base Anterior (Direita) para Auditoria
             const baseMap = new Map();
             for (let i = 1; i < allRows.length; i++) {
                 const row = allRows[i];
@@ -272,16 +267,15 @@
                 
                 const bPI = String(row[IDX_BASE_PI] || '').trim();
                 const bItem = String(row[IDX_BASE_ITEM_INFO] || '').trim();
-                const bCat = String(row[IDX_BASE_PI - 1] || '').trim(); // Categoria Econômica correspondente do bloco base
+                const bCat = String(row[IDX_BASE_PI - 1] || '').trim(); 
                 
                 if (bPI && bPI !== 'Total' && bPI !== 'PI' && bPI !== 'undefined') {
-                    // Chave composta única por dotação orçamentária específica
                     const uniqueKey = `${bPI}|||${bItem}|||${bCat}`;
                     baseMap.set(uniqueKey, row);
                 }
             }
 
-            // ==================== CRUZA COM O BLOCO ATUAL (CENTRO-DIREITA) ====================
+            // 3. ISOLADO: Cruzamento estrito com Bloco Atual para Alertas de Crédito
             allCreditAlerts = [];
             let alertIdCounter = 0;
             const uniqueCurrentProcessed = new Set();
@@ -292,23 +286,20 @@
                 
                 const cPI = String(row[IDX_CURR_PI] || '').trim();
                 const cItem = String(row[IDX_ITEM_INFO] || '').trim();
-                const cCat = String(row[IDX_CURR_PI - 1] || '').trim(); // Categoria Econômica do bloco atual
+                const cCat = String(row[IDX_CURR_PI - 1] || '').trim(); 
                 const cCredit = parseMoney(row[IDX_CURR_CREDIT]);
                 
                 if (!cPI || cPI === 'Total' || cPI === 'PI' || cPI === 'undefined') continue;
                 
                 const currentKey = `${cPI}|||${cItem}|||${cCat}`;
                 
-                // Evita duplicar o processamento da mesmíssima linha atual
                 if(uniqueCurrentProcessed.has(currentKey)) continue;
                 uniqueCurrentProcessed.add(currentKey);
 
-                // Localiza na base anterior usando a chave composta estrita
                 const matchBaseRow = baseMap.get(currentKey);
                 const bCredit = matchBaseRow ? parseMoney(matchBaseRow[IDX_BASE_CREDIT]) : 0;
                 const isNew = !matchBaseRow;
 
-                // CRITÉRIO MATEMÁTICO: Só exibe se houver mudança real de centavos ou se a linha de fato acabou de surgir
                 if (isNew || Math.abs(cCredit - bCredit) > 0.01) {
                     allCreditAlerts.push({
                         id: alertIdCounter++,
@@ -323,6 +314,7 @@
                 }
             }
             
+            // Renderiza painel superior de alertas
             renderCreditAlertPanel(allCreditAlerts);
             
             document.getElementById('lastUpdateText').textContent=new Date().toLocaleString('pt-BR');
@@ -331,7 +323,9 @@
             document.getElementById('statusBadge').classList.remove('hidden');
             document.getElementById('statusBadge').classList.add('flex');
             
+            // Renderiza KPIs e cartões originais da esquerda
             renderDashboard();
+            renderCards();
         } catch(err){ 
             console.error(err); 
             document.getElementById('loadingIcon').innerHTML='<i class="fas fa-exclamation-circle"></i>'; 
@@ -408,14 +402,12 @@
         
         let currentDetails = '', baseDetails = '';
         
-        // Exibe metadados das colunas adjacentes do bloco atual para conferência
         for (let k = 32; k <= 41; k++) {
             if(headers[k] || a.fullRow[k]) {
                 currentDetails += `<div class="p-2 bg-slate-900/50 rounded border border-slate-800/80 flex justify-between gap-4 text-xs"><span class="text-slate-500 font-medium">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-200 font-mono text-right truncate max-w-[250px]">${escapeHtml(a.fullRow[k] || '—')}</span></div>`;
             }
         }
         
-        // Exibe metadados das colunas adjacentes do bloco base correspondente
         if (a.baseRow) {
             for (let k = 42; k <= 51; k++) {
                 if(headers[k] || a.baseRow[k]) {
@@ -440,7 +432,7 @@
         document.body.classList.remove('modal-active');
     }
     
-    // Filtros de digitação em tempo real
+    // Filtros em tempo real aplicados na visualização dos cards gerais (da esquerda)
     document.getElementById('searchGlobal').addEventListener('input', applyFilters);
     document.getElementById('searchProcesso').addEventListener('input', applyFilters);
     document.getElementById('searchFavorecido').addEventListener('input', applyFilters);
@@ -450,15 +442,19 @@
         const pT = document.getElementById('searchProcesso').value.toLowerCase().trim(); 
         const fT = document.getElementById('searchFavorecido').value.toLowerCase().trim(); 
         
-        if(typeof allCreditAlerts !== 'undefined') {
-            const fAlerts = allCreditAlerts.filter(a => {
-                const matchG = !gT || a.pi.toLowerCase().includes(gT) || a.itemInfo.toLowerCase().includes(gT);
-                const matchP = !pT || a.pi.toLowerCase().includes(pT);
-                const matchF = !fT || a.itemInfo.toLowerCase().includes(fT);
-                return matchG && matchP && matchF;
-            });
-            renderCreditAlertPanel(fAlerts);
-        }
+        filteredData = allData.filter(row => {
+            const fav = String(row[IDX_FAVORECIDO]||'').toLowerCase();
+            const proc = String(row[IDX_PROCESSO]||'').toLowerCase();
+            const pi = String(row[IDX_PI_ESQUERDA]||'').toLowerCase();
+            
+            const matchG = !gT || fav.includes(gT) || proc.includes(gT) || pi.includes(gT);
+            const matchP = !pT || proc.includes(pT);
+            const matchF = !fT || fav.includes(fT);
+            
+            return matchG && matchP && matchF;
+        });
+        
+        renderCards();
     }
     
     function renderDashboard(){ 
@@ -470,6 +466,48 @@
         document.getElementById('kpiTotalSaldo').innerText = formatMoney(totalSaldo); 
         document.getElementById('kpiTotalProcessos').innerText = allData.length.toLocaleString('pt-BR'); 
         document.getElementById('kpiTotalFavorecidos').innerText = setFav.size.toLocaleString('pt-BR'); 
+    }
+
+    function renderCards(){
+        const container = document.getElementById('resultsContainer');
+        const empty = document.getElementById('emptyState');
+        
+        if(!filteredData.length){
+            container.innerHTML = ''; empty.classList.remove('hidden'); return;
+        }
+        empty.classList.add('hidden');
+        
+        container.innerHTML = filteredData.map(row => {
+            const fav = row[IDX_FAVORECIDO] || 'NÃO IDENTIFICADO';
+            const proc = row[IDX_PROCESSO] || '—';
+            const saldoVal = parseMoney(row[IDX_SALDO]);
+            const pi = row[IDX_PI_ESQUERDA] || '—';
+            const isPos = saldoVal >= 0;
+            
+            return `<div class="p-5 rounded-2xl bg-darkCard border border-darkBorder flex flex-col justify-between hover:border-slate-700 transition-all">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start gap-2">
+                        <div>
+                            <span class="text-[9px] uppercase tracking-wider font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">PI: ${escapeHtml(pi)}</span>
+                            <h4 class="text-sm font-display font-bold text-white mt-1.5 break-all">Processo: ${escapeHtml(proc)}</h4>
+                        </div>
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center ${isPos?'bg-emerald-500/10 text-emerald-400':'bg-red-500/10 text-red-400'}">
+                            <i class="fas ${isPos?'fa-check-circle':'fa-exclamation-circle'} text-sm"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase text-slate-500 mb-0.5">Favorecido</p>
+                        <p class="text-xs text-slate-300 line-clamp-2" title="${escapeHtml(fav)}">${escapeHtml(fav)}</p>
+                    </div>
+                </div>
+                <div class="pt-4 mt-4 border-t border-slate-800/80 flex justify-between items-center">
+                    <div>
+                        <p class="text-[9px] font-bold uppercase text-slate-500">Saldo Atual</p>
+                        <p class="text-base font-mono font-bold ${isPos?'text-emerald-400':'text-red-400'}">${formatMoney(saldoVal)}</p>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
     }
     
     document.addEventListener('keydown', e => { if(e.key === 'Escape') closeModalCreditAlert(); });
