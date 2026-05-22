@@ -229,8 +229,8 @@
         </div>
 
         <div id="btnA1IRRContainer" class="flex justify-center w-full my-4">
-            <button onclick="openA1IRRModal()" class="flex items-center gap-3 px-8 py-4 rounded-2xl font-display font-bold text-[15px] text-orange-400 bg-orange-500/10 border border-orange-500/30 hover:bg-orange-500/20 hover:scale-[1.02] transition-all shadow-[0_0_20px_rgba(249,115,22,0.15)]">
-                <i class="fas fa-search text-lg"></i>
+            <button onclick="openA1IRRModal()" class="flex items-center gap-2 text-xs px-2.5 py-1 rounded-full font-mono font-bold text-orange-400 bg-orange-500/10 border border-orange-500/20 hover:bg-orange-500/20 transition-all cursor-pointer">
+                <i class="fas fa-search"></i>
                 CONSULTA A1IRR
             </button>
         </div>
@@ -318,13 +318,13 @@
             <div class="flex justify-between items-start gap-4">
                 <div>
                     <p class="text-[10px] font-bold uppercase text-orange-400"><i class="fas fa-search mr-1"></i> Consulta Específica</p>
-                    <h3 class="text-base font-display font-bold text-white">Dados A1IRR (Colunas AQ até AZ)</h3>
+                    <h3 class="text-base font-display font-bold text-white">Dados A1IRR</h3>
                 </div>
                 <button onclick="closeA1IRRModal()" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 text-slate-400 hover:text-white"><i class="fas fa-times text-sm"></i></button>
             </div>
         </div>
         <div class="modal30-body">
-            <div id="modalA1IRRContent" class="table-wrap rounded-xl border border-slate-700/50 bg-slate-800/20 overflow-hidden">
+            <div id="modalA1IRRContent" class="table-wrap rounded-xl border border-slate-700/50 bg-slate-800/20">
                 </div>
         </div>
     </div>
@@ -456,16 +456,24 @@
 
             // ==================== NOVA CONSULTA A1IRR ====================
             const a1irrData = [];
-            const a1irrHeaders = headers.slice(42, 52); // Colunas AQ(42) a AZ(51)
+            const a1irrHeaders = [];
+            // Pegando do índice 42 (AQ) ao 51 (AZ)
+            for (let j = 42; j <= 51; j++) {
+                a1irrHeaders.push(headers[j] || `Col ${j}`);
+            }
             
             for (let i = 1; i < allRows.length; i++) {
                 const row = allRows[i];
-                // Verifica se a coluna AW (índice 48) existe e possui o valor esperado
                 if (row.length <= 48) continue;
                 const valAW = String(row[48] || '').trim();
                 
                 if (valAW === 'A1IRR') {
-                    a1irrData.push(row.slice(42, 52));
+                    // Garante que a linha extraída tenha exatamente as 10 colunas, preenchendo com vazio se faltar
+                    let extracted = [];
+                    for (let j = 42; j <= 51; j++) {
+                        extracted.push(row[j] || '');
+                    }
+                    a1irrData.push(extracted);
                 }
             }
             window._a1irrData = { headers: a1irrHeaders, rows: a1irrData };
@@ -501,8 +509,15 @@
             
             data.rows.forEach(row => {
                 html += '<tr class="border-b border-slate-700/50 hover:bg-orange-500/5 transition-colors">';
+                // Iteramos pelas 10 colunas extraídas
                 for (let i = 0; i < 10; i++) {
-                    html += `<td class="px-3 py-2 text-xs text-slate-300 font-mono whitespace-nowrap">${escapeHtml(row[i] || '—')}</td>`;
+                    let val = row[i] || '—';
+                    // Se for a última coluna (índice 9 corresponde a AZ - Crédito Disponível), tentamos formatar como moeda
+                    if (i === 9 && val !== '—') {
+                        const numVal = parseMoney(val);
+                        if(!isNaN(numVal)) val = formatMoney(numVal);
+                    }
+                    html += `<td class="px-3 py-2 text-xs text-slate-300 font-mono whitespace-nowrap">${escapeHtml(val)}</td>`;
                 }
                 html += '</tr>';
             });
