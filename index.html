@@ -457,20 +457,22 @@
             // ==================== NOVA CONSULTA A1IRR ====================
             const a1irrData = [];
             const a1irrHeaders = [];
-            // Pegando do índice 42 (AQ) ao 51 (AZ)
-            for (let j = 42; j <= 51; j++) {
+            // Pegando do índice 32 (AG) ao 41 (AP) - São 10 colunas no total
+            for (let j = 32; j <= 41; j++) {
                 a1irrHeaders.push(headers[j] || `Col ${j}`);
             }
             
             for (let i = 1; i < allRows.length; i++) {
                 const row = allRows[i];
-                if (row.length <= 48) continue;
-                const valAW = String(row[48] || '').trim();
+                // Como o bloco moveu 10 casas para trás (de 42 para 32), 
+                // a coluna PI que era a 48 (AW) logicamente passou a ser a 38 (AM)
+                if (row.length <= 38) continue;
+                const valPI = String(row[38] || '').trim(); 
                 
-                if (valAW === 'A1IRR') {
-                    // Garante que a linha extraída tenha exatamente as 10 colunas, preenchendo com vazio se faltar
+                if (valPI === 'A1IRR') {
+                    // Garante que a linha extraída tenha exatamente as 10 colunas
                     let extracted = [];
-                    for (let j = 42; j <= 51; j++) {
+                    for (let j = 32; j <= 41; j++) {
                         extracted.push(row[j] || '');
                     }
                     a1irrData.push(extracted);
@@ -509,10 +511,10 @@
             
             data.rows.forEach(row => {
                 html += '<tr class="border-b border-slate-700/50 hover:bg-orange-500/5 transition-colors">';
-                // Iteramos pelas 10 colunas extraídas
+                // Iteramos pelas 10 colunas extraídas (AG a AP)
                 for (let i = 0; i < 10; i++) {
                     let val = row[i] || '—';
-                    // Se for a última coluna (índice 9 corresponde a AZ - Crédito Disponível), tentamos formatar como moeda
+                    // O índice 9 corresponde à última coluna (AP)
                     if (i === 9 && val !== '—') {
                         const numVal = parseMoney(val);
                         if(!isNaN(numVal)) val = formatMoney(numVal);
