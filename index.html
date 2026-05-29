@@ -45,11 +45,11 @@
         .result-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.7), 0 0 0 1px rgba(59,130,246,0.3); }
 
         .modal-active { overflow: hidden; }
-        #detailsModal, #modal30, #modalCreditAlert, #modalA1IRR { backdrop-filter: blur(8px); }
+        #detailsModal, #modal30, #modalCreditAlert, #modalA1IRR, #modalEmpenhoAlert { backdrop-filter: blur(8px); }
         .modal-content { animation: scaleUp 0.22s ease-out; }
         @keyframes scaleUp { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        #liquidacaoPanel, #liq30Panel, #creditAlertPanel {
+        #liquidacaoPanel, #liq30Panel, #creditAlertPanel, #empenhoAlertPanel {
             position: relative;
             border-radius: 20px;
             background: linear-gradient(135deg, #0d1626 0%, #0f1e38 50%, #0d1626 100%);
@@ -57,6 +57,9 @@
         #liquidacaoPanel { border: 1px solid rgba(245,158,11,0.25); }
         #liq30Panel { border: 1px solid rgba(6,182,212,0.25); }
         #creditAlertPanel { border: 1px solid rgba(249, 115, 22, 0.45); background: linear-gradient(135deg, #0d1626 0%, #1c130b 100%); }
+        
+        /* Layout customizado para o painel de Empenhos (Pintado de Amarelo/Dourado) */
+        #empenhoAlertPanel { border: 1px solid rgba(234, 179, 8, 0.45); background: linear-gradient(135deg, #0d1626 0%, #1e1b12 100%); }
 
         .liq-table, .liq30-table, .alert-table {
             width: 100%;
@@ -108,7 +111,7 @@
         }
         .mini-bar-fill { height: 100%; border-radius: 3px; background: linear-gradient(90deg, #f59e0b, #ef4444); }
 
-        .pulse-dot, .pulse-dot-cyan, .pulse-dot-orange {
+        .pulse-dot, .pulse-dot-cyan, .pulse-dot-orange, .pulse-dot-yellow {
             display: inline-block;
             width: 8px; height: 8px;
             border-radius: 50%;
@@ -116,12 +119,14 @@
         .pulse-dot { background: #f59e0b; box-shadow: 0 0 0 0 rgba(245,158,11,0.5); animation: pulse 1.8s infinite; }
         .pulse-dot-cyan { background: #06b6d4; box-shadow: 0 0 0 0 rgba(6,182,212,0.5); animation: pulse-cyan 2.2s infinite; }
         .pulse-dot-orange { background: #f97316; box-shadow: 0 0 0 0 rgba(249,115,22,0.5); animation: pulse-orange 1.8s infinite; }
+        .pulse-dot-yellow { background: #eab308; box-shadow: 0 0 0 0 rgba(234,179,8,0.5); animation: pulse-yellow 1.8s infinite; }
         
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(245,158,11,0.6); } 70% { box-shadow: 0 0 0 8px rgba(245,158,11,0); } 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); } }
         @keyframes pulse-cyan { 0% { box-shadow: 0 0 0 0 rgba(6,182,212,0.6); } 70% { box-shadow: 0 0 0 8px rgba(6,182,212,0); } 100% { box-shadow: 0 0 0 0 rgba(6,182,212,0); } }
         @keyframes pulse-orange { 0% { box-shadow: 0 0 0 0 rgba(249,115,22,0.6); } 70% { box-shadow: 0 0 0 8px rgba(249,115,22,0); } 100% { box-shadow: 0 0 0 0 rgba(249,115,22,0); } }
+        @keyframes pulse-yellow { 0% { box-shadow: 0 0 0 0 rgba(234,179,8,0.6); } 70% { box-shadow: 0 0 0 8px rgba(234,179,8,0); } 100% { box-shadow: 0 0 0 0 rgba(234,179,8,0); } }
 
-        .panel-header-badge, .panel-header-badge-cyan, .panel-header-badge-orange {
+        .panel-header-badge, .panel-header-badge-cyan, .panel-header-badge-orange, .panel-header-badge-yellow {
             display: inline-flex;
             align-items: center;
             gap: 7px;
@@ -136,6 +141,7 @@
         .panel-header-badge { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #fbbf24; }
         .panel-header-badge-cyan { background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.25); color: #22d3ee; }
         .panel-header-badge-orange { background: rgba(249,115,22,0.1); border: 1px solid rgba(249,115,22,0.25); color: #fb923c; }
+        .panel-header-badge-yellow { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.25); color: #fde047; }
 
         .kpi-card { transition: all 0.2s ease; background: #0d1626; border: 1px solid #1e3050; border-radius: 20px; }
         .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px -5px rgba(0,0,0,0.4); }
@@ -154,6 +160,10 @@
         }
         .liq30-row-clickable { cursor: pointer; transition: background 0.15s; }
         .liq30-row-clickable:hover { background: rgba(249,115,22,0.05) !important; }
+        
+        /* Hover específico para a tabela de empenhos */
+        .empenho-row-clickable { cursor: pointer; transition: background 0.15s; }
+        .empenho-row-clickable:hover { background: rgba(234,179,8,0.05) !important; }
 
         .modal30 {
             position: fixed; inset: 0; z-index: 60;
@@ -243,6 +253,14 @@
             <div id="creditAlertContainer" class="table-wrap"></div>
         </div>
 
+        <div id="empenhoAlertPanel" class="hidden p-5">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="panel-header-badge-yellow"><span class="pulse-dot-yellow"></span> Alerta de Empenhos</span>
+                <span id="empenhoAlertCountBadge" class="text-xs px-2.5 py-1 rounded-full font-mono font-bold bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">0 ocorrências</span>
+            </div>
+            <div id="empenhoAlertContainer" class="table-wrap"></div>
+        </div>
+
         <div id="liq30Panel" class="hidden p-5">
             <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
                 <div class="flex items-center gap-3"><span class="panel-header-badge-cyan"><span class="pulse-dot-cyan"></span> Últimas Liquidações · 30 dias</span><span id="liq30CountBadge" class="text-xs px-2.5 py-1 rounded-full font-mono font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">0 ocorrências</span></div>
@@ -324,30 +342,63 @@
             </div>
         </div>
         <div class="modal30-body">
-            <div id="modalA1IRRContent" class="table-wrap rounded-xl border border-slate-700/50 bg-slate-800/20">
+            <div id="modalA1IRRContent" class="table-wrap rounded-xl border border-slate-700/50 bg-slate-800/20"></div>
+        </div>
+    </div>
+</div>
+
+<div id="modalEmpenhoAlert" class="modal30 hidden" onclick="if(event.target===this) closeModalEmpenhoAlert()">
+    <div class="modal30-content" style="border-color: rgba(234, 179, 8, 0.45); max-width: 800px;">
+        <div class="modal30-header" style="border-bottom-color: #1e3050;">
+            <div class="flex justify-between items-start gap-4">
+                <div>
+                    <p class="text-[10px] font-bold uppercase text-yellow-400"><i class="fas fa-file-signature mr-1"></i> Detalhes da Alteração de Empenho</p>
+                    <h3 id="modalEmpenhoProcesso" class="text-base font-display font-bold text-white">Processo: ---</h3>
                 </div>
+                <button onclick="closeModalEmpenhoAlert()" class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 text-slate-400 hover:text-white"><i class="fas fa-times text-sm"></i></button>
+            </div>
+            <div id="modalEmpenhoSummary" class="flex gap-3 mt-3 flex-wrap"></div>
+        </div>
+        <div class="modal30-body">
+            <p class="text-[10px] font-bold uppercase text-slate-500 mb-3">Detalhamento da Linha de Empenho Modificada</p>
+            <div id="modalEmpenhoEntries" class="space-y-4"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // URL do Google Apps Script original
     const CSV_URL = "https://script.google.com/macros/s/AKfycbxgjltMj72B_8Zd-46iPAiMYu2S7Y-hIYLOk-N4CdDXYrE9_ioYCw79tdpkrGYLRxTv-w/exec";
     
-    let allData = [], filteredData = [], headers = [], allMatches = [], allMatches30 = [], allCreditAlerts = [];
+    let allData = [], filteredData = [], headers = [], allMatches = [], allMatches30 = [], allCreditAlerts = [], allEmpenhoAlerts = [];
     
-    // Índices de mapeamento estrutural originais (Preservados do seu arquivo original)
     let IDX_FAVORECIDO = 7, IDX_PROCESSO = 12, IDX_SALDO = 17;
     const LIQ_START = 18, LIQ_END = 25;  
     const LIQ30_START = 25, LIQ30_END = 32; 
     
-    // Índices mapeados exclusivamente para o seu novo painel de Alertas de Crédito
     const IDX_CURR_PI = 38;      
     const IDX_ITEM_INFO = 40;     
     const IDX_CURR_CREDIT = 41;  
     const IDX_BASE_PI = 48;      
     const IDX_BASE_ITEM_INFO = 50;
     const IDX_BASE_CREDIT = 51;  
+    
+    // Mapeamento dos Índices para os Empenhos (BA até BG -> Índices 52 a 58)
+    const IDX_EMP_FAVORECIDO = 52;
+    const IDX_EMP_PROCESSO = 53;
+    const IDX_EMP_ELEMENTO = 54;
+    const IDX_EMP_SUBITEM = 55;
+    const IDX_EMP_COS01 = 56;
+    const IDX_EMP_PI = 57;
+    const IDX_EMP_VALOR_CURR = 58; // DESPESAS EMPENHADAS (CONTROLE EMPENHO)
+
+    // Base comparativa dos Empenhos (BH até BN -> Índices 59 a 65)
+    const IDX_EMP_BASE_FAVORECIDO = 59;
+    const IDX_EMP_BASE_PROCESSO = 60;
+    const IDX_EMP_BASE_ELEMENTO = 61;
+    const IDX_EMP_BASE_SUBITEM = 62;
+    const IDX_EMP_BASE_COS01 = 63;
+    const IDX_EMP_BASE_PI = 64;
+    const IDX_EMP_VALOR_BASE = 65;
     
     function parseCSV(text) {
         const rows = []; let inQ = false, cur = '', row = [];
@@ -380,7 +431,6 @@
             const find=(...t)=>{ let i=h.findIndex(c=>t.some(ct=>c===ct.toLowerCase())); if(i>=0) return i; return h.findIndex(c=>t.some(ct=>c.includes(ct.toLowerCase()))); };
             IDX_FAVORECIDO=find('ne ccor - favorecido','favorecido'); IDX_PROCESSO=find('ne ccor - núm. processo','processo'); IDX_SALDO=find('saldo - moeda origem','saldo');
             
-            // Tabela principal original (A-R)
             allData=[]; for(let i=1;i<allRows.length;i++){ const row=allRows[i].slice(0,LIQ_START); const proc=String(row[IDX_PROCESSO]||'').trim(); const fav=String(row[IDX_FAVORECIDO]||'').trim(); if(proc&&fav&&proc!=='Total'&&fav!=='Total'&&proc.length>3) allData.push(row); }
             filteredData=[...allData];
             
@@ -454,23 +504,76 @@
             }
             allCreditAlerts = Array.from(alertMap.values());
 
+            // ==================== NOVO: ALERTA DE EMPENHOS (BA até BG vs BH até BN) ====================
+            const empenhoBaseRowsList = [];
+            for (let i = 1; i < allRows.length; i++) {
+                const row = allRows[i];
+                if (row.length <= IDX_EMP_VALOR_BASE) continue;
+                const bProc = String(row[IDX_EMP_BASE_PROCESSO] || '').trim();
+                if (bProc && bProc !== 'Total' && bProc !== 'NE CCor - Núm. Processo') {
+                    empenhoBaseRowsList.push(row);
+                }
+            }
+
+            const empenhoAlertMap = new Map();
+            let empenhoCounter = 0;
+
+            for (let i = 1; i < allRows.length; i++) {
+                const row = allRows[i];
+                if (row.length <= IDX_EMP_VALOR_CURR) continue;
+                
+                const cFav = String(row[IDX_EMP_FAVORECIDO] || '').trim();
+                const cProc = String(row[IDX_EMP_PROCESSO] || '').trim();
+                const cElem = String(row[IDX_EMP_ELEMENTO] || '').trim();
+                const cSub = String(row[IDX_EMP_SUBITEM] || '').trim();
+                const cCos = String(row[IDX_EMP_COS01] || '').trim();
+                const cPI = String(row[IDX_EMP_PI] || '').trim();
+                const cValue = parseMoney(row[IDX_EMP_VALOR_CURR]);
+
+                if (!cProc || cProc === 'Total' || cProc === 'NE CCor - Núm. Processo' || cProc === '') continue;
+
+                // Encontra a linha correspondente no bloco Base (anterior) cruzando Processo, Favorecido e Elemento
+                const matchBase = empenhoBaseRowsList.find(br => 
+                    String(br[IDX_EMP_BASE_PROCESSO]).trim() === cProc &&
+                    String(br[IDX_EMP_BASE_FAVORECIDO]).trim() === cFav &&
+                    String(br[IDX_EMP_BASE_ELEMENTO]).trim() === cElem
+                );
+
+                const bValue = matchBase ? parseMoney(matchBase[IDX_EMP_VALOR_BASE]) : 0;
+                const isNew = !matchBase;
+
+                // Dispara o alerta se for um empenho novo ou se o valor mudou
+                if (isNew || Math.abs(cValue - bValue) > 0.01) {
+                    empenhoAlertMap.set(empenhoCounter++, {
+                        favorecido: cFav,
+                        processo: cProc,
+                        elemento: cElem,
+                        subitem: cSub,
+                        cos01: cCos,
+                        pi: cPI,
+                        oldValue: bValue,
+                        newValue: cValue,
+                        isNew: isNew,
+                        fullRow: row,
+                        baseRow: matchBase || null
+                    });
+                }
+            }
+            allEmpenhoAlerts = Array.from(empenhoAlertMap.values());
+
             // ==================== NOVA CONSULTA A1IRR ====================
             const a1irrData = [];
             const a1irrHeaders = [];
-            // Pegando do índice 32 (AG) ao 41 (AP) - São 10 colunas no total
             for (let j = 32; j <= 41; j++) {
                 a1irrHeaders.push(headers[j] || `Col ${j}`);
             }
             
             for (let i = 1; i < allRows.length; i++) {
                 const row = allRows[i];
-                // Como o bloco moveu 10 casas para trás (de 42 para 32), 
-                // a coluna PI que era a 48 (AW) logicamente passou a ser a 38 (AM)
                 if (row.length <= 38) continue;
                 const valPI = String(row[38] || '').trim(); 
                 
                 if (valPI === 'A1IRR') {
-                    // Garante que a linha extraída tenha exatamente as 10 colunas
                     let extracted = [];
                     for (let j = 32; j <= 41; j++) {
                         extracted.push(row[j] || '');
@@ -480,8 +583,9 @@
             }
             window._a1irrData = { headers: a1irrHeaders, rows: a1irrData };
             
-            // Executa as renderizações
+            // Renderizações dos painéis
             renderCreditAlertPanel(allCreditAlerts);
+            renderEmpenhoAlertPanel(allEmpenhoAlerts); // Renderiza o novo painel
             renderLiquidacaoPanel(allMatches);
             renderLiq30Panel(allMatches30);
             
@@ -495,26 +599,19 @@
         btn.disabled=false; icon.className='fas fa-sync-alt';
     }
     
-    // Função para abrir o modal A1IRR e renderizar os dados
     function openA1IRRModal() {
         const data = window._a1irrData;
         const container = document.getElementById('modalA1IRRContent');
-        
         if (!data || !data.rows || data.rows.length === 0) {
             container.innerHTML = '<div class="text-center p-8 text-slate-500"><i class="fas fa-search-minus text-3xl mb-3 block"></i>Nenhum registro encontrado com o filtro PI = A1IRR.</div>';
         } else {
             let html = '<table class="alert-table w-full text-left"><thead><tr>';
-            data.headers.forEach(h => {
-                html += `<th class="px-3 py-2">${escapeHtml(h)}</th>`;
-            });
+            data.headers.forEach(h => { html += `<th class="px-3 py-2">${escapeHtml(h)}</th>`; });
             html += '</tr></thead><tbody>';
-            
             data.rows.forEach(row => {
                 html += '<tr class="border-b border-slate-700/50 hover:bg-orange-500/5 transition-colors">';
-                // Iteramos pelas 10 colunas extraídas (AG a AP)
                 for (let i = 0; i < 10; i++) {
                     let val = row[i] || '—';
-                    // O índice 9 corresponde à última coluna (AP)
                     if (i === 9 && val !== '—') {
                         const numVal = parseMoney(val);
                         if(!isNaN(numVal)) val = formatMoney(numVal);
@@ -526,7 +623,6 @@
             html += '</tbody></table>';
             container.innerHTML = html;
         }
-        
         document.getElementById('modalA1IRR').classList.remove('hidden');
         document.body.classList.add('modal-active');
     }
@@ -540,28 +636,23 @@
         const panel = document.getElementById('creditAlertPanel');
         const badge = document.getElementById('creditAlertCountBadge');
         const container = document.getElementById('creditAlertContainer');
-        
         if (!alerts.length) { panel.classList.add('hidden'); return; }
         panel.classList.remove('hidden');
         badge.textContent = alerts.length + ' ocorrência' + (alerts.length > 1 ? 's' : '');
-        
         window._creditAlertsData = alerts;
-        
         const tbody = alerts.map((a, idx) => {
             const typeBadge = a.isNew 
                 ? `<span class="px-2.5 py-0.5 text-[9px] font-bold rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">NOVO CRÉDITO</span>`
                 : `<span class="px-2.5 py-0.5 text-[9px] font-bold rounded bg-orange-500/10 text-orange-400 border border-orange-500/20">VALOR ALTERADO</span>`;
-            
             return `<tr class="liq30-row-clickable" onclick="openCreditAlertModal(${idx})">
                 <td><div class="flex items-center gap-2"><i class="fas fa-exclamation-triangle text-orange-400 text-xs animate-pulse"></i><span class="font-mono font-bold text-white text-sm">PI ${escapeHtml(a.pi)}</span></div></td>
                 <td class="text-center">${typeBadge}</td>
                 <td class="text-left text-xs font-mono text-orange-300 truncate max-w-[220px]" title="${escapeHtml(a.itemInfo)}">${escapeHtml(a.itemInfo)}</td>
                 <td class="text-right"><span class="value-chip chip-before">${formatMoney(a.oldValue)}</span></td>
                 <td class="text-right"><span class="value-chip font-mono font-bold text-orange-400 bg-orange-500/5 border border-orange-500/20">${formatMoney(a.newValue)}</span></td>
-                <td class="text-right text-slate-600 text-xs"><i class="fas fa-chevron-right mr-1"></i></td>
+                <td class="text-right"><i class="fas fa-chevron-right mr-1 text-slate-600 text-xs"></i></td>
             </tr>`;
         }).join('');
-        
         container.innerHTML = `<table class="alert-table">
             <thead>
                 <tr>
@@ -577,54 +668,137 @@
         </table>`;
     }
 
+    // ==================== FUNÇÃO DE RENDERIZAÇÃO DO NOVO PAINEL DE EMPENHOS ====================
+    function renderEmpenhoAlertPanel(alerts) {
+        const panel = document.getElementById('empenhoAlertPanel');
+        const badge = document.getElementById('empenhoAlertCountBadge');
+        const container = document.getElementById('empenhoAlertContainer');
+        
+        // Regra dinâmica: só aparece se houver dados cadastrados
+        if (!alerts.length) { panel.classList.add('hidden'); return; }
+        panel.classList.remove('hidden');
+        badge.textContent = alerts.length + ' ocorrência' + (alerts.length > 1 ? 's' : '');
+        
+        window._empenhoAlertsData = alerts;
+        
+        const tbody = alerts.map((a, idx) => {
+            const typeBadge = a.isNew 
+                ? `<span class="px-2.5 py-0.5 text-[9px] font-bold rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">NOVO EMPENHO</span>`
+                : `<span class="px-2.5 py-0.5 text-[9px] font-bold rounded bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">VALOR ALTERADO</span>`;
+            
+            return `<tr class="empenho-row-clickable" onclick="openEmpenhoAlertModal(${idx})">
+                <td>
+                    <div class="flex flex-col">
+                        <span class="font-semibold text-white text-sm truncate max-w-[200px]" title="${escapeHtml(a.favorecido)}">${escapeHtml(a.favorecido)}</span>
+                        <span class="text-[10px] text-slate-500 font-mono">Proc: ${escapeHtml(a.processo)}</span>
+                    </div>
+                </td>
+                <td class="text-center">${typeBadge}</td>
+                <td class="text-center text-xs font-mono text-slate-300">${escapeHtml(a.elemento)} / ${escapeHtml(a.subitem)}</td>
+                <td class="text-center text-xs font-mono text-purple-400">PI ${escapeHtml(a.pi)}</td>
+                <td class="text-right"><span class="value-chip chip-before">${formatMoney(a.oldValue)}</span></td>
+                <td class="text-right"><span class="value-chip font-mono font-bold text-yellow-400 bg-yellow-500/5 border border-yellow-500/20">${formatMoney(a.newValue)}</span></td>
+                <td class="text-right text-slate-600 text-xs"><i class="fas fa-chevron-right mr-1"></i></td>
+            </tr>`;
+        }).join('');
+
+        container.innerHTML = `<table class="alert-table">
+            <thead>
+                <tr>
+                    <th>Favorecido / Processo</th>
+                    <th class="text-center">Tipo Ocorrência</th>
+                    <th class="text-center">Elemento / Subitem</th>
+                    <th class="text-center">PI</th>
+                    <th class="text-right">Valor Anterior</th>
+                    <th class="text-right">Despesa Empenhada</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>${tbody}</tbody>
+        </table>`;
+    }
+
+    // Modais de Visualização e Abertura
     function openCreditAlertModal(idx) {
         const a = window._creditAlertsData && window._creditAlertsData[idx];
         if (!a) return;
-        
         document.getElementById('modalAlertPI').textContent = "Plano Interno (PI): " + a.pi;
         const diff = a.newValue - a.oldValue;
-        
         document.getElementById('modalAlertSummary').innerHTML = `
             <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50"><span class="text-[10px] uppercase text-slate-500">Anterior Base Linha</span><span class="font-mono text-sm text-slate-300">${formatMoney(a.oldValue)}</span></div>
             <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-orange-500/10 border border-orange-500/20"><span class="text-[10px] uppercase text-orange-400">Novo Atual Linha</span><span class="font-mono text-sm text-orange-400 font-bold">${formatMoney(a.newValue)}</span></div>
             <div class="flex items-center gap-2 px-3 py-2 rounded-lg ${diff >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-500 font-bold">Variação Real</span><span class="font-mono text-sm ${diff >= 0 ? 'text-emerald-400' : 'text-red-400'}">${diff >= 0 ? '+' : ''}${formatMoney(diff)}</span></div>
         `;
-        
         let currentDetails = '', baseDetails = '';
         for (let k = 32; k <= 41; k++) {
-            if(headers[k] || a.fullRow[k]) {
-                currentDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-200 font-mono ${k===IDX_CURR_CREDIT?'text-orange-400 font-bold':''}">${escapeHtml(a.fullRow[k] || '—')}</span></div>`;
-            }
+            if(headers[k] || a.fullRow[k]) { currentDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-200 font-mono ${k===IDX_CURR_CREDIT?'text-orange-400 font-bold':''}">${escapeHtml(a.fullRow[k] || '—')}</span></div>`; }
         }
         if (a.baseRow) {
             for (let k = 42; k <= 51; k++) {
-                if(headers[k] || a.baseRow[k]) {
-                    baseDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-400 font-mono">${escapeHtml(a.baseRow[k] || '—')}</span></div>`;
-                }
+                if(headers[k] || a.baseRow[k]) { baseDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-400 font-mono">${escapeHtml(a.baseRow[k] || '—')}</span></div>`; }
             }
-        } else {
-            baseDetails = `<div class="text-xs text-slate-600 italic p-3 text-center">Nenhum registro correspondente localizado na base anterior.</div>`;
-        }
-        
-        document.getElementById('modalAlertEntries').innerHTML = `<div class="border border-slate-700/60 rounded-xl p-4 bg-slate-800/40 space-y-3">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <h4 class="text-[10px] font-bold text-orange-400 uppercase tracking-wider mb-2">Dados Atualizados</h4>
-                    <div class="space-y-1">${currentDetails}</div>
-                </div>
-                <div>
-                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Dados Base</h4>
-                    <div class="space-y-1">${baseDetails}</div>
-                </div>
-            </div>
-        </div>`;
-        
+        } else { baseDetails = `<div class="text-xs text-slate-600 italic p-3 text-center">Nenhum registro correspondente localizado na base anterior.</div>`; }
+        document.getElementById('modalAlertEntries').innerHTML = `<div class="border border-slate-700/60 rounded-xl p-4 bg-slate-800/40 space-y-3"><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><h4 class="text-[10px] font-bold text-orange-400 uppercase tracking-wider mb-2">Dados Atualizados</h4><div class="space-y-1">${currentDetails}</div></div><div><h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Dados Base</h4><div class="space-y-1">${baseDetails}</div></div></div></div>`;
         document.getElementById('modalCreditAlert').classList.remove('hidden');
         document.body.classList.add('modal-active');
     }
 
     function closeModalCreditAlert() {
         document.getElementById('modalCreditAlert').classList.add('hidden');
+        document.body.classList.remove('modal-active');
+    }
+
+    // ==================== CONTROLE DO NOVO MODAL DE EMPENHOS ====================
+    function openEmpenhoAlertModal(idx) {
+        const a = window._empenhoAlertsData && window._empenhoAlertsData[idx];
+        if (!a) return;
+        
+        document.getElementById('modalEmpenhoProcesso').textContent = "Processo: " + a.processo;
+        const diff = a.newValue - a.oldValue;
+        
+        document.getElementById('modalEmpenhoSummary').innerHTML = `
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50"><span class="text-[10px] uppercase text-slate-500">Empenho Base Anterior</span><span class="font-mono text-sm text-slate-300">${formatMoney(a.oldValue)}</span></div>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20"><span class="text-[10px] uppercase text-yellow-500">Empenho Atualizado</span><span class="font-mono text-sm text-yellow-400 font-bold">${formatMoney(a.newValue)}</span></div>
+            <div class="flex items-center gap-2 px-3 py-2 rounded-lg ${diff >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-500 font-bold">Variação</span><span class="font-mono text-sm ${diff >= 0 ? 'text-emerald-400' : 'text-red-400'}">${diff >= 0 ? '+' : ''}${formatMoney(diff)}</span></div>
+        `;
+
+        let currentDetails = '', baseDetails = '';
+        // Mapeia colunas atuais (BA até BG)
+        for (let k = 52; k <= 58; k++) {
+            if (headers[k] || a.fullRow[k]) {
+                currentDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-200 font-mono ${k===IDX_EMP_VALOR_CURR?'text-yellow-400 font-bold':''}">${escapeHtml(a.fullRow[k] || '—')}</span></div>`;
+            }
+        }
+        // Mapeia colunas base (BH até BN)
+        if (a.baseRow) {
+            for (let k = 59; k <= 65; k++) {
+                if (headers[k] || a.baseRow[k]) {
+                    baseDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-400 font-mono">${escapeHtml(a.baseRow[k] || '—')}</span></div>`;
+                }
+            }
+        } else {
+            baseDetails = `<div class="text-xs text-slate-600 italic p-3 text-center">Nenhum registro correspondente localizado na base anterior de empenhos.</div>`;
+        }
+
+        document.getElementById('modalEmpenhoEntries').innerHTML = `<div class="border border-slate-700/60 rounded-xl p-4 bg-slate-800/40 space-y-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <h4 class="text-[10px] font-bold text-yellow-400 uppercase tracking-wider mb-2">Dados do Empenho Atual</h4>
+                    <div class="space-y-1">${currentDetails}</div>
+                </div>
+                <div>
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Dados do Empenho Anterior (Base)</h4>
+                    <div class="space-y-1">${baseDetails}</div>
+                </div>
+            </div>
+        </div>`;
+
+        document.getElementById('modalEmpenhoAlert').classList.remove('hidden');
+        document.body.classList.add('modal-active');
+    }
+
+    function closeModalEmpenhoAlert() {
+        document.getElementById('modalEmpenhoAlert').classList.add('hidden');
         document.body.classList.remove('modal-active');
     }
     
@@ -646,7 +820,7 @@
         window._liq30Data=matches;
         const totalLiq=matches.reduce((s,m)=>s+m.totalLiq,0), totalAntes=matches.filter(m=>m.saldoAtual!==null).reduce((s,m)=>s+(m.saldoAtual+m.totalLiq),0), totalDep=matches.filter(m=>m.saldoAtual!==null).reduce((s,m)=>s+m.saldoAtual,0);
         const tbody=matches.map((m,idx)=>{ const saldo=m.saldoAtual; const saldoAntes=saldo!==null?saldo+m.totalLiq:null; const pct=saldoAntes&&saldoAntes>0?Math.min(m.totalLiq/saldoAntes*100,100):100; const barColor=pct>90?'#ef4444':pct>60?'#f59e0b':'#10b981'; const isLow=saldo!==null&&saldoAntes!==null&&saldo<saldoAntes*0.1; const afterChip=saldo===null?'chip-before':(saldo<0?'chip-after-red':(isLow?'chip-after-warn':'chip-after')); const latestDate=m.entries.length?m.entries.reduce((a,b)=>a.date>b.date?a:b).date:null; const hasMultiple=m.entries.length>1; return `<tr class="liq30-row-clickable" onclick="openModal30(${idx})"><td><div class="flex items-center gap-2"><i class="fas fa-history text-xs text-cyan-400"></i><div><p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p>${m.desc?`<p class="text-[10px] text-slate-500">${escapeHtml(m.desc)}</p>`:''}</div></div></td><td><span class="text-[11px] font-mono px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400">${escapeHtml(m.elem)} · ${escapeHtml(m.processo)}</span>${m.pi?`<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">PI ${escapeHtml(m.pi)}</span>`:''}</td><td class="text-center"><span class="date-chip">${latestDate?formatDateBR(latestDate):'—'}</span>${hasMultiple?`<span class="text-[9px] block mt-1 text-cyan-400"><i class="fas fa-layer-group mr-0.5"></i>${m.entries.length} lançamentos</span>`:''}</td><td class="text-right"><span class="value-chip chip-before">${saldoAntes!==null?formatMoney(saldoAntes):'—'}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(m.totalLiq)}</span></td><td class="text-right"><span class="value-chip ${afterChip}">${saldo!==null?formatMoney(saldo):'—'}</span></td><td class="text-right"><div class="flex items-center justify-end gap-2"><span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pct.toFixed(1)}%</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div></div><i class="fas fa-chevron-right text-[9px] text-slate-600"></i></div></td></tr>`; }).join('');
-        container.innerHTML=`<table class="liq30-table"><thead><tr><th>Favorecido</th><th>Elemento · Processo</th><th class="text-center">Último Lançamento</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody><tfoot><td><td colspan="3" class="font-mono text-slate-500">TOTAIS · ${matches.length} OCORRÊNCIAS (30 dias)</td><td class="text-right"><span class="value-chip chip-before">${formatMoney(totalAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(totalLiq)}</span></td><td class="text-right"><span class="value-chip chip-after">${formatMoney(totalDep)}</span></td><td class="text-right"></td></tr></tfoot></table>`;
+        container.innerHTML=`<table class="liq30-table"><thead><tr><th>Favorecido</th><th>Elemento · Processo</th><th class="text-center">Último Lançamento</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody></table>`;
     }
     
     function openModal30(idx){ const m=window._liq30Data&&window._liq30Data[idx]; if(!m) return; document.getElementById('modal30Processo').textContent=m.processo; document.getElementById('modal30Fav').textContent=m.favorecido; const saldo=m.saldoAtual; const saldoAntes=saldo!==null?saldo+m.totalLiq:null; document.getElementById('modal30Summary').innerHTML=`<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50"><span class="text-[10px] uppercase text-slate-500">Saldo Anterior</span><span class="font-mono text-sm text-slate-300">${saldoAntes!==null?formatMoney(saldoAntes):'—'}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10"><span class="text-[10px] uppercase text-slate-500">Total Liquidado</span><span class="font-mono text-sm text-red-400">− ${formatMoney(m.totalLiq)}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg ${saldo!==null&&saldo>=0?'bg-emerald-500/10':'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-500">Saldo Atual</span><span class="font-mono text-sm ${saldo!==null&&saldo>=0?'text-emerald-400':'text-red-400'}">${saldo!==null?formatMoney(saldo):'—'}</span></div>`; const sorted=[...m.entries].sort((a,b)=>b.date-a.date); document.getElementById('modal30Entries').innerHTML=sorted.map((e,i)=>`<div class="modal30-row"><div class="flex items-center gap-3"><div class="w-7 h-7 rounded-full flex items-center justify-center bg-cyan-500/10 border border-cyan-500/20"><span class="text-[10px] font-bold text-cyan-400">${sorted.length-i}</span></div><span class="date-chip">${formatDateBR(e.date)}</span></div><span class="value-chip ${e.valor>=0?'chip-after':'chip-liq'}">${e.valor>=0?'':'− '}${formatMoney(Math.abs(e.valor))}</span></div>`).join(''); document.getElementById('modal30').classList.remove('hidden'); document.body.classList.add('modal-active'); }
@@ -670,10 +844,12 @@
         renderLiq30Panel(allMatches30.filter(m=>m.processo.toLowerCase().includes(pT)&&m.favorecido.toLowerCase().includes(fT))); 
         
         if(typeof allCreditAlerts !== 'undefined') {
-            const fAlerts = allCreditAlerts.filter(a => {
-                return a.pi.toLowerCase().includes(gT) || a.itemInfo.toLowerCase().includes(gT);
-            });
+            const fAlerts = allCreditAlerts.filter(a => a.pi.toLowerCase().includes(gT) || a.itemInfo.toLowerCase().includes(gT));
             renderCreditAlertPanel(fAlerts);
+        }
+        if(typeof allEmpenhoAlerts !== 'undefined') {
+            const fEmpenhos = allEmpenhoAlerts.filter(a => a.processo.toLowerCase().includes(pT) || a.favorecido.toLowerCase().includes(fT) || a.pi.toLowerCase().includes(gT));
+            renderEmpenhoAlertPanel(fEmpenhos);
         }
         renderDashboard(); 
     }
@@ -688,6 +864,7 @@
             if(!document.getElementById('modal30').classList.contains('hidden')) closeModal30();
             if(!document.getElementById('modalCreditAlert').classList.contains('hidden')) closeModalCreditAlert();
             if(!document.getElementById('modalA1IRR').classList.contains('hidden')) closeA1IRRModal();
+            if(!document.getElementById('modalEmpenhoAlert').classList.contains('hidden')) closeModalEmpenhoAlert();
         }
     });
     
