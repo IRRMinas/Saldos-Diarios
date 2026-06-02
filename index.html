@@ -237,7 +237,6 @@
     let IDX_EMP_FAVORECIDO = 52, IDX_EMP_PROCESSO = 53, IDX_EMP_ELEMENTO = 54, IDX_EMP_SUBITEM = 55, IDX_EMP_COS01 = 56, IDX_EMP_PI = 57, IDX_EMP_VALOR_CURR = 58;
     let IDX_EMP_BASE_FAVORECIDO = 59, IDX_EMP_BASE_PROCESSO = 60, IDX_EMP_BASE_ELEMENTO = 61, IDX_EMP_BASE_SUBITEM = 62, IDX_EMP_BASE_COS01 = 63, IDX_EMP_BASE_PI = 64, IDX_EMP_VALOR_BASE = 65;
     
-    // NOVO LEITOR CSV BLINDADO: Quebra por linha primeiro, impedindo que aspas abertas destruam o resto do arquivo.
     function parseCSV(text) {
         const rows = [];
         const lines = text.split(/\r?\n/);
@@ -296,11 +295,18 @@
             IDX_EMP_FAVORECIDO = 52 + offset; IDX_EMP_PROCESSO = 53 + offset; IDX_EMP_ELEMENTO = 54 + offset; IDX_EMP_SUBITEM = 55 + offset; IDX_EMP_COS01 = 56 + offset; IDX_EMP_PI = 57 + offset; IDX_EMP_VALOR_CURR = 58 + offset;
             IDX_EMP_BASE_FAVORECIDO = 59 + offset; IDX_EMP_BASE_PROCESSO = 60 + offset; IDX_EMP_BASE_ELEMENTO = 61 + offset; IDX_EMP_BASE_SUBITEM = 62 + offset; IDX_EMP_BASE_COS01 = 63 + offset; IDX_EMP_BASE_PI = 64 + offset; IDX_EMP_VALOR_BASE = 65 + offset;
             
-            allData=[]; for(let i=1;i<allRows.length;i++){ 
+            allData=[]; 
+            for(let i=1;i<allRows.length;i++){ 
                 const row=allRows[i].slice(0,LIQ_START); 
                 const proc=String(row[IDX_PROCESSO]||'').trim(); 
                 const fav=String(row[IDX_FAVORECIDO]||'').trim(); 
-                if(proc&&fav&&proc!=='Total'&&fav!=='Total'&&proc.length>3) allData.push(row); 
+                
+                // MISTÉRIO RESOLVIDO: O código antigo tinha um "proc.length > 3". 
+                // Isso escondia a FIOCRUZ, já que o processo dela é apenas "-8" (2 caracteres). 
+                // Removi a trava de tamanho! Agora a Fiocruz entra normalmente.
+                if(proc && fav && proc !== 'Total' && fav !== 'Total') {
+                    allData.push(row); 
+                } 
             }
             filteredData=[...allData];
             
