@@ -371,34 +371,33 @@
     
     let allData = [], filteredData = [], headers = [], allMatches = [], allMatches30 = [], allCreditAlerts = [], allEmpenhoAlerts = [];
     
+    // VARIÁVEIS TRANSFORMADAS EM "LET" PARA COMPENSAR A ADIÇÃO DE COLUNAS
     let IDX_FAVORECIDO = 7, IDX_PROCESSO = 12, IDX_SALDO = 17;
-    const LIQ_START = 18, LIQ_END = 25;  
-    const LIQ30_START = 25, LIQ30_END = 32; 
+    let LIQ_START = 18, LIQ_END = 25;  
+    let LIQ30_START = 25, LIQ30_END = 32; 
     
-    const IDX_CURR_PI = 38;      
-    const IDX_ITEM_INFO = 40;     
-    const IDX_CURR_CREDIT = 41;  
-    const IDX_BASE_PI = 48;      
-    const IDX_BASE_ITEM_INFO = 50;
-    const IDX_BASE_CREDIT = 51;  
+    let IDX_CURR_PI = 38;      
+    let IDX_ITEM_INFO = 40;      
+    let IDX_CURR_CREDIT = 41;  
+    let IDX_BASE_PI = 48;      
+    let IDX_BASE_ITEM_INFO = 50;
+    let IDX_BASE_CREDIT = 51;  
     
-    // Mapeamento dos Índices para os Empenhos (BA até BG -> Índices 52 a 58)
-    const IDX_EMP_FAVORECIDO = 52;
-    const IDX_EMP_PROCESSO = 53;
-    const IDX_EMP_ELEMENTO = 54;
-    const IDX_EMP_SUBITEM = 55;
-    const IDX_EMP_COS01 = 56;
-    const IDX_EMP_PI = 57;
-    const IDX_EMP_VALOR_CURR = 58; // DESPESAS EMPENHADAS (CONTROLE EMPENHO)
+    let IDX_EMP_FAVORECIDO = 52;
+    let IDX_EMP_PROCESSO = 53;
+    let IDX_EMP_ELEMENTO = 54;
+    let IDX_EMP_SUBITEM = 55;
+    let IDX_EMP_COS01 = 56;
+    let IDX_EMP_PI = 57;
+    let IDX_EMP_VALOR_CURR = 58;
 
-    // Base comparativa dos Empenhos (BH até BN -> Índices 59 a 65)
-    const IDX_EMP_BASE_FAVORECIDO = 59;
-    const IDX_EMP_BASE_PROCESSO = 60;
-    const IDX_EMP_BASE_ELEMENTO = 61;
-    const IDX_EMP_BASE_SUBITEM = 62;
-    const IDX_EMP_BASE_COS01 = 63;
-    const IDX_EMP_BASE_PI = 64;
-    const IDX_EMP_VALOR_BASE = 65;
+    let IDX_EMP_BASE_FAVORECIDO = 59;
+    let IDX_EMP_BASE_PROCESSO = 60;
+    let IDX_EMP_BASE_ELEMENTO = 61;
+    let IDX_EMP_BASE_SUBITEM = 62;
+    let IDX_EMP_BASE_COS01 = 63;
+    let IDX_EMP_BASE_PI = 64;
+    let IDX_EMP_VALOR_BASE = 65;
     
     function parseCSV(text) {
         const rows = []; let inQ = false, cur = '', row = [];
@@ -429,9 +428,46 @@
             
             const h=headers.map(c=>String(c).toLowerCase().trim());
             const find=(...t)=>{ let i=h.findIndex(c=>t.some(ct=>c===ct.toLowerCase())); if(i>=0) return i; return h.findIndex(c=>t.some(ct=>c.includes(ct.toLowerCase()))); };
-            IDX_FAVORECIDO=find('ne ccor - favorecido','favorecido'); IDX_PROCESSO=find('ne ccor - núm. processo','processo'); IDX_SALDO=find('saldo - moeda origem','saldo');
             
-            allData=[]; for(let i=1;i<allRows.length;i++){ const row=allRows[i].slice(0,LIQ_START); const proc=String(row[IDX_PROCESSO]||'').trim(); const fav=String(row[IDX_FAVORECIDO]||'').trim(); if(proc&&fav&&proc!=='Total'&&fav!=='Total'&&proc.length>3) allData.push(row); }
+            IDX_FAVORECIDO=find('ne ccor - favorecido','favorecido'); 
+            IDX_PROCESSO=find('ne ccor - núm. processo','processo'); 
+            IDX_SALDO=find('saldo - moeda origem','saldo');
+            if (IDX_SALDO === -1) IDX_SALDO = 17; // proteção caso mude o nome
+            
+            // CÁLCULO DE DESLOCAMENTO DINÂMICO PARA ADAPTAÇÃO DE NOVAS COLUNAS
+            let offset = IDX_SALDO - 17;
+            
+            LIQ_START = 18 + offset;
+            LIQ_END = 25 + offset;
+            LIQ30_START = 25 + offset;
+            LIQ30_END = 32 + offset;
+            IDX_CURR_PI = 38 + offset;
+            IDX_ITEM_INFO = 40 + offset;
+            IDX_CURR_CREDIT = 41 + offset;
+            IDX_BASE_PI = 48 + offset;
+            IDX_BASE_ITEM_INFO = 50 + offset;
+            IDX_BASE_CREDIT = 51 + offset;
+            IDX_EMP_FAVORECIDO = 52 + offset;
+            IDX_EMP_PROCESSO = 53 + offset;
+            IDX_EMP_ELEMENTO = 54 + offset;
+            IDX_EMP_SUBITEM = 55 + offset;
+            IDX_EMP_COS01 = 56 + offset;
+            IDX_EMP_PI = 57 + offset;
+            IDX_EMP_VALOR_CURR = 58 + offset;
+            IDX_EMP_BASE_FAVORECIDO = 59 + offset;
+            IDX_EMP_BASE_PROCESSO = 60 + offset;
+            IDX_EMP_BASE_ELEMENTO = 61 + offset;
+            IDX_EMP_BASE_SUBITEM = 62 + offset;
+            IDX_EMP_BASE_COS01 = 63 + offset;
+            IDX_EMP_BASE_PI = 64 + offset;
+            IDX_EMP_VALOR_BASE = 65 + offset;
+            
+            allData=[]; for(let i=1;i<allRows.length;i++){ 
+                const row=allRows[i].slice(0,LIQ_START); 
+                const proc=String(row[IDX_PROCESSO]||'').trim(); 
+                const fav=String(row[IDX_FAVORECIDO]||'').trim(); 
+                if(proc&&fav&&proc!=='Total'&&fav!=='Total'&&proc.length>3) allData.push(row); 
+            }
             filteredData=[...allData];
             
             // ==================== LIQUIDAÇÕES DO DIA ====================
@@ -504,7 +540,7 @@
             }
             allCreditAlerts = Array.from(alertMap.values());
 
-            // ==================== NOVO: ALERTA DE EMPENHOS (BA até BG vs BH até BN) ====================
+            // ==================== NOVO: ALERTA DE EMPENHOS ====================
             const empenhoBaseRowsList = [];
             for (let i = 1; i < allRows.length; i++) {
                 const row = allRows[i];
@@ -532,7 +568,6 @@
 
                 if (!cProc || cProc === 'Total' || cProc === 'NE CCor - Núm. Processo' || cProc === '') continue;
 
-                // Encontra a linha correspondente no bloco Base (anterior) cruzando Processo, Favorecido e Elemento
                 const matchBase = empenhoBaseRowsList.find(br => 
                     String(br[IDX_EMP_BASE_PROCESSO]).trim() === cProc &&
                     String(br[IDX_EMP_BASE_FAVORECIDO]).trim() === cFav &&
@@ -542,7 +577,6 @@
                 const bValue = matchBase ? parseMoney(matchBase[IDX_EMP_VALOR_BASE]) : 0;
                 const isNew = !matchBase;
 
-                // Dispara o alerta se for um empenho novo ou se o valor mudou
                 if (isNew || Math.abs(cValue - bValue) > 0.01) {
                     empenhoAlertMap.set(empenhoCounter++, {
                         favorecido: cFav,
@@ -564,18 +598,19 @@
             // ==================== NOVA CONSULTA A1IRR ====================
             const a1irrData = [];
             const a1irrHeaders = [];
-            for (let j = 32; j <= 41; j++) {
+            let startA1 = 32 + offset, endA1 = 41 + offset;
+            for (let j = startA1; j <= endA1; j++) {
                 a1irrHeaders.push(headers[j] || `Col ${j}`);
             }
             
             for (let i = 1; i < allRows.length; i++) {
                 const row = allRows[i];
-                if (row.length <= 38) continue;
-                const valPI = String(row[38] || '').trim(); 
+                if (row.length <= IDX_CURR_PI) continue;
+                const valPI = String(row[IDX_CURR_PI] || '').trim(); 
                 
                 if (valPI === 'A1IRR') {
                     let extracted = [];
-                    for (let j = 32; j <= 41; j++) {
+                    for (let j = startA1; j <= endA1; j++) {
                         extracted.push(row[j] || '');
                     }
                     a1irrData.push(extracted);
@@ -583,9 +618,9 @@
             }
             window._a1irrData = { headers: a1irrHeaders, rows: a1irrData };
             
-            // Renderizações dos painéis
+            // Renderizações
             renderCreditAlertPanel(allCreditAlerts);
-            renderEmpenhoAlertPanel(allEmpenhoAlerts); // Renderiza o novo painel
+            renderEmpenhoAlertPanel(allEmpenhoAlerts);
             renderLiquidacaoPanel(allMatches);
             renderLiq30Panel(allMatches30);
             
@@ -610,7 +645,7 @@
             html += '</tr></thead><tbody>';
             data.rows.forEach(row => {
                 html += '<tr class="border-b border-slate-700/50 hover:bg-orange-500/5 transition-colors">';
-                for (let i = 0; i < 10; i++) {
+                for (let i = 0; i < row.length; i++) {
                     let val = row[i] || '—';
                     if (i === 9 && val !== '—') {
                         const numVal = parseMoney(val);
@@ -668,13 +703,11 @@
         </table>`;
     }
 
-    // ==================== FUNÇÃO DE RENDERIZAÇÃO DO NOVO PAINEL DE EMPENHOS ====================
     function renderEmpenhoAlertPanel(alerts) {
         const panel = document.getElementById('empenhoAlertPanel');
         const badge = document.getElementById('empenhoAlertCountBadge');
         const container = document.getElementById('empenhoAlertContainer');
         
-        // Regra dinâmica: só aparece se houver dados cadastrados
         if (!alerts.length) { panel.classList.add('hidden'); return; }
         panel.classList.remove('hidden');
         badge.textContent = alerts.length + ' ocorrência' + (alerts.length > 1 ? 's' : '');
@@ -718,7 +751,6 @@
         </table>`;
     }
 
-    // Modais de Visualização e Abertura
     function openCreditAlertModal(idx) {
         const a = window._creditAlertsData && window._creditAlertsData[idx];
         if (!a) return;
@@ -730,11 +762,14 @@
             <div class="flex items-center gap-2 px-3 py-2 rounded-lg ${diff >= 0 ? 'bg-emerald-500/10' : 'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-500 font-bold">Variação Real</span><span class="font-mono text-sm ${diff >= 0 ? 'text-emerald-400' : 'text-red-400'}">${diff >= 0 ? '+' : ''}${formatMoney(diff)}</span></div>
         `;
         let currentDetails = '', baseDetails = '';
-        for (let k = 32; k <= 41; k++) {
+        let offset = IDX_SALDO - 17;
+        let startCurr = 32 + offset, endCurr = 41 + offset;
+        for (let k = startCurr; k <= endCurr; k++) {
             if(headers[k] || a.fullRow[k]) { currentDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-200 font-mono ${k===IDX_CURR_CREDIT?'text-orange-400 font-bold':''}">${escapeHtml(a.fullRow[k] || '—')}</span></div>`; }
         }
         if (a.baseRow) {
-            for (let k = 42; k <= 51; k++) {
+            let startBase = 42 + offset, endBase = 51 + offset;
+            for (let k = startBase; k <= endBase; k++) {
                 if(headers[k] || a.baseRow[k]) { baseDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-400 font-mono">${escapeHtml(a.baseRow[k] || '—')}</span></div>`; }
             }
         } else { baseDetails = `<div class="text-xs text-slate-600 italic p-3 text-center">Nenhum registro correspondente localizado na base anterior.</div>`; }
@@ -748,7 +783,6 @@
         document.body.classList.remove('modal-active');
     }
 
-    // ==================== CONTROLE DO NOVO MODAL DE EMPENHOS ====================
     function openEmpenhoAlertModal(idx) {
         const a = window._empenhoAlertsData && window._empenhoAlertsData[idx];
         if (!a) return;
@@ -763,15 +797,13 @@
         `;
 
         let currentDetails = '', baseDetails = '';
-        // Mapeia colunas atuais (BA até BG)
-        for (let k = 52; k <= 58; k++) {
+        for (let k = IDX_EMP_FAVORECIDO; k <= IDX_EMP_VALOR_CURR; k++) {
             if (headers[k] || a.fullRow[k]) {
                 currentDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-200 font-mono ${k===IDX_EMP_VALOR_CURR?'text-yellow-400 font-bold':''}">${escapeHtml(a.fullRow[k] || '—')}</span></div>`;
             }
         }
-        // Mapeia colunas base (BH até BN)
         if (a.baseRow) {
-            for (let k = 59; k <= 65; k++) {
+            for (let k = IDX_EMP_BASE_FAVORECIDO; k <= IDX_EMP_VALOR_BASE; k++) {
                 if (headers[k] || a.baseRow[k]) {
                     baseDetails += `<div class="p-1.5 bg-slate-900/40 rounded border border-slate-800/60 flex justify-between items-center text-xs"><span class="text-slate-500">${escapeHtml(headers[k] || 'Col ' + k)}:</span><span class="text-slate-400 font-mono">${escapeHtml(a.baseRow[k] || '—')}</span></div>`;
                 }
