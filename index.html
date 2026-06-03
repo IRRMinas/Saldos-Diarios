@@ -313,7 +313,15 @@
             const liqRows=[]; for(let i=1;i<allRows.length;i++){ const row=allRows[i].slice(LIQ_START,LIQ_END); const fav=String(row[0]||'').trim(); if(fav&&fav!=='Total'){ const proc=String(row[1]||'').trim(); if(proc&&proc!=='Total') liqRows.push(row); } }
             const liqMap=new Map();
             for(const row of liqRows){ const fav=row[0]?.trim(), proc=row[1]?.trim(); if(!fav||!proc) continue; const key=`${fav}|||${proc}`; if(!liqMap.has(key)) liqMap.set(key,{total:0,elem:row[2]||'',sub:row[3]||'',pi:row[5]||''}); liqMap.get(key).total+=parseMoney(row[6]); }
-            const seen=new Set(); allMatches=[]; for(const row of allData){ const fav=row[IDX_FAVORECIDO]?.trim(), proc=row[IDX_PROCESSO]?.trim(); if(!fav||!proc) continue; const key=`${fav}|||${proc}`; if(liqMap.has(key)&&!seen.has(key)){ seen.add(key); const liq=liqMap.get(key); const saldoAtual=parseMoney(row[IDX_SALDO]); const saldoAntes=saldoAtual+liq.total; allMatches.push({favorecido:fav,processo:proc,saldoAntes,liquidado:liq.total,saldoDepois:saldoAtual,pct:saldoAntes>0?liq.total/saldoAntes*100:0,elem:liq.elem,sub:liq.sub,pi:liq.pi}); } }
+            allMatches=[];
+           for(const [key, liq] of liqMap.entries()){
+               const [fav, proc] = key.split('|||');
+               const mainRow = allData.find(r => r[IDX_FAVORECIDO]?.trim()===fav && r[IDX_PROCESSO]?.trim()===proc);
+               const saldoAtual = mainRow ? parseMoney(mainRow[IDX_SALDO]) : null;
+               const saldoAntes = saldoAtual !== null ? saldoAtual + liq.total : null;
+               const pct = saldoAntes && saldoAntes > 0 ? liq.total / saldoAntes * 100 : 0;
+               allMatches.push({favorecido:fav, processo:proc, saldoAntes, liquidado:liq.total, saldoDepois:saldoAtual, pct, elem:liq.elem, sub:liq.sub, pi:liq.pi});
+           }
             
             const now=new Date(), cutoff=new Date(now.getTime()-30*24*60*60*1000);
             const liq30Map=new Map();
