@@ -87,8 +87,8 @@
             <div><h1 class="text-xl font-display font-bold text-white">Consulta Diária de Saldos</h1><p class="text-xs text-slate-500 font-mono">Sistema Local de Monitoramento</p></div>
         </div>
         <div class="flex items-center gap-3">
-            <div id="statusBadge" class="hidden items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium" style="background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2);"><i class="fas fa-circle text-[10px] animate-pulse"></i><span id="lastUpdateText">ao vivo</span></div>
-            <button id="refreshBtn" onclick="loadData()" class="flex items-center gap-2 text-white px-4 py-2 rounded-xl font-semibold text-sm" style="background: linear-gradient(135deg, #2563eb, #0891b2);"><i class="fas fa-sync-alt" id="refreshIcon"></i> Atualizar</button>
+            <div id="statusBadge" class="hidden items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium" style="background: rgba(16,185,129,0.1); color: #10b981; border: 1px solid rgba(16,185,129,0.2);"><i class="fas fa-circle text-[10px] animate-pulse"></i><span id="lastUpdateText">--/--/---- --:--:--</span></div>
+            <button id="refreshBtn" onclick="loadData(true)" class="flex items-center gap-2 text-white px-4 py-2 rounded-xl font-semibold text-sm" style="background: linear-gradient(135deg, #2563eb, #0891b2);"><i class="fas fa-sync-alt" id="refreshIcon"></i> Atualizar</button>
         </div>
     </div>
 </header>
@@ -268,7 +268,7 @@
     }
     function formatDateBR(d){ if(!d) return '—'; return d.toLocaleDateString('pt-BR'); }
     
-    async function loadData(){
+    async function loadData(isManualClick = false){
         const btn=document.getElementById('refreshBtn'), icon=document.getElementById('refreshIcon');
         btn.disabled=true; icon.className='fas fa-sync-alt animate-spin';
         document.getElementById('uploadSection').style.display='block';
@@ -301,9 +301,6 @@
                 const proc=String(row[IDX_PROCESSO]||'').trim(); 
                 const fav=String(row[IDX_FAVORECIDO]||'').trim(); 
                 
-                // MISTÉRIO RESOLVIDO: O código antigo tinha um "proc.length > 3". 
-                // Isso escondia a FIOCRUZ, já que o processo dela é apenas "-8" (2 caracteres). 
-                // Removi a trava de tamanho! Agora a Fiocruz entra normalmente.
                 if(proc && fav && proc !== 'Total' && fav !== 'Total') {
                     allData.push(row); 
                 } 
@@ -389,8 +386,26 @@
             }
             window._a1irrData = { headers: a1irrHeaders, rows: a1irrData };
             
-            renderCreditAlertPanel(allCreditAlerts); renderEmpenhoAlertPanel(allEmpenhoAlerts); renderLiquidacaoPanel(allMatches); renderLiq30Panel(allMatches30);
-            document.getElementById('lastUpdateText').textContent=new Date().toLocaleString('pt-BR'); document.getElementById('uploadSection').style.display='none'; document.getElementById('dashboardContent').classList.remove('hidden'); document.getElementById('statusBadge').classList.remove('hidden'); document.getElementById('statusBadge').classList.add('flex'); renderDashboard();
+            renderCreditAlertPanel(allCreditAlerts); 
+            renderEmpenhoAlertPanel(allEmpenhoAlerts); 
+            renderLiquidacaoPanel(allMatches); 
+            renderLiq30Panel(allMatches30);
+
+            // GESTÃO DA DATA DE ATUALIZAÇÃO (SÓ MUDA NO CLIQUE MANUAL)
+            if (isManualClick) {
+                const novaData = new Date().toLocaleString('pt-BR');
+                localStorage.setItem('dashboard_last_update', novaData);
+                document.getElementById('lastUpdateText').textContent = novaData;
+            } else {
+                const dataSalva = localStorage.getItem('dashboard_last_update');
+                document.getElementById('lastUpdateText').textContent = dataSalva || 'Pendente de atualização';
+            }
+
+            document.getElementById('uploadSection').style.display='none'; 
+            document.getElementById('dashboardContent').classList.remove('hidden'); 
+            document.getElementById('statusBadge').classList.remove('hidden'); 
+            document.getElementById('statusBadge').classList.add('flex'); 
+            renderDashboard();
         } catch(err){ console.error(err); document.getElementById('loadingIcon').innerHTML='<i class="fas fa-exclamation-circle"></i>'; document.getElementById('loadingIcon').className='text-5xl text-red-500'; }
         btn.disabled=false; icon.className='fas fa-sync-alt';
     }
@@ -449,8 +464,16 @@
         const panel=document.getElementById('liquidacaoPanel'), badge=document.getElementById('liqCountBadge'), container=document.getElementById('liqCardsContainer');
         if(!matches.length){ panel.classList.add('hidden'); return; } panel.classList.remove('hidden'); badge.textContent=matches.length+' ocorrência(s)';
         const totalLiq=matches.reduce((s,m)=>s+m.liquidado,0), totalAntes=matches.reduce((s,m)=>s+m.saldoAntes,0), totalDep=matches.reduce((s,m)=>s+m.saldoDepois,0);
-        const tbody=matches.map(m=>{ const pct=Math.min(m.pct,100); const barColor=pct>90?'#ef4444':pct>60?'#f59e0b':'#10b981'; const isLow=m.saldoDepois<m.saldoAntes*0.1; return `<tr><td><div class="flex items-center gap-2"><i class="fas fa-bolt text-xs text-amber-500"></i><div><p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p></div></div></td><td><span class="text-[11px] font-mono px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400">${escapeHtml(m.elem)}/${escapeHtml(m.sub)} · ${escapeHtml(m.processo)}</span>${m.pi?`<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">PI ${escapeHtml(m.pi)}</span>`:''}</td><td class="text-right"><span class="value-chip chip-before">${formatMoney(m.saldoAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(m.liquidado)}</span></td><td class="text-right"><span class="value-chip ${isLow?'chip-after-red':'chip-after'}">${formatMoney(m.saldoDepois)}</span></td><td class="text-right"><div class="flex items-center justify-end gap-2"><span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pct.toFixed(1)}%</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div></div></div></td></tr>`; }).join('');
-        container.innerHTML=`<table class="liq-table"><thead><tr><th>Favorecido</th><th>Elemento · Processo</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody><tfoot><td><td colspan="2" class="font-mono text-slate-500">TOTAIS · ${matches.length} OCORRÊNCIAS</td><td class="text-right"><span class="value-chip chip-before">${formatMoney(totalAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(totalLiq)}</span></td><td class="text-right"><span class="value-chip chip-after">${formatMoney(totalDep)}</span></td><td class="text-right"></td></tr></tfoot></table>`;
+        const tbody=matches.map(m=>{ 
+            const pct=Math.min(m.pct,100); 
+            const barColor=pct>90?'#ef4444':pct>60?'#f59e0b':'#10b981'; 
+            
+            // COR DO SALDO ATUAL: Verde para >= 0 e Vermelho APENAS para negativo (< 0)
+            const chipCorSaldo = (m.saldoDepois !== null && m.saldoDepois < 0) ? 'chip-after-red' : 'chip-after';
+            
+            return `<tr><td><div class="flex items-center gap-2"><i class="fas fa-bolt text-xs text-amber-500"></i><div><p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p></div></div></td><td><span class="text-[11px] font-mono px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400">${escapeHtml(m.elem)}/${escapeHtml(m.sub)} · ${escapeHtml(m.processo)}</span>${m.pi?`<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">PI ${escapeHtml(m.pi)}</span>`:''}</td><td class="text-right"><span class="value-chip chip-before">${formatMoney(m.saldoAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(m.liquidado)}</span></td><td class="text-right"><span class="value-chip ${chipCorSaldo}">${formatMoney(m.saldoDepois)}</span></td><td class="text-right"><div class="flex items-center justify-end gap-2"><span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pct.toFixed(1)}%</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div></div></div></td></tr>`; 
+        }).join('');
+        container.innerHTML=`<table class="liq-table"><thead><tr><th>Favorecido</th><th>Elemento · Processo</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody><tfoot><td><td colspan="2" class="font-mono text-slate-500">TOTAIS · ${matches.length} OCORRÊNCIAS</td><td class="text-right"><span class="value-chip chip-before">${formatMoney(totalAntes)}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(totalLiq)}</span></td><td class="text-right"><span class="value-chip ${totalDep < 0 ? 'chip-after-red' : 'chip-after'}">${formatMoney(totalDep)}</span></td><td class="text-right"></td></tr></tfoot></table>`;
     }
     
     function renderLiq30Panel(matches){
@@ -484,7 +507,8 @@
     function renderDashboard(){ const container=document.getElementById('resultsContainer'), empty=document.getElementById('emptyState'); container.innerHTML=''; let totalSaldo=0; const setFav=new Set(); if(!filteredData.length){ container.style.display='none'; empty.style.display='flex'; updateKPIs(0,0,0); return; } container.style.display='grid'; empty.style.display='none'; filteredData.forEach((row,idx)=>{ const processo=row[IDX_PROCESSO]||'N/A', favorecido=row[IDX_FAVORECIDO]||'N/A', saldoVal=parseMoney(row[IDX_SALDO]); totalSaldo+=saldoVal; setFav.add(favorecido); const isPos=saldoVal>=0, card=document.createElement('div'); card.className='result-card rounded-2xl p-5 flex flex-col h-full cursor-pointer'; card.style.cssText='background:#0d1626; border:1px solid #1e3050;'; card.onclick=()=>openModal(idx); card.innerHTML=`<div class="flex justify-between items-start mb-4"><div class="flex-1"><div class="flex items-center gap-2 mb-1.5"><span class="w-2 h-2 rounded-full ${isPos?'bg-emerald-500':'bg-red-500'}"></span><p class="text-[10px] font-bold uppercase text-slate-500">Processo</p></div><h4 class="text-sm font-display font-bold text-white truncate">${escapeHtml(processo)}</h4></div><div class="w-10 h-10 rounded-xl flex items-center justify-center ${isPos?'bg-emerald-500/10 border-emerald-500/20 text-emerald-400':'bg-red-500/10 border-red-500/20 text-red-400'}"><i class="fas ${isPos?'fa-check':'fa-exclamation'} text-sm"></i></div></div><div class="mb-5"><p class="text-[10px] font-bold uppercase text-slate-500 mb-1">Favorecido</p><p class="text-sm text-slate-300 line-clamp-2">${escapeHtml(favorecido)}</p></div><div class="pt-4 flex items-center justify-between border-t border-slate-700/50"><div><p class="text-[10px] font-bold uppercase text-slate-500 mb-0.5">Saldo</p><p class="text-lg font-display font-bold font-mono ${isPos?'text-emerald-400':'text-red-400'}">${formatMoney(saldoVal)}</p></div><div class="w-8 h-8 rounded-full flex items-center justify-center bg-slate-800 border border-slate-700 text-slate-500"><i class="fas fa-arrow-right text-sm"></i></div></div>`; container.appendChild(card); }); updateKPIs(totalSaldo,allData.reduce((acc, r) => acc + (r[IDX_PROCESSO] ? 1 : 0), 0),setFav.size); }
     function updateKPIs(saldo,proc,fav){ document.getElementById('kpiTotalSaldo').innerText=formatMoney(saldo); document.getElementById('kpiTotalProcessos').innerText=proc.toLocaleString('pt-BR'); document.getElementById('kpiTotalFavorecidos').innerText=fav.toLocaleString('pt-BR'); }
     
-    loadData();
+    // Carrega os dados na abertura da página sem sobrescrever o carimbo de data
+    loadData(false);
 </script>
 </body>
 </html>
