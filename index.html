@@ -391,14 +391,42 @@
             renderLiquidacaoPanel(allMatches); 
             renderLiq30Panel(allMatches30);
 
-            // GESTÃO DA DATA DE ATUALIZAÇÃO (SÓ MUDA NO CLIQUE MANUAL)
+            // ========================================================
+            // GESTÃO DA DATA DE ATUALIZAÇÃO (MOSTRA ÚLTIMA ATUALIZAÇÃO E SE FOI HOJE)
+            // ========================================================
+            const statusBadge = document.getElementById('statusBadge');
+            const lastUpdateText = document.getElementById('lastUpdateText');
+            const hojeStr = new Date().toLocaleDateString('pt-BR');
+
             if (isManualClick) {
-                const novaData = new Date().toLocaleString('pt-BR');
-                localStorage.setItem('dashboard_last_update', novaData);
-                document.getElementById('lastUpdateText').textContent = novaData;
+                const agoraCompleto = new Date();
+                const dataFormatada = agoraCompleto.toLocaleDateString('pt-BR');
+                const horaFormatada = agoraCompleto.toLocaleTimeString('pt-BR');
+                
+                localStorage.setItem('dashboard_last_date', dataFormatada);
+                localStorage.setItem('dashboard_last_time', horaFormatada);
+            }
+
+            const dataSalva = localStorage.getItem('dashboard_last_date');
+            const horaSalva = localStorage.getItem('dashboard_last_time');
+
+            if (!dataSalva || !horaSalva) {
+                lastUpdateText.textContent = 'Última atualização pendente';
+                statusBadge.style.background = 'rgba(245,158,11,0.1)';
+                statusBadge.style.color = '#f59e0b';
+                statusBadge.style.borderColor = 'rgba(245,158,11,0.2)';
+            } else if (dataSalva === hojeStr) {
+                // Atualizado hoje -> Fica Verde
+                lastUpdateText.textContent = `Atualizado hoje (${dataSalva} às ${horaSalva})`;
+                statusBadge.style.background = 'rgba(16,185,129,0.1)';
+                statusBadge.style.color = '#10b981';
+                statusBadge.style.borderColor = 'rgba(16,185,129,0.2)';
             } else {
-                const dataSalva = localStorage.getItem('dashboard_last_update');
-                document.getElementById('lastUpdateText').textContent = dataSalva || 'Pendente de atualização';
+                // Atualização antiga -> Fica Âmbar mostrando a data anterior
+                lastUpdateText.textContent = `Última atualização em ${dataSalva} às ${horaSalva}`;
+                statusBadge.style.background = 'rgba(245,158,11,0.1)';
+                statusBadge.style.color = '#f59e0b';
+                statusBadge.style.borderColor = 'rgba(245,158,11,0.2)';
             }
 
             document.getElementById('uploadSection').style.display='none'; 
