@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR" class="dark">
 <head>
@@ -392,39 +393,41 @@
             renderLiq30Panel(allMatches30);
 
             // ========================================================
-            // GESTÃO DA DATA DE ATUALIZAÇÃO (AGORA VEM DO SERVIDOR/PLANILHA,
-            // NÃO MAIS DO NAVEGADOR — ASSIM TODO MUNDO VÊ O MESMO STATUS)
+            // GESTÃO DA DATA DE ATUALIZAÇÃO (MOSTRA ÚLTIMA ATUALIZAÇÃO E SE FOI HOJE)
             // ========================================================
             const statusBadge = document.getElementById('statusBadge');
             const lastUpdateText = document.getElementById('lastUpdateText');
             const hojeStr = new Date().toLocaleDateString('pt-BR');
 
-            let statusText = '';
-            try {
-                const statusResp = await fetch(CSV_URL + '?status=1&t=' + Date.now());
-                if (statusResp.ok) statusText = (await statusResp.text()).trim();
-            } catch (e) { console.warn('Não foi possível obter status de atualização', e); }
+            if (isManualClick) {
+                const agoraCompleto = new Date();
+                const dataFormatada = agoraCompleto.toLocaleDateString('pt-BR');
+                const horaFormatada = agoraCompleto.toLocaleTimeString('pt-BR');
+                
+                localStorage.setItem('dashboard_last_date', dataFormatada);
+                localStorage.setItem('dashboard_last_time', horaFormatada);
+            }
 
-            if (!statusText) {
+            const dataSalva = localStorage.getItem('dashboard_last_date');
+            const horaSalva = localStorage.getItem('dashboard_last_time');
+
+            if (!dataSalva || !horaSalva) {
                 lastUpdateText.textContent = 'Última atualização pendente';
                 statusBadge.style.background = 'rgba(245,158,11,0.1)';
                 statusBadge.style.color = '#f59e0b';
                 statusBadge.style.borderColor = 'rgba(245,158,11,0.2)';
+            } else if (dataSalva === hojeStr) {
+                // Atualizado hoje -> Fica Verde
+                lastUpdateText.textContent = `Atualizado hoje (${dataSalva} às ${horaSalva})`;
+                statusBadge.style.background = 'rgba(16,185,129,0.1)';
+                statusBadge.style.color = '#10b981';
+                statusBadge.style.borderColor = 'rgba(16,185,129,0.2)';
             } else {
-                const dataSalva = statusText.split(' ')[0];
-                if (dataSalva === hojeStr) {
-                    // Atualizado hoje -> Fica Verde
-                    lastUpdateText.textContent = `Atualizado hoje (${statusText})`;
-                    statusBadge.style.background = 'rgba(16,185,129,0.1)';
-                    statusBadge.style.color = '#10b981';
-                    statusBadge.style.borderColor = 'rgba(16,185,129,0.2)';
-                } else {
-                    // Atualização antiga -> Fica Âmbar mostrando a data anterior
-                    lastUpdateText.textContent = `Última atualização em ${statusText}`;
-                    statusBadge.style.background = 'rgba(245,158,11,0.1)';
-                    statusBadge.style.color = '#f59e0b';
-                    statusBadge.style.borderColor = 'rgba(245,158,11,0.2)';
-                }
+                // Atualização antiga -> Fica Âmbar mostrando a data anterior
+                lastUpdateText.textContent = `Última atualização em ${dataSalva} às ${horaSalva}`;
+                statusBadge.style.background = 'rgba(245,158,11,0.1)';
+                statusBadge.style.color = '#f59e0b';
+                statusBadge.style.borderColor = 'rgba(245,158,11,0.2)';
             }
 
             document.getElementById('uploadSection').style.display='none'; 
