@@ -277,16 +277,21 @@
             const resp = await fetch(CSV_URL + '?status=1&t=' + Date.now());
             if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
             const text = (await resp.text()).trim();
-            if(text){
+            // Proteção: se vier algo muito longo ou com cara de CSV (várias vírgulas/quebras),
+            // é sinal de que o deploy do Apps Script está desatualizado e devolveu a planilha
+            // inteira em vez da data. Nesse caso NÃO exibimos, para não quebrar o layout.
+            const pareceCSV = text.length > 60 || text.includes('\n') || (text.match(/,/g) || []).length > 2;
+            if(text && !pareceCSV){
                 lastUpdateText.textContent = `Atualizado em ${text}`;
                 statusBadge.style.background = 'rgba(16,185,129,0.1)';
                 statusBadge.style.color = '#10b981';
                 statusBadge.style.borderColor = 'rgba(16,185,129,0.2)';
             } else {
-                lastUpdateText.textContent = 'Sem registro de atualização';
+                lastUpdateText.textContent = pareceCSV ? 'Status indisponível (redeploy pendente)' : 'Sem registro de atualização';
                 statusBadge.style.background = 'rgba(148,163,184,0.1)';
                 statusBadge.style.color = '#94a3b8';
                 statusBadge.style.borderColor = 'rgba(148,163,184,0.2)';
+                if(pareceCSV) console.warn('loadLastUpdate: resposta parece CSV, não data. Verifique se o Apps Script foi republicado com "Nova versão".');
             }
             statusBadge.classList.remove('hidden');
             statusBadge.classList.add('flex');
