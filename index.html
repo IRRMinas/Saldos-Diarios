@@ -268,6 +268,33 @@
     }
     function formatDateBR(d){ if(!d) return '—'; return d.toLocaleDateString('pt-BR'); }
     
+    // Busca a "última atualização oficial" gravada no servidor (PropertiesService),
+    // que é a mesma para QUALQUER pessoa que acessar, em qualquer PC.
+    async function loadLastUpdate(){
+        const statusBadge = document.getElementById('statusBadge');
+        const lastUpdateText = document.getElementById('lastUpdateText');
+        try{
+            const resp = await fetch(CSV_URL + '?status=1&t=' + Date.now());
+            if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const text = (await resp.text()).trim();
+            if(text){
+                lastUpdateText.textContent = `Atualizado em ${text}`;
+                statusBadge.style.background = 'rgba(16,185,129,0.1)';
+                statusBadge.style.color = '#10b981';
+                statusBadge.style.borderColor = 'rgba(16,185,129,0.2)';
+            } else {
+                lastUpdateText.textContent = 'Sem registro de atualização';
+                statusBadge.style.background = 'rgba(148,163,184,0.1)';
+                statusBadge.style.color = '#94a3b8';
+                statusBadge.style.borderColor = 'rgba(148,163,184,0.2)';
+            }
+            statusBadge.classList.remove('hidden');
+            statusBadge.classList.add('flex');
+        }catch(err){
+            console.error('Erro ao buscar última atualização:', err);
+        }
+    }
+
     async function loadData(isManualClick = false){
         const btn=document.getElementById('refreshBtn'), icon=document.getElementById('refreshIcon');
         btn.disabled=true; icon.className='fas fa-sync-alt animate-spin';
@@ -392,16 +419,9 @@
             renderLiq30Panel(allMatches30);
 
             // ========================================================
-            // DATA DE ATUALIZAÇÃO (SEMPRE MOSTRA A DATA DE HOJE, SEM CHECAGEM)
+            // DATA DE ATUALIZAÇÃO OFICIAL (compartilhada, vem do servidor)
             // ========================================================
-            const statusBadge = document.getElementById('statusBadge');
-            const lastUpdateText = document.getElementById('lastUpdateText');
-            const hojeStr = new Date().toLocaleDateString('pt-BR');
-
-            lastUpdateText.textContent = `Atualizado em ${hojeStr}`;
-            statusBadge.style.background = 'rgba(16,185,129,0.1)';
-            statusBadge.style.color = '#10b981';
-            statusBadge.style.borderColor = 'rgba(16,185,129,0.2)';
+            loadLastUpdate();
 
             document.getElementById('uploadSection').style.display='none'; 
             document.getElementById('dashboardContent').classList.remove('hidden'); 
@@ -511,6 +531,7 @@
     
     // Carrega os dados na abertura da página sem sobrescrever o carimbo de data
     loadData(false);
+    setInterval(loadLastUpdate, 120000); // rechecar status a cada 2 min, sem recarregar os dados
 </script>
 </body>
 </html>
