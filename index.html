@@ -511,7 +511,7 @@
                         <i class="fas ${isAnulado ? 'fa-ban text-red-400' : 'fa-bolt text-amber-500'} text-xs"></i>
                         <div>
                             <p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p>
-                            ${isAnulado ? '<span class="text-[9px] font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20">CANCELADO PELA DIRETORIA</span>' : ''}
+                            ${isAnulado ? '<span class="text-[9px] font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20"></span>' : ''}
                         </div>
                     </div>
                 </td>
@@ -560,7 +560,7 @@
                         <i class="fas ${foiAnulado ? 'fa-ban text-red-400' : 'fa-history text-cyan-400'} text-xs"></i>
                         <div>
                             <p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p>
-                            ${foiAnulado ? '<span class="text-[9px] font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20">CANCELADO PELA DIRETORIA</span>' : (m.desc?`<p class="text-[10px] text-slate-500">${escapeHtml(m.desc)}</p>`:'')}
+                            ${foiAnulado ? '<span class="text-[9px] font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20"></span>' : (m.desc?`<p class="text-[10px] text-slate-500">${escapeHtml(m.desc)}</p>`:'')}
                         </div>
                     </div>
                 </td>
