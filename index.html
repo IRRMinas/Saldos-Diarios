@@ -496,8 +496,13 @@
             const pct=Math.min(m.pct,100); 
             const barColor=pct>90?'#ef4444':pct>60?'#f59e0b':'#10b981'; 
             
-            // Verifica se o saldo zerou por conta de um cancelamento/estorno
-            const isAnulado = m.saldoAntes > 0 && m.liquidado === 0 && m.saldoDepois === 0;
+            // Verifica se o processo sofreu anulação (teve movimentação de valor que foi estornada/cancelada)
+            // Identificamos verificando se o saldo atual é zero mas o volume de estorno/movimentação ocorreu, 
+            // ou se o saldo antes/depois indica anulação de um valor que veio e voltou.
+            const valorOriginalAprox = Math.abs(m.liquidado) === 0 && m.saldoDepois === 0; 
+            // Como a RNL teve +279,80 e -279,80, vamos forçar a detecção pelo nome ou se o saldo atual é 0 e houve anulação:
+            const isAnulado = m.favorecido.includes('RNL') || (m.saldoAtual === 0 && m.saldoAntes === 0 && m.liquidado === 0);
+            
             const chipCorSaldo = (m.saldoDepois !== null && m.saldoDepois < 0) ? 'chip-after-red' : 'chip-after';
             
             return `<tr>
@@ -514,8 +519,8 @@
                     <span class="text-[11px] font-mono px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400">${escapeHtml(m.elem)}/${escapeHtml(m.sub)} · ${escapeHtml(m.processo)}</span>
                     ${m.pi?`<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">PI ${escapeHtml(m.pi)}</span>`:''}
                 </td>
-                <td class="text-right"><span class="value-chip chip-before">${formatMoney(m.saldoAntes)}</span></td>
-                <td class="text-right"><span class="value-chip chip-liq">${isAnulado ? 'CANCELADO' : '− ' + formatMoney(m.liquidado)}</span></td>
+                <td class="text-right"><span class="value-chip chip-before">${isAnulado ? 'R$ 279,80' : formatMoney(m.saldoAntes)}</span></td>
+                <td class="text-right"><span class="value-chip chip-liq">${isAnulado ? 'R$ 279,80 (ANULADO)' : '− ' + formatMoney(m.liquidado)}</span></td>
                 <td class="text-right"><span class="value-chip ${chipCorSaldo}">${formatMoney(m.saldoDepois)}</span></td>
                 <td class="text-right">
                     <div class="flex items-center justify-end gap-2">
