@@ -533,8 +533,54 @@
         const panel=document.getElementById('liq30Panel'), badge=document.getElementById('liq30CountBadge'), container=document.getElementById('liq30CardsContainer');
         if(!matches.length){ panel.classList.add('hidden'); return; } panel.classList.remove('hidden'); badge.textContent=matches.length+' ocorrência(s)';
         const now=new Date(), cutoff=new Date(now.getTime()-30*24*60*60*1000); document.getElementById('liq30PeriodText').textContent=formatDateBR(cutoff)+' → '+formatDateBR(now); window._liq30Data=matches;
-        const tbody=matches.map((m,idx)=>{ const saldo=m.saldoAtual, saldoAntes=saldo!==null?saldo+m.totalLiq:null, pct=saldoAntes&&saldoAntes>0?Math.min(m.totalLiq/saldoAntes*100,100):100, barColor=pct>90?'#ef4444':pct>60?'#f59e0b':'#10b981', isLow=saldo!==null&&saldoAntes!==null&&saldo<saldoAntes*0.1, afterChip=saldo===null?'chip-before':(saldo<0?'chip-after-red':(isLow?'chip-after-warn':'chip-after')), latestDate=m.entries.length?m.entries.reduce((a,b)=>a.date>b.date?a:b).date:null, hasMultiple=m.entries.length>1; return `<tr class="liq30-row-clickable" onclick="openModal30(${idx})"><td><div class="flex items-center gap-2"><i class="fas fa-history text-xs text-cyan-400"></i><div><p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p>${m.desc?`<p class="text-[10px] text-slate-500">${escapeHtml(m.desc)}</p>`:''}</div></div></td><td><span class="text-[11px] font-mono px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400">${escapeHtml(m.elem)} · ${escapeHtml(m.processo)}</span>${m.pi?`<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">PI ${escapeHtml(m.pi)}</span>`:''}</td><td class="text-center"><span class="date-chip">${latestDate?formatDateBR(latestDate):'—'}</span>${hasMultiple?`<span class="text-[9px] block mt-1 text-cyan-400"><i class="fas fa-layer-group mr-0.5"></i>${m.entries.length} lançamentos</span>`:''}</td><td class="text-right"><span class="value-chip chip-before">${saldoAntes!==null?formatMoney(saldoAntes):'—'}</span></td><td class="text-right"><span class="value-chip chip-liq">− ${formatMoney(m.totalLiq)}</span></td><td class="text-right"><span class="value-chip ${afterChip}">${saldo!==null?formatMoney(saldo):'—'}</span></td><td class="text-right"><div class="flex items-center justify-end gap-2"><span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pct.toFixed(1)}%</span><div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div></div><i class="fas fa-chevron-right text-[9px] text-slate-600"></i></div></td></tr>`; }).join('');
-        container.innerHTML=`<table class="liq30-table"><thead><tr><th>Favorecido</th><th>Elemento · Processo</th><th class="text-center">Último Lançamento</th><th class="text-right">Saldo Anterior</th><th class="text-right">Liquidado</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody></table>`;
+        
+        const tbody=matches.map((m,idx)=>{ 
+            const saldo=m.saldoAtual, saldoAntes=saldo!==null?saldo+m.totalLiq:null; 
+            
+            // Verifica se houve lançamento positivo seguido de anulação (totalLiq igual a 0 ou estornado)
+            // Analisando se nos lançamentos há valores opuestos (ex: +279.80 e -279.80)
+            const temEntrada = m.entries.some(e => e.valor > 0);
+            const temEstorno = m.entries.some(e => e.valor < 0);
+            const foiAnulado = temEntrada && temEstorno && Math.abs(m.totalLiq) < 0.01;
+            
+            const pct=saldoAntes&&saldoAntes>0?Math.min(m.totalLiq/saldoAntes*100,100):100; 
+            const barColor=pct>90?'#ef4444':pct>60?'#f59e0b':'#10b981'; 
+            const afterChip=foiAnulado?'chip-after-red':(saldo===null?'chip-before':(saldo<0?'chip-after-red':'chip-after')); 
+            const latestDate=m.entries.length?m.entries.reduce((a,b)=>a.date>b.date?a:b).date:null; 
+            const hasMultiple=m.entries.length>1; 
+            
+            return `<tr class="liq30-row-clickable" onclick="openModal30(${idx})">
+                <td>
+                    <div class="flex items-center gap-2">
+                        <i class="fas ${foiAnulado ? 'fa-ban text-red-400' : 'fa-history text-cyan-400'} text-xs"></i>
+                        <div>
+                            <p class="text-sm font-semibold text-white">${escapeHtml(m.favorecido)}</p>
+                            ${foiAnulado ? '<span class="text-[9px] font-bold text-red-400 bg-red-500/10 px-1.5 py-0.5 rounded border border-red-500/20">CANCELADO PELA DIRETORIA</span>' : (m.desc?`<p class="text-[10px] text-slate-500">${escapeHtml(m.desc)}</p>`:'')}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="text-[11px] font-mono px-2 py-1 rounded-md bg-cyan-500/10 text-cyan-400">${escapeHtml(m.elem)} · ${escapeHtml(m.processo)}</span>
+                    ${m.pi?`<span class="text-[10px] font-mono ml-1 px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400">PI ${escapeHtml(m.pi)}</span>`:''}
+                </td>
+                <td class="text-center">
+                    <span class="date-chip">${latestDate?formatDateBR(latestDate):'—'}</span>
+                    ${hasMultiple?`<span class="text-[9px] block mt-1 text-cyan-400"><i class="fas fa-layer-group mr-0.5"></i>${m.entries.length} lançamentos</span>`:''}
+                </td>
+                <td class="text-right"><span class="value-chip chip-before">${saldoAntes!==null?formatMoney(saldoAntes):'—'}</span></td>
+                <td class="text-right"><span class="value-chip ${foiAnulado ? 'chip-after-red' : 'chip-liq'}">${foiAnulado ? 'ANULADO' : '− ' + formatMoney(m.totalLiq)}</span></td>
+                <td class="text-right"><span class="value-chip ${afterChip}">${foiAnulado ? 'R$ 0,00' : (saldo!==null?formatMoney(saldo):'—')}</span></td>
+                <td class="text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <span class="text-[11px] font-mono font-bold" style="color:${barColor};">${pct.toFixed(1)}%</span>
+                        <div class="mini-bar-track"><div class="mini-bar-fill" style="width:${pct}%;background:${barColor};"></div></div>
+                        <i class="fas fa-chevron-right text-[9px] text-slate-600"></i>
+                    </div>
+                </td>
+            </tr>`; 
+        }).join('');
+        
+        container.innerHTML=`<table class="liq30-table"><thead><tr><th>Favorecido</th><th>Elemento · Processo</th><th class="text-center">Último Lançamento</th><th class="text-right">Saldo Anterior</th><th class="text-right">Movimentação</th><th class="text-right">Saldo Atual</th><th class="text-right">Consumo</th></tr></thead><tbody>${tbody}</tbody></table>`;
     }
     
     function openModal30(idx){ const m=window._liq30Data&&window._liq30Data[idx]; if(!m) return; document.getElementById('modal30Processo').textContent=m.processo; document.getElementById('modal30Fav').textContent=m.favorecido; const saldo=m.saldoAtual, saldoAntes=saldo!==null?saldo+m.totalLiq:null; document.getElementById('modal30Summary').innerHTML=`<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50"><span class="text-[10px] uppercase text-slate-500">Saldo Anterior</span><span class="font-mono text-sm text-slate-300">${saldoAntes!==null?formatMoney(saldoAntes):'—'}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10"><span class="text-[10px] uppercase text-slate-500">Total Liquidado</span><span class="font-mono text-sm text-red-400">− ${formatMoney(m.totalLiq)}</span></div><div class="flex items-center gap-2 px-3 py-2 rounded-lg ${saldo!==null&&saldo>=0?'bg-emerald-500/10':'bg-red-500/10'}"><span class="text-[10px] uppercase text-slate-500">Saldo Atual</span><span class="font-mono text-sm ${saldo!==null&&saldo>=0?'text-emerald-400':'text-red-400'}">${saldo!==null?formatMoney(saldo):'—'}</span></div>`; const sorted=[...m.entries].sort((a,b)=>b.date-a.date); document.getElementById('modal30Entries').innerHTML=sorted.map((e,i)=>`<div class="modal30-row"><div class="flex items-center gap-3"><div class="w-7 h-7 rounded-full flex items-center justify-center bg-cyan-500/10 border border-cyan-500/20"><span class="text-[10px] font-bold text-cyan-400">${sorted.length-i}</span></div><span class="date-chip">${formatDateBR(e.date)}</span></div><span class="value-chip ${e.valor>=0?'chip-after':'chip-liq'}">${e.valor>=0?'':'− '}${formatMoney(Math.abs(e.valor))}</span></div>`).join(''); document.getElementById('modal30').classList.remove('hidden'); document.body.classList.add('modal-active'); }
